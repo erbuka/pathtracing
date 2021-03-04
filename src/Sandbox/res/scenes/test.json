@@ -1,0 +1,130 @@
+{
+    "name" : "TestScene",
+    "camera" : {
+        "position" : [0,0,-3],
+        "lookAt" : [0,0,0]
+    },
+    "background" : {
+        "color" : "background"
+    },
+    "meshes" : [
+        {
+            "file" : "res/meshes/bunny.obj",
+            "ids" : ["bunny"]
+        },
+        {
+            "file" : "res/meshes/plane.obj",
+            "ids" : ["plane"]
+        }
+    ],
+    "samplers" : [
+        {
+            "color" : [0.2, 0.3, 0.8],
+            "id" : "blue"
+        }, 
+        {
+            "file" : "res/textures/jupiter.jpg",
+            "id" : "jupiter",
+            "mode" : "linear"
+        },
+        {
+            "file" : "res/textures/checker-board.jpg",
+            "id" : "checker-board",
+            "mode" : "nearest"
+        },
+        {
+            "file" : "res/textures/bg0.hdr",
+            "id": "background",
+            "type" : "equirectangular"
+        }
+    ],
+    "nodes" : [
+        {
+            "translate" : [-3,1,-3],
+            "rotate" : [0,0,0],
+            "scale" : [1,1,1],
+            "shape" : "sphere",
+            "material" : {
+                "color" : "jupiter"
+            }
+        },
+        {
+            "translate" : [-3,1,0],
+            "rotate" : [0,0,0],
+            "scale" : [1,1,1],
+            "shape" : "sphere",
+            "material" : {
+                "color" : "jupiter"
+            }
+        },
+        {
+            "translate" : [-3,1,3],
+            "rotate" : [0,0,0],
+            "scale" : [1,1,1],
+            "shape" : "sphere",
+            "material" : {
+                "color" : "jupiter"
+            }
+        },
+        {
+            "translate" : [0,1,-3],
+            "rotate" : [0,0,0],
+            "scale" : [1,1,1],
+            "shape" : "sphere",
+            "material" : {
+                "color" : "jupiter"
+            }
+        },
+        {
+            "translate" : [0,1,0],
+            "rotate" : [0,0,0],
+            "scale" : [1,1,1],
+            "shape" : "sphere",
+            "material" : {
+                "color" : "jupiter"
+            }
+        },
+        {
+            "translate" : [0,1,3],
+            "rotate" : [0,0,0],
+            "scale" : [1,1,1],
+            "shape" : "sphere",
+            "material" : {
+                "color" : "jupiter"
+            }
+        },
+        {
+            "translate" : [3,1,-3],
+            "rotate" : [0,0,0],
+            "scale" : [1,1,1],
+            "shape" : "sphere",
+            "material" : {
+                "color" : "jupiter"
+            }
+        },
+        {
+            "translate" : [3,1,0],
+            "rotate" : [0,0,0],
+            "scale" : [1,1,1],
+            "shape" : "sphere",
+            "material" : {
+                "color" : "jupiter"
+            }
+        },
+        {
+            "translate" : [3,1,3],
+            "rotate" : [0,0,0],
+            "scale" : [1,1,1],
+            "shape" : "sphere",
+            "material" : {
+                "color" : "jupiter"
+            }
+        },
+        {
+            "mesh" : "plane",
+            "material" : {
+                "color" : "checker-board"
+            }
+        }
+    ]
+}
