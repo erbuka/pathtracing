@@ -263,7 +263,7 @@ namespace sandbox
         }
 
         /* Create a windowed mode window and its OpenGL context */
-        m_Window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+        m_Window = glfwCreateWindow(1280, 720, "Hello World", NULL, NULL);
         if (!m_Window)
         {
             glfwTerminate();
@@ -283,8 +283,10 @@ namespace sandbox
 
         Initialize();
 
+        m_Running = true;
+
         /* Loop until the user closes the window */
-        while (!glfwWindowShouldClose(m_Window))
+        while (!glfwWindowShouldClose(m_Window) && m_Running)
         {
 
             Update();
@@ -479,7 +481,7 @@ namespace sandbox
                     m_State = SandboxState::Rendering;
                 }
 
-                if (ImGui::BeginMenu("Scenes"))
+                if (ImGui::BeginMenu("Load Scene"))
                 {
                     for (const auto& sceneDef : m_SceneDefs)
                     {
@@ -490,12 +492,25 @@ namespace sandbox
                     }
                     ImGui::EndMenu();
                 }
+
+                ImGui::Separator();
+
+                if (ImGui::MenuItem("Quit"))
+                {
+                    m_Running = false;
+                }
+
                 ImGui::EndMenu();
             }
             ImGui::EndMainMenuBar();
         }
         else if (m_State == SandboxState::Rendering)
         {
+            ImGui::SetNextWindowPos({ 0.0f, 0.0f });
+            ImGui::Begin("Test", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
+            ImGui::Text("Rendering");
+            ImGui::ProgressBar(m_RenderResult->GetProgressPercent());
+            ImGui::End();
         }
         else if (m_State == SandboxState::Result)
         {

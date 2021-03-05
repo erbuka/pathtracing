@@ -34,6 +34,12 @@ namespace rt {
 		using Fn = std::function<void(RaytracerResult&)>;
 		RaytracerResult(const Fn& fn);
 		~RaytracerResult();
+		float GetProgressPercent() const { return float(m_Progress) / m_ProgressMax; }
+
+		void IncrementProgress(uint32_t p) { m_Progress += p; }
+		void SetProgress(uint32_t p) { m_Progress = p; }
+		void SetMaxProgress(uint32_t m) { m_ProgressMax = m; }
+
 		bool IsReady() const { return m_Ready; }
 		void Wait();
 		const Image& GetResult() const { return m_Result; }
@@ -44,6 +50,7 @@ namespace rt {
 		Image m_Result;
 		std::mutex m_Mutex;
 		std::atomic_bool m_Ready = false;
+		std::atomic_uint32_t m_Progress = 0, m_ProgressMax = 1;
 	};
 
 

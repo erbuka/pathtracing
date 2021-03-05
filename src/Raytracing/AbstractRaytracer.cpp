@@ -10,6 +10,8 @@ namespace rt {
 			Image result(params.Width, params.Height);
 			std::mutex lineMutex;
 
+			self.SetMaxProgress(params.Width);
+
 			auto nextScanLine = [&, current = uint32_t(0)]() mutable->std::optional<uint32_t>{
 				std::lock_guard guard(lineMutex);
 				if (current == params.Width)
@@ -50,6 +52,7 @@ namespace rt {
 
 						result.SetPixel(x, y, color);
 					}
+					self.IncrementProgress(1);
 				}
 			};
 

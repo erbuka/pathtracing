@@ -95,5 +95,7 @@ namespace sandbox
 
 		ImFont* m_Font;
 
+		bool m_Running = false;
+
 	};
 }
