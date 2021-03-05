@@ -88,7 +88,7 @@ namespace rt {
 	struct Material
 	{
 		Material();
-		std::shared_ptr<Sampler2D> Color;
+		std::shared_ptr<Sampler2D> Albedo;
 	};
 
 	class KDTreeNode

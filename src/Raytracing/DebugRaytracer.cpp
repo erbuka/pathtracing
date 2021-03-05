@@ -14,7 +14,7 @@ namespace rt
 			switch (CurrentMode)
 			{
 			case rt::DebugRaytracer::Mode::Color:
-				return node->Material.Color->Sample(result.UV);
+				return node->Material.Albedo->Sample(result.UV);
 			case rt::DebugRaytracer::Mode::Normal:
 				return result.Normal * 0.5f + 0.5f;
 			default:

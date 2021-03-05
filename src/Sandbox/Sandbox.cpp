@@ -697,8 +697,8 @@ namespace sandbox
                 {
                     auto matDef = nodeDef["material"];
 
-                    if (matDef.contains("color"))
-                        node->Material.Color = samplers2D.at(matDef["color"].get<std::string>());
+                    if (matDef.contains("albedo"))
+                        node->Material.Albedo = samplers2D.at(matDef["albedo"].get<std::string>());
                 }
 
                 m_Scene.Nodes.push_back(std::move(node));

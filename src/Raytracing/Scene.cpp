@@ -391,7 +391,7 @@ namespace rt
 
 	Material::Material()
 	{
-		Color = std::make_shared<ColorSampler>(glm::vec3(1.0f, 1.0f, 1.0f));
+		Albedo = std::make_shared<ColorSampler>(glm::vec3(1.0f, 1.0f, 1.0f));
 	}
 
 }

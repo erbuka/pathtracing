@@ -51,7 +51,7 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "color" : "jupiter"
+                "albedo" : "jupiter"
             }
         },
         {
@@ -60,7 +60,7 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "color" : "jupiter"
+                "albedo" : "jupiter"
             }
         },
         {
@@ -69,7 +69,7 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "color" : "jupiter"
+                "albedo" : "jupiter"
             }
         },
         {
@@ -78,7 +78,7 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "color" : "jupiter"
+                "albedo" : "jupiter"
             }
         },
         {
@@ -87,7 +87,7 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "color" : "jupiter"
+                "albedo" : "jupiter"
             }
         },
         {
@@ -96,7 +96,7 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "color" : "jupiter"
+                "albedo" : "jupiter"
             }
         },
         {
@@ -105,7 +105,7 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "color" : "jupiter"
+                "albedo" : "jupiter"
             }
         },
         {
@@ -114,7 +114,7 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "color" : "jupiter"
+                "albedo" : "jupiter"
             }
         },
         {
@@ -123,13 +123,13 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "color" : "jupiter"
+                "albedo" : "jupiter"
             }
         },
         {
             "mesh" : "plane",
             "material" : {
-                "color" : "checker-board"
+                "albedo" : "checker-board"
             }
         }
     ]

@@ -14,7 +14,7 @@ namespace rt
 
 		if (result.Hit)
 		{
-			auto albedo = node->Material.Color->Sample(result.UV);
+			auto albedo = node->Material.Albedo->Sample(result.UV);
 			glm::vec3 directLighting(0.0f);
 
 			for (const auto& light : scene.Lights)
