@@ -74,13 +74,14 @@ namespace rt {
 		Directional, Point, Spot
 	};
 
+
 	struct Light
 	{
 		LightType Type = LightType::Directional;
 		glm::vec3 Color = { 1.0f, 1.0f, 1.0f };
 		glm::vec3 Direction = { 0.0f, 1.0f, 0.0f };
 		glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
-		float Attenuation = 0.0f;
+		float Attenuation = 1.0f;
 		float Angle = glm::pi<float>() / 4.0f;
 	};
 
@@ -165,6 +166,6 @@ namespace rt {
 		std::vector<Light> Lights;
 		std::shared_ptr<Sampler3D> Background = nullptr;
 		std::vector<std::shared_ptr<SceneNode>> Nodes;
-		std::tuple<RaycastResult, std::shared_ptr<SceneNode>> Scene::Intersect(const Ray& ray) const;
+		std::tuple<RaycastResult, std::shared_ptr<SceneNode>> Scene::CastRay(const Ray& ray, bool returnOnFirstHit = false, const std::vector<std::shared_ptr<SceneNode>>& avoidNodes = {}) const;
 	};
 }

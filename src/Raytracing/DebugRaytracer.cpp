@@ -7,7 +7,7 @@ namespace rt
 {
 	glm::vec3 DebugRaytracer::Trace(const ViewParameters& params, const Ray& ray, const Scene& scene)
 	{
-		auto [result, node] = scene.Intersect(ray);
+		auto [result, node] = scene.CastRay(ray);
 
 		if (result.Hit)
 		{

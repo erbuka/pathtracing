@@ -7,6 +7,12 @@
     "background" : {
         "color" : "background"
     },
+    "lights" : [
+        {
+            "type": "directional",
+            "direction" : [1,1,1]
+        }
+    ],
     "meshes" : [
         {
             "file" : "res/meshes/bunny.obj",

@@ -3,9 +3,9 @@
 #include <fstream>
 #include <regex>
 
-#include <glm/gtx/norm.hpp>
 #include <spdlog\spdlog.h>
 
+#include <glm/gtx/norm.hpp>
 #include <glm\gtx\transform.hpp>
 
 #include "Sampler.h"
@@ -301,7 +301,7 @@ namespace rt
 		Transform *= glm::scale(s);
 	}
 
-	std::tuple<RaycastResult, std::shared_ptr<SceneNode>> Scene::Intersect(const Ray& ray) const
+	std::tuple<RaycastResult, std::shared_ptr<SceneNode>> Scene::CastRay(const Ray& ray, bool returnOnFirstHit, const std::vector<std::shared_ptr<SceneNode>>& avoidNodes) const
 	{
 		float distance = std::numeric_limits<float>::max();
 		RaycastResult raycastResult;
@@ -309,6 +309,11 @@ namespace rt
 			
 		for (const auto& node : Nodes)
 		{
+			if (!avoidNodes.empty() && std::find(avoidNodes.begin(), avoidNodes.end(), node) != avoidNodes.end())
+			{
+				continue;
+			}
+
 			// Ray is transformed by the inverse tranform of the node
 			// The intersection test is performed in local coordinates, because
 			// transforming the ray is faster than transforming all the vertices
@@ -316,10 +321,17 @@ namespace rt
 
 			if (r0.Hit)
 			{
+
 				// Transform to world coordinates
 				r0.Position = node->Transform * glm::vec4(r0.Position, 1.0f);
 				r0.Normal = glm::normalize(node->Transform * glm::vec4(r0.Normal, 0.0f));
+				
+				if (returnOnFirstHit)
+					return { r0, node };
+				
 				float d0 = glm::length2(r0.Position - ray.Origin);
+
+
 				if (d0 < distance) 
 				{
 					distance = d0;

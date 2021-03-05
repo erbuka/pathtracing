@@ -42,6 +42,19 @@ namespace rt
         if (str == "linear") s = rt::SampleMode::Linear;
         else if (str == "nearest") s = rt::SampleMode::Nearest;
     }
+
+    void to_json(nlohmann::json& j, const rt::LightType& t) {
+        if (t == rt::LightType::Directional) j = "directional";
+        else if (t == rt::LightType::Point) j = "point";
+        else if (t == rt::LightType::Spot) j = "spot";
+    }
+
+    void from_json(const nlohmann::json& j, rt::LightType& t) {
+        auto str = j.get<std::string>();
+        if (str == "directional") t = rt::LightType::Directional;
+        else if (str == "point") t = rt::LightType::Point;
+        else if (str == "spot") t = rt::LightType::Spot;
+    }
 }
 
 namespace sandbox
@@ -275,7 +288,7 @@ namespace sandbox
         {
 
             Update();
-            Render();
+            Update();
             RenderGUI();
 
             /* Swap front and back buffers */
@@ -315,9 +328,9 @@ namespace sandbox
 
     void Sandbox::OnMouseMoved(const glm::vec2& pos)
     {
-        auto [w, h] = GetWindowSize();
-        if (m_Mouse.Button[MouseButton::Left])
+        if (m_State == SandboxState::Idle && m_Mouse.Button[MouseButton::Left])
         {
+            auto [w, h] = GetWindowSize();
             auto delta = (pos - m_Mouse.Position) / glm::vec2(w, h);
             m_Camera.Alpha += -delta.x * m_Camera.RotateSpeed;
             m_Camera.Beta += delta.y * m_Camera.RotateSpeed;
@@ -330,6 +343,36 @@ namespace sandbox
         double x, y;
         glfwGetCursorPos(m_Window, &x, &y);
         return { x, y };
+    }
+
+    rt::ViewParameters sandbox::Sandbox::GetDebugiViewParameters() const
+    {
+        rt::ViewParameters params;
+
+        const auto [width, height] = GetWindowSize();
+
+        params.Width = width / 4;
+        params.Height = height / 4;
+        params.NumThreads = 7;
+        params.Camera.Position = m_Camera.GetPosition();
+        params.Camera.Direction = m_Camera.GetDirection();
+
+        return params;
+    }
+
+    rt::ViewParameters sandbox::Sandbox::GetViewParameters() const
+    {
+        rt::ViewParameters params;
+
+        const auto [width, height] = GetWindowSize();
+
+        params.Width = width;
+        params.Height = height;
+        params.NumThreads = 7;
+        params.Camera.Position = m_Camera.GetPosition();
+        params.Camera.Direction = m_Camera.GetDirection();
+
+        return params;
     }
 
     void Sandbox::Initialize()
@@ -357,7 +400,10 @@ namespace sandbox
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO(); (void)io;
 
+        m_Font = io.Fonts->AddFontFromFileTTF("res/fonts/roboto.ttf", 24);
+
         ImGui::StyleColorsDark();
+        ImGui::GetStyle().ScaleAllSizes(2.0f);
         ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
         ImGui_ImplOpenGL3_Init("#version 130");
 
@@ -365,58 +411,52 @@ namespace sandbox
 
     void Sandbox::Update()
     {
-        if (m_RenderResult.valid())
-        {
-            if (m_RenderResult.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
-            {
-                ImageToTexture(m_RenderResult.get(), m_RenderTexture);
-                m_RenderResult = {};
-            }
-
-        }
-    }
-
-    void Sandbox::Render()
-    {
 
         const auto [width, height] = GetWindowSize();
 
-        rt::ViewParameters params;
-
-        params.Width = width / 4;
-        params.Height = height / 4;
-        params.NumThreads = 7;
-        params.Camera.Position = m_Camera.GetPosition();
-        params.Camera.Direction = m_Camera.GetDirection();
-
-        m_Debug.CurrentMode = rt::DebugRaytracer::Mode::Color;
-        auto result = m_Debug.Run(params, m_Scene);
-        result.wait();
-        ImageToTexture(result.get(), m_DebugTexture);
-
         glViewport(0, 0, width, height);
-
-        /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, m_DebugTexture);
-
-        glBegin(GL_QUADS);
+        if (m_State == SandboxState::Idle || m_State == SandboxState::Result)
         {
-            glColor3f(1, 1, 1);
-            glTexCoord2d(0, 1); glVertex2f(-1, -1);
-            glTexCoord2d(1, 1); glVertex2f(1, -1);
-            glTexCoord2d(1, 0); glVertex2f(1, 1);
-            glTexCoord2d(0, 0); glVertex2f(-1, 1);
+            if (m_State == SandboxState::Idle)
+            {
+                m_Debug.CurrentMode = rt::DebugRaytracer::Mode::Color;
+                auto result = m_Debug.Run(GetDebugiViewParameters(), m_Scene);
+                result->Wait();
+                ImageToTexture(result->GetResult(), m_DebugTexture);
+            }
+
+
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, m_State == SandboxState::Idle ? m_DebugTexture : m_RenderTexture);
+
+            glBegin(GL_QUADS);
+            {
+                glColor3f(1, 1, 1);
+                glTexCoord2d(0, 1); glVertex2f(-1, -1);
+                glTexCoord2d(1, 1); glVertex2f(1, -1);
+                glTexCoord2d(1, 0); glVertex2f(1, 1);
+                glTexCoord2d(0, 0); glVertex2f(-1, 1);
+            }
+            glEnd();
         }
-        glEnd();
+        else if (m_State == SandboxState::Rendering)
+        {
+            if (m_RenderResult->IsReady())
+            {
+                ImageToTexture(m_RenderResult->GetResult(), m_RenderTexture);
+                m_State = SandboxState::Result;
+                m_RenderResult = nullptr;
+            }
+        }
+
 
     }
 
@@ -426,19 +466,50 @@ namespace sandbox
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::BeginMainMenuBar();
-        if (ImGui::BeginMenu("Scenes"))
+        ImGui::PushFont(m_Font);
+
+        if (m_State == SandboxState::Idle)
         {
-            for (const auto& sceneDef : m_SceneDefs)
+            ImGui::BeginMainMenuBar();
+            if (ImGui::BeginMenu("File"))
             {
-                if (ImGui::MenuItem(sceneDef["name"].get<std::string>().c_str()))
+                if (ImGui::MenuItem("Render"))
                 {
-                    LoadScene(sceneDef);
+                    m_RenderResult = m_Raytracer.Run(GetViewParameters(), m_Scene);
+                    m_State = SandboxState::Rendering;
                 }
+
+                if (ImGui::BeginMenu("Scenes"))
+                {
+                    for (const auto& sceneDef : m_SceneDefs)
+                    {
+                        if (ImGui::MenuItem(sceneDef["name"].get<std::string>().c_str()))
+                        {
+                            LoadScene(sceneDef);
+                        }
+                    }
+                    ImGui::EndMenu();
+                }
+                ImGui::EndMenu();
             }
-            ImGui::EndMenu();
+            ImGui::EndMainMenuBar();
         }
-        ImGui::EndMainMenuBar();
+        else if (m_State == SandboxState::Rendering)
+        {
+        }
+        else if (m_State == SandboxState::Result)
+        {
+            ImGui::SetNextWindowPos({ 0.0f, 0.0f });
+            ImGui::Begin("Test", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
+            if (ImGui::Button("Back"))
+            {
+                m_State = SandboxState::Idle;
+            }
+            ImGui::End();
+        }
+
+
+        ImGui::PopFont();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -507,7 +578,7 @@ namespace sandbox
                     image->Load(samplerDef["file"].get<std::string>());
 
                     if (samplerDef.contains("mode"))
-                        image->SampleMode = samplerDef["mode"].get<rt::SampleMode>();
+                        samplerDef["mode"].get_to(image->SampleMode);
 
                     std::string type = samplerDef.contains("type") ? samplerDef["type"].get<std::string>() : "image";
 
@@ -544,8 +615,39 @@ namespace sandbox
                 m_Scene.Background = samplers3D.at(background["color"].get<std::string>());
 
         }
-        
 
+        if (sceneDef.contains("lights"))
+        {
+            for (const auto& lightDef : sceneDef["lights"])
+            {
+                rt::Light light;
+
+                if (lightDef.contains("type"))
+                    lightDef["type"].get_to(light.Type);
+
+                if (lightDef.contains("direction"))
+                {
+                    lightDef["direction"].get_to(light.Direction);
+                    light.Direction = glm::normalize(light.Direction);
+                }
+
+
+                if (lightDef.contains("position"))
+                    lightDef["position"].get_to(light.Position);
+
+                if (lightDef.contains("color"))
+                    lightDef["color"].get_to(light.Color);
+
+
+                if (lightDef.contains("angle"))
+                {
+                    lightDef["angle"].get_to(light.Angle);
+                    light.Angle = glm::radians(light.Angle);
+                }
+
+                m_Scene.Lights.push_back(std::move(light));
+            }
+        }
 
         if (sceneDef.contains("nodes"))
         {
@@ -572,6 +674,7 @@ namespace sandbox
 
                 if (nodeDef.contains("mesh"))
                     node->Shape = meshes.at(nodeDef["mesh"].get<std::string>());
+
                 else if (nodeDef.contains("shape") && nodeDef["shape"].get<std::string>() == "sphere")
                     node->Shape = std::make_shared<rt::Sphere>();
 

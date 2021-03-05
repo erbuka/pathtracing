@@ -7,12 +7,21 @@
 
 #include "Scene.h"
 #include "DebugRaytracer.h"
+#include "Raytracer.h"
 
 
 struct GLFWwindow;
+struct ImFont;
 
 namespace sandbox
 {
+
+	enum class SandboxState
+	{
+		Idle,
+		Rendering,
+		Result
+	};
 
 	class Sandbox {
 	public:
@@ -22,6 +31,7 @@ namespace sandbox
 			Right,
 			Other
 		};
+
 
 		bool Start();
 
@@ -36,9 +46,11 @@ namespace sandbox
 
 	private:
 
+		rt::ViewParameters GetDebugiViewParameters() const;
+		rt::ViewParameters GetViewParameters() const;
+
 		void Initialize();
 		void Update();
-		void Render();
 		void RenderGUI();
 
 		void LoadSceneDefinitions();
@@ -66,20 +78,22 @@ namespace sandbox
 			};
 		} m_Mouse;
 
+		SandboxState m_State = SandboxState::Idle;
 
 		std::vector<nlohmann::json> m_SceneDefs;
 
 		rt::Scene m_Scene;
 
 		rt::DebugRaytracer m_Debug;
+		rt::Raytracer m_Raytracer;
 
-		std::future<rt::Image> m_RenderResult;
+		std::shared_ptr<rt::RaytracerResult> m_RenderResult = nullptr;
 		uint32_t m_RenderTexture, m_DebugTexture;
 
 		GLFWwindow* m_Window;
 		std::vector<uint32_t> m_Pixels;
 
-
+		ImFont* m_Font;
 
 	};
 }

@@ -33,13 +33,17 @@ namespace rt {
 	public:
 		using Fn = std::function<void(RaytracerResult&)>;
 		RaytracerResult(const Fn& fn);
+		~RaytracerResult();
+		bool IsReady() const { return m_Ready; }
 		void Wait();
-		const Image& GetResult() const;
+		const Image& GetResult() const { return m_Result; }
 		void SetResult(Image&& result);
 	private:
+		std::condition_variable m_Cond;
 		std::thread m_Thread;
 		Image m_Result;
 		std::mutex m_Mutex;
+		std::atomic_bool m_Ready = false;
 	};
 
 
@@ -47,7 +51,7 @@ namespace rt {
 	{
 	public:
 
-		std::future<Image> Run(const ViewParameters& params, const Scene& scene);
+		std::shared_ptr<RaytracerResult> Run(const ViewParameters& params, const Scene& scene);
 		virtual glm::vec3 Trace(const ViewParameters& params, const Ray& ray, const Scene& scene) = 0;
 
 	};
