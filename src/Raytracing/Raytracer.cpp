@@ -10,40 +10,39 @@ namespace rt
 {
 	glm::vec3 Raytracer::Trace(const ViewParameters& params, const Ray& ray, const Scene& scene)
 	{
-		auto [result, node] = scene.CastRay(ray);
-
-		if (result.Hit)
+		return TraceRecursive(params, ray, scene, 2);
+	}
+	glm::vec3 Raytracer::TraceRecursive(const ViewParameters& params, const Ray& ray, const Scene& scene, uint32_t recursion) const
+	{
+		if (recursion == 0)
 		{
-			auto albedo = node->Material.Albedo->Sample(result.UV);
-			glm::vec3 directLighting(0.0f);
+			return scene.Background ? scene.Background->Sample(ray.Direction) : glm::vec3(0.0f);
+		}
+		else
+		{
+			auto [result, node] = scene.CastRay(ray);
 
-			for (const auto& light : scene.Lights)
+			if (result.Hit)
 			{
-				if (light.Type == LightType::Directional)
+				auto albedo = node->Material.Albedo->Sample(result.UV);
+				const auto R = glm::reflect(ray.Direction, result.Normal);
+
+				glm::vec3 directLighting(0.0f);
+
+				for (const auto& light : scene.Lights)
 				{
-					auto [shadowResult, _] = scene.CastRay({ result.Position, light.Direction }, true, { node });
-					if (!shadowResult.Hit)
+					if (light.Type == LightType::Directional)
 					{
-						directLighting += light.Color * glm::max(0.0f, glm::dot(light.Direction, result.Normal));
+						auto [shadowResult, _] = scene.CastRay({ result.Position, light.Direction }, true, { node });
+						if (!shadowResult.Hit)
+						{
+							directLighting += light.Color * glm::max(0.0f, glm::dot(light.Direction, result.Normal));
+						}
 					}
-				}
-				else if (light.Type == LightType::Point)
-				{
-					auto lightVector = light.Position - result.Position;
-					auto lvn = glm::normalize(lightVector);
-					auto [shadowResult, _] = scene.CastRay({ result.Position, lvn }, true, { node });
-					if (!shadowResult.Hit)
+					else if (light.Type == LightType::Point)
 					{
-						float attenuation = 1.0f / (1.0f + glm::length2(lightVector) * light.Attenuation);
-						directLighting += light.Color * glm::max(0.0f, glm::dot(lvn, result.Normal)) * attenuation;
-					}
-				}
-				else if (light.Type == LightType::Spot)
-				{
-					auto lightVector = light.Position - result.Position;
-					auto lvn = glm::normalize(lightVector);
-					if (glm::max(0.0f, glm::dot(-lvn, light.Direction)) >= glm::cos(light.Angle / 2.0f))
-					{
+						auto lightVector = light.Position - result.Position;
+						auto lvn = glm::normalize(lightVector);
 						auto [shadowResult, _] = scene.CastRay({ result.Position, lvn }, true, { node });
 						if (!shadowResult.Hit)
 						{
@@ -51,19 +50,35 @@ namespace rt
 							directLighting += light.Color * glm::max(0.0f, glm::dot(lvn, result.Normal)) * attenuation;
 						}
 					}
+					else if (light.Type == LightType::Spot)
+					{
+						auto lightVector = light.Position - result.Position;
+						auto lvn = glm::normalize(lightVector);
+						if (glm::max(0.0f, glm::dot(-lvn, light.Direction)) >= glm::cos(light.Angle / 2.0f))
+						{
+							auto [shadowResult, _] = scene.CastRay({ result.Position, lvn }, true, { node });
+							if (!shadowResult.Hit)
+							{
+								float attenuation = 1.0f / (1.0f + glm::length2(lightVector) * light.Attenuation);
+								directLighting += light.Color * glm::max(0.0f, glm::dot(lvn, result.Normal)) * attenuation;
+							}
+						}
+					}
 				}
 
+				const Ray reflectedRay = { result.Position + R * 0.001f, R };
+
+				auto specular = TraceRecursive(params, reflectedRay, scene, recursion - 1);
+
+				auto color = albedo * directLighting + specular;
+
+				return color;
+
 			}
-
-
-			auto color = albedo * directLighting;
-
-			return color;
-
-		}
-		else
-		{
-			return scene.Background ? scene.Background->Sample(ray.Direction) : glm::vec3(0.0f);
+			else
+			{
+				return scene.Background ? scene.Background->Sample(ray.Direction) : glm::vec3(0.0f);
+			}
 		}
 	}
 }
