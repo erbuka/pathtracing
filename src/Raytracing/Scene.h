@@ -89,6 +89,7 @@ namespace rt {
 	{
 		Material();
 		std::shared_ptr<Sampler2D> Albedo;
+		std::shared_ptr<Sampler2D> Specular;
 	};
 
 	class KDTreeNode

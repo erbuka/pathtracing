@@ -290,7 +290,6 @@ namespace sandbox
         {
 
             Update();
-            Update();
             RenderGUI();
 
             /* Swap front and back buffers */
@@ -699,6 +698,10 @@ namespace sandbox
 
                     if (matDef.contains("albedo"))
                         node->Material.Albedo = samplers2D.at(matDef["albedo"].get<std::string>());
+
+
+                    if (matDef.contains("specular"))
+                        node->Material.Specular = samplers2D.at(matDef["specular"].get<std::string>());
                 }
 
                 m_Scene.Nodes.push_back(std::move(node));

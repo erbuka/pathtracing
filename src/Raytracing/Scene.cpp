@@ -387,11 +387,13 @@ namespace rt
 		};
 
 		return result;
+
 	}
 
 	Material::Material()
 	{
 		Albedo = std::make_shared<ColorSampler>(glm::vec3(1.0f, 1.0f, 1.0f));
+		Specular = std::make_shared<ColorSampler>(glm::vec3(0.25f));
 	}
 
 }

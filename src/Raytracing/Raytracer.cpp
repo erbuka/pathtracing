@@ -10,7 +10,7 @@ namespace rt
 {
 	glm::vec3 Raytracer::Trace(const ViewParameters& params, const Ray& ray, const Scene& scene)
 	{
-		return TraceRecursive(params, ray, scene, 2);
+		return TraceRecursive(params, ray, scene, 3);
 	}
 	glm::vec3 Raytracer::TraceRecursive(const ViewParameters& params, const Ray& ray, const Scene& scene, uint32_t recursion) const
 	{
@@ -24,10 +24,13 @@ namespace rt
 
 			if (result.Hit)
 			{
-				auto albedo = node->Material.Albedo->Sample(result.UV);
+				const auto albedo = node->Material.Albedo->Sample(result.UV);
+				const float kS = node->Material.Specular->Sample(result.UV).r;
+				const float kD = 1.0f - kS;
 				const auto R = glm::reflect(ray.Direction, result.Normal);
 
 				glm::vec3 directLighting(0.0f);
+
 
 				for (const auto& light : scene.Lights)
 				{
@@ -66,11 +69,12 @@ namespace rt
 					}
 				}
 
+
 				const Ray reflectedRay = { result.Position + R * 0.001f, R };
 
 				auto specular = TraceRecursive(params, reflectedRay, scene, recursion - 1);
 
-				auto color = albedo * directLighting + specular;
+				auto color = albedo * (kD * directLighting + kS * specular);
 
 				return color;
 

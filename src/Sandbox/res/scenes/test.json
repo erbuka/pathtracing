@@ -24,10 +24,17 @@
         }
     ],
     "samplers" : [
-        {
-            "color" : [0.2, 0.3, 0.8],
-            "id" : "blue"
-        }, 
+        { "color" : [0.1, 0.0, 0.0], "id" : "s0" }, 
+        { "color" : [0.2, 0.0, 0.0], "id" : "s1" }, 
+        { "color" : [0.3, 0.0, 0.0], "id" : "s2" }, 
+        { "color" : [0.4, 0.0, 0.0], "id" : "s3" }, 
+        { "color" : [0.5, 0.0, 0.0], "id" : "s4" }, 
+        { "color" : [0.6, 0.0, 0.0], "id" : "s5" }, 
+        { "color" : [0.7, 0.0, 0.0], "id" : "s6" }, 
+        { "color" : [0.8, 0.0, 0.0], "id" : "s7" }, 
+        { "color" : [0.9, 0.0, 0.0], "id" : "s8" }, 
+        { "color" : [0.2, 0.3, 0.8], "id" : "blue" }, 
+        { "color" : [0.8, 0.1, 0.1], "id" : "red" }, 
         {
             "file" : "res/textures/jupiter.jpg",
             "id" : "jupiter",
@@ -51,7 +58,8 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "albedo" : "jupiter"
+                "albedo" : "red",
+                "specular" : "s0"
             }
         },
         {
@@ -60,7 +68,8 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "albedo" : "jupiter"
+                "albedo" : "red",
+                "specular" : "s1"
             }
         },
         {
@@ -69,7 +78,8 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "albedo" : "jupiter"
+                "albedo" : "red",
+                "specular" : "s2"
             }
         },
         {
@@ -78,7 +88,8 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "albedo" : "jupiter"
+                "albedo" : "red",
+                "specular" : "s3"
             }
         },
         {
@@ -87,7 +98,8 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "albedo" : "jupiter"
+                "albedo" : "red",
+                "specular" : "s4"
             }
         },
         {
@@ -96,7 +108,8 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "albedo" : "jupiter"
+                "albedo" : "red",
+                "specular" : "s5"
             }
         },
         {
@@ -105,7 +118,8 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "albedo" : "jupiter"
+                "albedo" : "red",
+                "specular" : "s6"
             }
         },
         {
@@ -114,7 +128,8 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "albedo" : "jupiter"
+                "albedo" : "red",
+                "specular" : "s7"
             }
         },
         {
@@ -123,7 +138,8 @@
             "scale" : [1,1,1],
             "shape" : "sphere",
             "material" : {
-                "albedo" : "jupiter"
+                "albedo" : "red",
+                "specular" : "s8"
             }
         },
         {
