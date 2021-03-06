@@ -70,6 +70,7 @@ namespace rt
 				}
 
 
+
 				const Ray reflectedRay = { result.Position + R * 0.001f, R };
 
 				auto specular = TraceRecursive(params, reflectedRay, scene, recursion - 1);
