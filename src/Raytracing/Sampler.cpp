@@ -17,6 +17,12 @@ namespace rt {
 	{
 		m_Pixels.resize(width * height);
 	}
+	void Image::Resize(size_t width, size_t height)
+	{
+		m_Width = width;
+		m_Height = height;
+		m_Pixels.resize(width * height);
+	}
 	glm::vec3 Image::Sample(const glm::vec2& uv) const
 	{
 		const auto uv0 = glm::fract(uv);

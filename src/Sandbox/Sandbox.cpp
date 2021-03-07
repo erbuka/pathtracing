@@ -12,7 +12,6 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-
 #include <glm\glm.hpp>
 #include <glm\ext.hpp>
 #include <glm\gtx\transform.hpp>
@@ -418,45 +417,39 @@ namespace sandbox
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        if (m_State == SandboxState::Idle || m_State == SandboxState::Result)
+        if (m_State == SandboxState::Idle)
         {
-            if (m_State == SandboxState::Idle)
-            {
-                m_Debug.CurrentMode = rt::DebugRaytracer::Mode::Color;
-                auto result = m_Debug.Run(GetDebugiViewParameters(), m_Scene);
-                result->Wait();
-                ImageToTexture(result->GetResult(), m_DebugTexture);
-            }
-
-
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
-
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, m_State == SandboxState::Idle ? m_DebugTexture : m_RenderTexture);
-
-            glBegin(GL_QUADS);
-            {
-                glColor3f(1, 1, 1);
-                glTexCoord2d(0, 1); glVertex2f(-1, -1);
-                glTexCoord2d(1, 1); glVertex2f(1, -1);
-                glTexCoord2d(1, 0); glVertex2f(1, 1);
-                glTexCoord2d(0, 0); glVertex2f(-1, 1);
-            }
-            glEnd();
+            m_Debug.CurrentMode = rt::DebugRaytracer::Mode::Color;
+            auto result = m_Debug.Run(GetDebugiViewParameters(), m_Scene);
+            result->Wait();
+            ImageToTexture(result->GetImage(), m_DebugTexture);
         }
-        else if (m_State == SandboxState::Rendering)
+        else
         {
-            if (m_RenderResult->IsReady())
-            {
-                ImageToTexture(m_RenderResult->GetResult(), m_RenderTexture);
+            ImageToTexture(m_RenderResult->GetImage(), m_RenderTexture);
+            if (m_RenderResult->IsInterrupted())
                 m_State = SandboxState::Result;
-                m_RenderResult = nullptr;
-            }
         }
+
+
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, m_State == SandboxState::Idle ? m_DebugTexture : m_RenderTexture);
+
+        glBegin(GL_QUADS);
+        {
+            glColor3f(1, 1, 1);
+            glTexCoord2d(0, 1); glVertex2f(-1, -1);
+            glTexCoord2d(1, 1); glVertex2f(1, -1);
+            glTexCoord2d(1, 0); glVertex2f(1, 1);
+            glTexCoord2d(0, 0); glVertex2f(-1, 1);
+        }
+        glEnd();
 
 
     }
@@ -505,10 +498,16 @@ namespace sandbox
         }
         else if (m_State == SandboxState::Rendering)
         {
+            const auto iteration = m_RenderResult->Iteration.load();
             ImGui::SetNextWindowPos({ 0.0f, 0.0f });
-            ImGui::Begin("Test", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
+            //ImGui::Begin("Test", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
+            ImGui::Begin("Test", nullptr);
             ImGui::Text("Rendering");
-            ImGui::ProgressBar(m_RenderResult->GetProgressPercent());
+            ImGui::ProgressBar(m_RenderResult->Progress);
+            ImGui::Text("Iteration #%d", iteration);
+            if (ImGui::Button("Interrupt")) {
+                m_RenderResult->Interrupt();
+            }
             ImGui::End();
         }
         else if (m_State == SandboxState::Result)
@@ -517,6 +516,8 @@ namespace sandbox
             ImGui::Begin("Test", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
             if (ImGui::Button("Back"))
             {
+                m_RenderResult->Wait();
+                m_RenderResult = nullptr;
                 m_State = SandboxState::Idle;
             }
             ImGui::End();
@@ -699,8 +700,9 @@ namespace sandbox
                     if (matDef.contains("albedo"))
                         node->Material.Albedo = samplers2D.at(matDef["albedo"].get<std::string>());
 
-                    if (matDef.contains("specular"))
-                        node->Material.Specular = samplers2D.at(matDef["specular"].get<std::string>());
+                    if (matDef.contains("emission"))
+                        node->Material.Emission = samplers2D.at(matDef["emission"].get<std::string>());
+
                 }
 
                 m_Scene.Nodes.push_back(std::move(node));

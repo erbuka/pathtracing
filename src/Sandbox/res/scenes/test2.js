@@ -30,7 +30,8 @@ for (let x = 0; x < 10; x++) {
       shape: "sphere",
       material: {
         albedo: "red",
-        specular: "s" + x
+        roughness: "s" + x,
+        metallic: "s" + y
       }
     })
   }

@@ -5,27 +5,26 @@
 namespace rt {
 	std::shared_ptr<RaytracerResult> AbstractRaytracer::Run(const ViewParameters& params, const Scene& scene)
 	{
-		return std::make_shared<RaytracerResult>([&, params](RaytracerResult& self) -> void {
+		OnBeforeRun(params, scene);
 
-			Image result(params.Width, params.Height);
+		return std::make_shared<RaytracerResult>(params, [&, params](RaytracerResult& self) -> void {
+
 			std::mutex lineMutex;
+			
+			Image& image = self.GetImage();
 
-			self.SetMaxProgress(params.Width);
-
-			auto nextScanLine = [&, current = uint32_t(0)]() mutable->std::optional<uint32_t>{
+			auto nextScanLine = [&]()-> std::optional<ScanLine> {
 				std::lock_guard guard(lineMutex);
-				if (current == params.Width)
+				auto sl = GetNextScanline();
+				if (sl.has_value())
 				{
-					return std::nullopt;
+					self.Progress = sl.value().Number / float(image.GetWidth());
+					self.Iteration = sl.value().Iteration;
 				}
-				else
-				{
-					return current++;
-				}
+				return sl;
 			};
 
 			const auto threadFunc = [&] {
-
 
 				auto forward = glm::normalize(params.Camera.Direction);
 				auto right = glm::normalize(glm::cross(forward, glm::vec3{ 0.0f, 1.0f, 0.0f }));
@@ -34,11 +33,15 @@ namespace rt {
 				float h2 = std::atan(params.FovY / 2.0f);
 				float w2 = h2 * (float)params.Width / params.Height;
 
-
-				for (auto scanLine = nextScanLine(); scanLine.has_value(); scanLine = nextScanLine())
+				for (auto scanLine = nextScanLine(); !self.IsInterrupted() && scanLine.has_value(); scanLine=nextScanLine())
 				{
-					uint32_t x = scanLine.value();
-					for (uint32_t y = 0; y < params.Height; ++y)
+					const auto s = scanLine.value();
+					const auto x = s.Number;
+					const auto iteration = s.Iteration;
+
+					const float t = s.Iteration / float(s.Iteration + 1);
+
+					for (uint32_t y = 0; y < params.Height && !self.IsInterrupted(); ++y)
 					{
 						Ray ray;
 
@@ -49,10 +52,12 @@ namespace rt {
 						ray.Direction = glm::normalize(forward + right * xFactor * w2 + up * yFactor * h2);
 
 						auto color = Trace(params, ray, scene);
+						auto prevColor = image.GetPixel(x, y);
+						auto nextColor = glm::mix(color, prevColor, t);
 
-						result.SetPixel(x, y, color);
+
+						image.SetPixel(x, y, nextColor);
 					}
-					self.IncrementProgress(1);
 				}
 			};
 
@@ -68,38 +73,19 @@ namespace rt {
 				threads[i].join();
 			}
 
-			self.SetResult(std::move(result));
-
 		});
 
 	}
 	
-	RaytracerResult::RaytracerResult(const Fn& fn)
+	RaytracerResult::RaytracerResult(const ViewParameters& viewParams, const Fn& fn)
 	{
+		m_Result.Resize(viewParams.Width, viewParams.Height);
 		m_Thread = std::thread([&, fn] { fn(*this); });
-		m_Thread.detach();
+		//m_Thread.detach();
 	}
 
 	RaytracerResult::~RaytracerResult()
 	{
-		//m_Thread.join();
 	}
 
-	void RaytracerResult::Wait()
-	{
-		std::unique_lock<std::mutex> lock(m_Mutex);
-
-		while (!m_Ready)
-			m_Cond.wait(lock);
-
-		lock.unlock();
-	}
-
-	void RaytracerResult::SetResult(Image&& result)
-	{
-		std::lock_guard lock(m_Mutex);
-		m_Result = std::move(result);
-		m_Ready = true;
-		m_Cond.notify_all();
-	}
 }

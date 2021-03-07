@@ -4,6 +4,7 @@
 #include <memory>
 #include <future>
 #include <atomic>
+#include <optional>
 
 #include <glm\glm.hpp>
 #include <glm\ext.hpp>
@@ -32,35 +33,38 @@ namespace rt {
 	{
 	public:
 		using Fn = std::function<void(RaytracerResult&)>;
-		RaytracerResult(const Fn& fn);
+		std::atomic<float> Progress = 0.0f;
+		std::atomic_uint64_t Iteration = 0;
+
+		RaytracerResult(const ViewParameters& viewParams, const Fn& fn);
 		~RaytracerResult();
-		float GetProgressPercent() const { return float(m_Progress) / m_ProgressMax; }
 
-		void IncrementProgress(uint32_t p) { m_Progress += p; }
-		void SetProgress(uint32_t p) { m_Progress = p; }
-		void SetMaxProgress(uint32_t m) { m_ProgressMax = m; }
 
-		bool IsReady() const { return m_Ready; }
-		void Wait();
-		const Image& GetResult() const { return m_Result; }
-		void SetResult(Image&& result);
+		void Wait() { m_Thread.join(); }
+		void Interrupt() { m_Interrupted = true; }
+		bool IsInterrupted() const { return m_Interrupted; }
+		Image& GetImage() { return m_Result; }
+
 	private:
-		std::condition_variable m_Cond;
 		std::thread m_Thread;
 		Image m_Result;
-		std::mutex m_Mutex;
-		std::atomic_bool m_Ready = false;
-		std::atomic_uint32_t m_Progress = 0, m_ProgressMax = 1;
+		std::atomic_bool m_Interrupted = false;
+	};
+
+	struct ScanLine
+	{
+		uint32_t Number = 0;
+		size_t Iteration = 0;
 	};
 
 
 	class AbstractRaytracer 
 	{
 	public:
-
 		std::shared_ptr<RaytracerResult> Run(const ViewParameters& params, const Scene& scene);
 		virtual glm::vec3 Trace(const ViewParameters& params, const Ray& ray, const Scene& scene) = 0;
-
+		virtual std::optional<ScanLine> GetNextScanline() = 0;
+		virtual void OnBeforeRun(const ViewParameters& params, const Scene& scene) = 0;
 	};
 
 }

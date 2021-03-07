@@ -46,6 +46,8 @@ namespace rt {
 		Image();
 		Image(size_t width, size_t height);
 
+		void Resize(size_t width, size_t height);
+
 		glm::vec3 Sample(const glm::vec2& uv) const override;
 
 		void SetPixel(size_t x, size_t y, const glm::vec3& color);

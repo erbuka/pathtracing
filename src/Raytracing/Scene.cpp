@@ -386,14 +386,16 @@ namespace rt
 			result.Normal.y * 0.5f + 0.5f
 		};
 
-		return result;
 
+		return result;
 	}
 
 	Material::Material()
 	{
 		Albedo = std::make_shared<ColorSampler>(glm::vec3(1.0f, 1.0f, 1.0f));
-		Specular = std::make_shared<ColorSampler>(glm::vec3(0.25f));
+		Emission = std::make_shared<ColorSampler>(glm::vec3(0.0f));
+		Roughness = std::make_shared<ColorSampler>(glm::vec3(1.0f));
+
 	}
 
 }

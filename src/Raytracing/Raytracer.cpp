@@ -8,11 +8,35 @@
 
 namespace rt
 {
+
 	glm::vec3 Raytracer::Trace(const ViewParameters& params, const Ray& ray, const Scene& scene)
 	{
-		return TraceRecursive(params, ray, scene, 3);
+		return TraceRecursive(params, ray, scene, 5);
 	}
-	glm::vec3 Raytracer::TraceRecursive(const ViewParameters& params, const Ray& ray, const Scene& scene, uint32_t recursion) const
+
+
+	std::optional<ScanLine> Raytracer::GetNextScanline()
+	{
+		auto result = m_NextScanline;
+
+		m_NextScanline.Number++;
+
+		if (m_NextScanline.Number == m_ScanlineCount)
+		{
+			m_NextScanline.Number = 0;
+			m_NextScanline.Iteration++;
+		}
+
+		return result;
+	}
+
+	void Raytracer::OnBeforeRun(const ViewParameters& params, const Scene& scene)
+	{
+		m_NextScanline = { 0, 0 };
+		m_ScanlineCount = params.Width;
+	}
+
+	glm::vec3 Raytracer::TraceRecursive(const ViewParameters& params, const Ray& ray, const Scene& scene, uint32_t recursion) 
 	{
 		if (recursion == 0)
 		{
@@ -25,57 +49,40 @@ namespace rt
 			if (result.Hit)
 			{
 				const auto albedo = node->Material.Albedo->Sample(result.UV);
-				const float kS = node->Material.Specular->Sample(result.UV).r;
-				const float kD = 1.0f - kS;
-				const auto R = glm::reflect(ray.Direction, result.Normal);
+				const auto emission = node->Material.Emission->Sample(result.UV);
+				const float roughness = node->Material.Roughness->Sample(result.UV).r;
 
-				glm::vec3 directLighting(0.0f);
+				// Reflected ray on hemisphere
 
+				const glm::vec3 N = result.Normal;
+				glm::vec3 T = glm::cross(N, glm::vec3(0.0f, 0.0f, 1.0f));
+				if (glm::length2(T) == 0.0f)
+					T = glm::cross(N, glm::vec3(1.0f, 0.0f, 0.0f));
+				glm::vec3 B = glm::cross(N, T);
 
-				for (const auto& light : scene.Lights)
-				{
-					if (light.Type == LightType::Directional)
-					{
-						auto [shadowResult, _] = scene.CastRay({ result.Position, light.Direction }, true, { node });
-						if (!shadowResult.Hit)
-						{
-							directLighting += light.Color * glm::max(0.0f, glm::dot(light.Direction, result.Normal));
-						}
-					}
-					else if (light.Type == LightType::Point)
-					{
-						auto lightVector = light.Position - result.Position;
-						auto lvn = glm::normalize(lightVector);
-						auto [shadowResult, _] = scene.CastRay({ result.Position, lvn }, true, { node });
-						if (!shadowResult.Hit)
-						{
-							float attenuation = 1.0f / (1.0f + glm::length2(lightVector) * light.Attenuation);
-							directLighting += light.Color * glm::max(0.0f, glm::dot(lvn, result.Normal)) * attenuation;
-						}
-					}
-					else if (light.Type == LightType::Spot)
-					{
-						auto lightVector = light.Position - result.Position;
-						auto lvn = glm::normalize(lightVector);
-						if (glm::max(0.0f, glm::dot(-lvn, light.Direction)) >= glm::cos(light.Angle / 2.0f))
-						{
-							auto [shadowResult, _] = scene.CastRay({ result.Position, lvn }, true, { node });
-							if (!shadowResult.Hit)
-							{
-								float attenuation = 1.0f / (1.0f + glm::length2(lightVector) * light.Attenuation);
-								directLighting += light.Color * glm::max(0.0f, glm::dot(lvn, result.Normal)) * attenuation;
-							}
-						}
-					}
-				}
+				const float alpha = m_Rand.Next(0.0f, glm::pi<float>() * 2.0f);
+				const float beta = m_Rand.Next(0.0f, glm::pi<float>() / 2.0f);
+		
+				glm::vec3 tangentSample = {
+					glm::sin(alpha) * glm::sin(beta),
+					glm::cos(alpha) * glm::sin(beta),
+					glm::cos(beta)
+				};
 
+				auto reflectDir = glm::reflect(ray.Direction, result.Normal);
+				auto hemiDir = tangentSample.x * T + tangentSample.y * B + tangentSample.z * N;
+				auto dir = glm::normalize(glm::mix(reflectDir, hemiDir, roughness));
+				Ray reflectedRay = {
+					result.Position + dir * 0.01f,
+					dir
+				};
 
+				
+				auto cosTheta = glm::max(0.0f, glm::dot(reflectedRay.Direction, result.Normal));
 
-				const Ray reflectedRay = { result.Position + R * 0.001f, R };
-
-				auto specular = TraceRecursive(params, reflectedRay, scene, recursion - 1);
-
-				auto color = albedo * (kD * directLighting + kS * specular);
+				auto radiance = TraceRecursive(params, reflectedRay, scene, recursion - 1);
+				
+				auto color = emission + albedo * radiance * cosTheta;
 
 				return color;
 

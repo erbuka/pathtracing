@@ -89,7 +89,8 @@ namespace rt {
 	{
 		Material();
 		std::shared_ptr<Sampler2D> Albedo;
-		std::shared_ptr<Sampler2D> Specular;
+		std::shared_ptr<Sampler2D> Emission;
+		std::shared_ptr<Sampler2D> Roughness;
 	};
 
 	class KDTreeNode

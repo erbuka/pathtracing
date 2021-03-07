@@ -33,6 +33,26 @@ namespace rt
 				break;
 			}
 		}
+	}
 
+	std::optional<ScanLine> DebugRaytracer::GetNextScanline()
+	{
+		if (m_NextScanline == m_ScanlineCount)
+		{
+			return std::nullopt;
+		}
+		else
+		{
+			return ScanLine{
+				m_NextScanline++,
+				0
+			};
+		}
+	}
+
+	void DebugRaytracer::OnBeforeRun(const ViewParameters& params, const Scene& scene)
+	{
+		m_NextScanline = 0;
+		m_ScanlineCount = params.Width;
 	}
 }
