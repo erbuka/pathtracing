@@ -47,7 +47,6 @@ namespace rt {
 			uint32_t iy = uint32_t(glm::round(y)) % m_Height;
 			return GetPixel(ix, iy);
 		}
-		
 
 	}
 	void Image::SetPixel(size_t x, size_t y, const glm::vec3& color)

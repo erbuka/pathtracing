@@ -55,9 +55,12 @@ namespace rt
 				// Reflected ray on hemisphere
 
 				const glm::vec3 N = result.Normal;
+				/*
 				glm::vec3 T = glm::cross(N, glm::vec3(0.0f, 0.0f, 1.0f));
 				if (glm::length2(T) == 0.0f)
 					T = glm::cross(N, glm::vec3(1.0f, 0.0f, 0.0f));
+					*/
+				const glm::vec3 T = glm::sphericalRand(1.0f);
 				glm::vec3 B = glm::cross(N, T);
 
 				const float alpha = m_Rand.Next(0.0f, glm::pi<float>() * 2.0f);

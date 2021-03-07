@@ -388,13 +388,12 @@ namespace rt
 
 		return result;
 	}
-
-
+	
 	Material::Material()
 	{
 		Albedo = std::make_shared<ColorSampler>(glm::vec3(1.0f, 1.0f, 1.0f));
 		Emission = std::make_shared<ColorSampler>(glm::vec3(0.0f));
-		Roughness = std::make_shared<ColorSampler>(glm::vec3(0.0f));
+		Roughness = std::make_shared<ColorSampler>(glm::vec3(1.0f));
 	}
 
 }

@@ -55,7 +55,6 @@ namespace rt {
 						auto prevColor = image.GetPixel(x, y);
 						auto nextColor = glm::mix(color, prevColor, t);
 
-
 						image.SetPixel(x, y, nextColor);
 					}
 				}

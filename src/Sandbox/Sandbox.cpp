@@ -678,16 +678,14 @@ namespace sandbox
                 if (nodeDef.contains("translate"))
                     node->Translate(nodeDef["translate"].get<glm::vec3>());
 
-
                 if (nodeDef.contains("rotate"))
                 {
                     glm::vec3 angles = nodeDef["rotate"].get<glm::vec3>();
                     node->Transform *=
                         glm::rotate(glm::radians(angles.z), glm::vec3(0.0f, 0.0f, 1.0f)) *
                         glm::rotate(glm::radians(angles.y), glm::vec3(0.0f, 1.0f, 0.0f)) *
-                        glm::rotate(glm::radians(angles.x), glm::vec3(1.0f, 0.0f, 1.0f));
+                        glm::rotate(glm::radians(angles.x), glm::vec3(1.0f, 0.0f, 0.0f));
                 }
-
 
                 if (nodeDef.contains("scale"))
                     node->Scale(nodeDef["scale"].get<glm::vec3>());
@@ -707,6 +705,9 @@ namespace sandbox
 
                     if (matDef.contains("emission"))
                         node->Material.Emission = samplers2D.at(matDef["emission"].get<std::string>());
+
+                    if (matDef.contains("roughness"))
+                        node->Material.Roughness = samplers2D.at(matDef["roughness"].get<std::string>());
 
                 }
 
