@@ -403,7 +403,6 @@ namespace sandbox
         m_Font = io.Fonts->AddFontFromFileTTF("res/fonts/roboto.ttf", 24);
 
         ImGui::StyleColorsDark();
-        ImGui::GetStyle().ScaleAllSizes(2.0f);
         ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
         ImGui_ImplOpenGL3_Init("#version 130");
 
@@ -426,7 +425,12 @@ namespace sandbox
         }
         else
         {
-            ImageToTexture(m_RenderResult->GetImage(), m_RenderTexture);
+            auto iteration = m_RenderResult->Iteration.load();
+            if (iteration != m_CurrentIteration)
+            {
+                ImageToTexture(m_RenderResult->GetImage(), m_RenderTexture);
+                m_CurrentIteration = iteration;
+            }
             if (m_RenderResult->IsInterrupted())
                 m_State = SandboxState::Result;
         }
@@ -469,6 +473,7 @@ namespace sandbox
             {
                 if (ImGui::MenuItem("Render"))
                 {
+                    m_CurrentIteration = 0;
                     m_RenderResult = m_Raytracer.Run(GetViewParameters(), m_Scene);
                     m_State = SandboxState::Rendering;
                 }

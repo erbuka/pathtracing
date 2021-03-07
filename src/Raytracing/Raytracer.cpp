@@ -11,7 +11,7 @@ namespace rt
 
 	glm::vec3 Raytracer::Trace(const ViewParameters& params, const Ray& ray, const Scene& scene)
 	{
-		return TraceRecursive(params, ray, scene, 5);
+		return std::get<0>(TraceRecursive(params, ray, scene, 5));
 	}
 
 
@@ -36,15 +36,15 @@ namespace rt
 		m_ScanlineCount = params.Width;
 	}
 
-	glm::vec3 Raytracer::TraceRecursive(const ViewParameters& params, const Ray& ray, const Scene& scene, uint32_t recursion) 
+	std::tuple<glm::vec3, float> Raytracer::TraceRecursive(const ViewParameters& params, const Ray& ray, const Scene& scene, uint32_t recursion)
 	{
 		if (recursion == 0)
 		{
-			return scene.Background ? scene.Background->Sample(ray.Direction) : glm::vec3(0.0f);
+			return { scene.Background ? scene.Background->Sample(ray.Direction) : glm::vec3(0.0f), 0.0f };
 		}
 		else
 		{
-			auto [result, node] = scene.CastRay(ray);
+			const auto [result, node] = scene.CastRay(ray);
 
 			if (result.Hit)
 			{
@@ -69,27 +69,27 @@ namespace rt
 					glm::cos(beta)
 				};
 
-				auto reflectDir = glm::reflect(ray.Direction, result.Normal);
-				auto hemiDir = tangentSample.x * T + tangentSample.y * B + tangentSample.z * N;
-				auto dir = glm::normalize(glm::mix(reflectDir, hemiDir, roughness));
+				const auto reflectDir = glm::reflect(ray.Direction, result.Normal);
+				const auto hemiDir = tangentSample.x * T + tangentSample.y * B + tangentSample.z * N;
+				const auto dir = glm::normalize(glm::mix(reflectDir, hemiDir, roughness));
 				Ray reflectedRay = {
 					result.Position + dir * 0.01f,
 					dir
 				};
 
-				
-				auto cosTheta = glm::max(0.0f, glm::dot(reflectedRay.Direction, result.Normal));
+				const auto cosTheta = glm::max(0.0f, glm::dot(reflectedRay.Direction, result.Normal));
 
-				auto radiance = TraceRecursive(params, reflectedRay, scene, recursion - 1);
+				const auto [radiance, distance] = TraceRecursive(params, reflectedRay, scene, recursion - 1);
+				const float attenuation = 1.0f / (1.0f + distance * distance);
 				
-				auto color = emission + albedo * radiance * cosTheta;
+				const auto color = emission + albedo * radiance * cosTheta * attenuation;
 
-				return color;
+				return { color, glm::distance(ray.Origin, result.Position) };
 
 			}
 			else
 			{
-				return scene.Background ? scene.Background->Sample(ray.Direction) : glm::vec3(0.0f);
+				return { scene.Background ? scene.Background->Sample(ray.Direction) : glm::vec3(0.0f), 0.0f };
 			}
 		}
 	}

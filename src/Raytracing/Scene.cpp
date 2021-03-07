@@ -199,7 +199,7 @@ namespace rt
 			if (node->GetLeft() != nullptr)
 				IntersectInternal(ray, node->GetLeft(), result, distance);
 
-			if (node->GetRight())
+			if (node->GetRight() != nullptr)
 				IntersectInternal(ray, node->GetRight(), result, distance);
 
 		}
@@ -265,9 +265,7 @@ namespace rt
 		if (result.LeftTris.size() + result.RightTris.size() > 1.5 * triangles.size())
 		{
 			// If so, subdiving is not efficent anymore
-			for (auto& t : triangles)
-				m_Triangles = triangles;
-
+			m_Triangles = triangles;
 		}
 		else
 		{
@@ -375,7 +373,7 @@ namespace rt
 		}
 
 		// It could be 1 or 2 intersections
-		// t1 it's the closest, but might be negative if the ray origin is
+		// t1 is the closest, but might be negative if the ray origin is
 		// inside the sphere
 
 		result.Hit = true;
@@ -392,10 +390,10 @@ namespace rt
 
 	Material::Material()
 	{
+
 		Albedo = std::make_shared<ColorSampler>(glm::vec3(1.0f, 1.0f, 1.0f));
 		Emission = std::make_shared<ColorSampler>(glm::vec3(0.0f));
 		Roughness = std::make_shared<ColorSampler>(glm::vec3(1.0f));
-
 	}
 
 }

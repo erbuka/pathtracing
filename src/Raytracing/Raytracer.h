@@ -18,7 +18,7 @@ namespace rt
 		Random m_Rand;
 		uint32_t m_ScanlineCount;
 		ScanLine m_NextScanline;
-		glm::vec3 TraceRecursive(const ViewParameters& params, const Ray& ray, const Scene& scene, uint32_t recursion);
+		std::tuple<glm::vec3, float> TraceRecursive(const ViewParameters& params, const Ray& ray, const Scene& scene, uint32_t recursion);
 
 	};
 }
