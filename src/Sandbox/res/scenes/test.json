@@ -5,7 +5,7 @@
         "lookAt" : [0,0,0]
     },
     "background" : {
-        "color" : "night"
+        "color" : "background"
     },
     "lights" : [
         {

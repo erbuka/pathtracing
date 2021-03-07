@@ -89,8 +89,8 @@ namespace rt {
 	{
 		const auto normal = glm::normalize(uvw);
 		const glm::vec2 uv = {
-			std::atan2(normal.x, normal.z) / glm::pi<float>() + 0.5f,
-			normal.y * 0.5f + 0.5f
+			std::atan2(normal.x, normal.z) / (2.0f * glm::pi<float>()) + 0.5f,
+			std::asin(normal.y) / glm::pi<float>() - 0.5f
 		};
 		return m_Image->Sample(uv);
 	}
