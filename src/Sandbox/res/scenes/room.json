@@ -4,11 +4,14 @@
         "position" : [0,0,-3],
         "lookAt" : [0,0,0]
     },
+    "background" : {
+    },
     "samplers" : [
         { "id" : "red", "color" : [1.0, 0.1, 0.1] },
         { "id" : "green", "color" : [0.1, 1.0, 0.1] },
         { "id" : "whiteLight", "color" : [600, 600, 700] },
-        { "id" : "rWall", "color" : [0.9, 0.0, 0.0] }
+        { "id" : "rWall", "color" : [0.9, 0.0, 0.0] },
+        { "id" : "ambient", "color" : [1,1,1] }
     ],
     "meshes" : [
         {

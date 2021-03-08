@@ -8,6 +8,11 @@
 
 namespace rt
 {
+	Raytracer::Raytracer()
+	{
+		m_Beta = std::uniform_real_distribution<float>(0.0f, glm::pi<float>() / 2.0f);
+		m_Alpha = std::uniform_real_distribution<float>(0.0f, glm::pi<float>() * 2.0f);
+	}
 
 	glm::vec3 Raytracer::Trace(const ViewParameters& params, const Ray& ray, const Scene& scene)
 	{
@@ -55,39 +60,48 @@ namespace rt
 				// Reflected ray on hemisphere
 
 				const glm::vec3 N = result.Normal;
-				/*
-				glm::vec3 T = glm::cross(N, glm::vec3(0.0f, 0.0f, 1.0f));
-				if (glm::length2(T) == 0.0f)
-					T = glm::cross(N, glm::vec3(1.0f, 0.0f, 0.0f));
-					*/
-				const glm::vec3 T = glm::sphericalRand(1.0f);
+				const glm::vec3 T = glm::cross(N, glm::sphericalRand(1.0f));
 				glm::vec3 B = glm::cross(N, T);
 
-				const float alpha = m_Rand.Next(0.0f, glm::pi<float>() * 2.0f);
-				const float beta = m_Rand.Next(0.0f, glm::pi<float>() / 2.0f);
-		
-				glm::vec3 tangentSample = {
-					glm::sin(alpha) * glm::sin(beta),
-					glm::cos(alpha) * glm::sin(beta),
-					glm::cos(beta)
-				};
 
-				const auto reflectDir = glm::reflect(ray.Direction, result.Normal);
-				const auto hemiDir = tangentSample.x * T + tangentSample.y * B + tangentSample.z * N;
-				const auto dir = glm::normalize(glm::mix(reflectDir, hemiDir, roughness));
-				Ray reflectedRay = {
-					result.Position + dir * 0.01f,
-					dir
-				};
+				constexpr size_t numSamples = 1;
+				glm::vec3 totalRadiance(0.0f);
 
-				const auto cosTheta = glm::max(0.0f, glm::dot(reflectedRay.Direction, result.Normal));
+				for (size_t s = 0; s < numSamples; ++s)
+				{
+					//const float alpha = m_Rand.Next(0.0f, glm::pi<float>() * 2.0f);
+					const float alpha = m_Alpha(m_E);
+					//const float beta = m_Rand.Next(0.0f, glm::pi<float>() / 2.0f);
+					const float beta = m_Beta(m_E);
 
-				const auto [radiance, distance] = TraceRecursive(params, reflectedRay, scene, recursion - 1);
-				const float attenuation = 1.0f / (1.0f + distance * distance);
-				
-				const auto color = emission + albedo * radiance * cosTheta * attenuation;
+					glm::vec3 tangentSample = {
+						glm::sin(alpha) * glm::sin(beta),
+						glm::cos(alpha) * glm::sin(beta),
+						glm::cos(beta)
+					};
 
-				return { color, glm::distance(ray.Origin, result.Position) };
+					const auto reflectDir = glm::reflect(ray.Direction, result.Normal);
+					const auto hemiDir = tangentSample.x * T + tangentSample.y * B + tangentSample.z * N;
+
+					const auto dir = glm::normalize(glm::mix(reflectDir, hemiDir, roughness));
+
+					Ray reflectedRay = {
+						result.Position + dir * 0.01f,
+						dir
+					};
+
+					const auto cosTheta = glm::max(0.0f, glm::dot(reflectedRay.Direction, result.Normal));
+
+					const auto [radiance, distance] = TraceRecursive(params, reflectedRay, scene, recursion - 1);
+					const float attenuation = 1.0f / (1.0f + distance * distance);
+
+					totalRadiance += albedo * radiance * cosTheta * attenuation;
+
+				}
+
+				totalRadiance /= numSamples;
+
+				return { emission + totalRadiance, glm::distance(ray.Origin, result.Position) };
 
 			}
 			else

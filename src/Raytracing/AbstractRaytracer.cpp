@@ -24,6 +24,7 @@ namespace rt {
 				return sl;
 			};
 
+
 			const auto threadFunc = [&] {
 
 				auto forward = glm::normalize(params.Camera.Direction);

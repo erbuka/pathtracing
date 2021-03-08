@@ -316,7 +316,6 @@ namespace rt
 			// The intersection test is performed in local coordinates, because
 			// transforming the ray is faster than transforming all the vertices
 			auto r0 = node->Shape->Intersect(glm::inverse(node->Transform) * ray);
-
 			if (r0.Hit)
 			{
 
@@ -372,6 +371,7 @@ namespace rt
 			// No intersection. The ray is going in the opposite direction
 			return result;
 		}
+
 
 		// It could be 1 or 2 intersections
 		// t1 is the closest, but might be negative if the ray origin is

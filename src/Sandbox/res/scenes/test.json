@@ -5,7 +5,7 @@
         "lookAt" : [0,0,0]
     },
     "background" : {
-        "color" : "background"
+        "color" : "night"
     },
     "lights" : [
         {
@@ -20,7 +20,7 @@
         }
     ],
     "samplers" : [
-        { "color" : [0.1, 0.1, 0.2], "id" : "night" }, 
+        { "color" : [0.03, 0.05, 0.3], "id" : "night" }, 
         { "color" : [120, 120, 130], "id" : "light" }, 
         { "color" : [0.8, 0.1, 0.1], "id" : "red" }, 
         {

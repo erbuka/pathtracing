@@ -368,7 +368,7 @@ namespace sandbox
 
         params.Width = width;
         params.Height = height;
-        params.NumThreads = 7;
+        params.NumThreads = 4;
         params.Camera.Position = m_Camera.GetPosition();
         params.Camera.Direction = m_Camera.GetDirection();
 
