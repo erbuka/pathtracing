@@ -59,7 +59,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\vendor\glm;..\vendor\glad\include;..\vendor\glfw\include;..\vendor\spdlog\include;..\vendor\stb\include;..\vendor\imgui;..\vendor\imgui\backends;..\vendor\json;..\src\Raytracing;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vendor\glm;..\vendor\glad\include;..\vendor\glfw\include;..\vendor\spdlog\include;..\vendor\stb\include;..\vendor\imgui;..\vendor\imgui\backends;..\vendor\json;..\src\Raytracing;..\src\RaytracingUtility;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -78,7 +78,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\vendor\glm;..\vendor\glad\include;..\vendor\glfw\include;..\vendor\spdlog\include;..\vendor\stb\include;..\vendor\imgui;..\vendor\imgui\backends;..\vendor\json;..\src\Raytracing;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vendor\glm;..\vendor\glad\include;..\vendor\glfw\include;..\vendor\spdlog\include;..\vendor\stb\include;..\vendor\imgui;..\vendor\imgui\backends;..\vendor\json;..\src\Raytracing;..\src\RaytracingUtility;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -99,9 +99,11 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\Sandbox\GLSceneRenderer.h" />
     <ClInclude Include="..\src\Sandbox\Sandbox.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\Sandbox\GLSceneRenderer.cpp" />
     <ClCompile Include="..\src\Sandbox\Main.cpp" />
     <ClCompile Include="..\src\Sandbox\Sandbox.cpp" />
   </ItemGroup>
@@ -117,6 +119,9 @@
     </ProjectReference>
     <ProjectReference Include="Raytracing.vcxproj">
       <Project>{59CAB741-4582-F98E-AE89-D2EA9A60947F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="RaytracingUtility.vcxproj">
+      <Project>{2D350908-994B-079E-E2C2-92BF4E18D825}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

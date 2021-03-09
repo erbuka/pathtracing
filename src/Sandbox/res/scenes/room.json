@@ -9,7 +9,7 @@
     "samplers" : [
         { "id" : "red", "color" : [1.0, 0.1, 0.1] },
         { "id" : "green", "color" : [0.1, 1.0, 0.1] },
-        { "id" : "whiteLight", "color" : [600, 600, 700] },
+        { "id" : "whiteLight", "color" : [50, 50, 50] },
         { "id" : "rWall", "color" : [0.9, 0.0, 0.0] },
         { "id" : "ambient", "color" : [1,1,1] }
     ],
@@ -22,6 +22,8 @@
     "nodes" : [
         {
             "shape" : "sphere",
+            "translate" : [0, 10, 0],
+            "scale" : [2, 2, 2],
             "material" : {
                 "emission" : "whiteLight"
             }
@@ -44,6 +46,14 @@
         {
             "translate" : [0, 0, -10],
             "rotate" : [90, 0, 0],
+            "mesh" : "plane",
+            "material": {
+                "roughness" : "rWall"
+            }
+        },
+        {
+            "translate" : [0, 0, 10],
+            "rotate" : [-90, 0, 0],
             "mesh" : "plane",
             "material": {
                 "roughness" : "rWall"

@@ -13,6 +13,15 @@
 namespace rt 
 {
 
+	size_t ObjectID::s_Next = 0;
+
+	Ray operator*(const glm::mat4& m, const Ray& r)
+	{
+		auto origin = glm::vec3(m * glm::vec4(r.Origin, 1.0f));
+		auto direction = glm::normalize(glm::vec3(m * glm::vec4(r.Direction, 0.0f)));
+		return { origin, direction };
+	}
+
 	float BoundingBox::Surface() const
 	{
 		return 2 * ((Max.x - Min.x) * (Max.y - Min.y) + (Max.x - Min.x) * (Max.z - Min.z) + (Max.z - Min.z) * (Max.y - Min.y));
@@ -299,6 +308,14 @@ namespace rt
 		Transform *= glm::scale(s);
 	}
 
+	void Scene::Compile()
+	{
+		std::for_each(Nodes.begin(), Nodes.end(), [](std::shared_ptr<SceneNode>& n) {
+			if (n->Shape)
+				n->Shape->Compile();
+		});
+	}
+
 	std::tuple<RaycastResult, std::shared_ptr<SceneNode>> Scene::CastRay(const Ray& ray, bool returnOnFirstHit, const std::vector<std::shared_ptr<SceneNode>>& avoidNodes) const
 	{
 		float distance = std::numeric_limits<float>::max();
@@ -348,9 +365,6 @@ namespace rt
 	{
 		RaycastResult result;
 
-		// real squaredRadius = 1.0f;
-		//Vector3 l = ray.Origin;
-
 		float projection = glm::dot((glm::vec3(0.0f, 0.0f, 0.0f) - ray.Origin), ray.Direction);
 		float squaredDistance = glm::dot(ray.Origin, ray.Origin) - projection * projection;
 
@@ -394,6 +408,7 @@ namespace rt
 		Albedo = std::make_shared<ColorSampler>(glm::vec3(1.0f, 1.0f, 1.0f));
 		Emission = std::make_shared<ColorSampler>(glm::vec3(0.0f));
 		Roughness = std::make_shared<ColorSampler>(glm::vec3(1.0f));
+		Metallic = std::make_shared<ColorSampler>(glm::vec3(0.0f));
 	}
 
 }

@@ -1,9 +1,11 @@
 #include "Sandbox.h"
 
+
 #include <chrono>
 #include <fstream>
 #include <filesystem>
 #include <regex>
+#include <sstream>
 
 #include <spdlog\spdlog.h>
 #include <glad\glad.h>
@@ -15,6 +17,9 @@
 #include <glm\glm.hpp>
 #include <glm\ext.hpp>
 #include <glm\gtx\transform.hpp>
+
+#include <MeshLoader.h>
+
 
 
 #define RT_SANDBOX(window) ((Sandbox*)glfwGetWindowUserPointer(window))
@@ -41,170 +46,12 @@ namespace rt
         if (str == "linear") s = rt::SampleMode::Linear;
         else if (str == "nearest") s = rt::SampleMode::Nearest;
     }
-
-    void to_json(nlohmann::json& j, const rt::LightType& t) {
-        if (t == rt::LightType::Directional) j = "directional";
-        else if (t == rt::LightType::Point) j = "point";
-        else if (t == rt::LightType::Spot) j = "spot";
-    }
-
-    void from_json(const nlohmann::json& j, rt::LightType& t) {
-        auto str = j.get<std::string>();
-        if (str == "directional") t = rt::LightType::Directional;
-        else if (str == "point") t = rt::LightType::Point;
-        else if (str == "spot") t = rt::LightType::Spot;
-    }
 }
 
 namespace sandbox
 {
 
-    std::map<std::string, std::shared_ptr<rt::Mesh>> LoadMeshesFromWavefront(std::string_view fileName)
-    {
-        std::map<std::string, std::shared_ptr<rt::Mesh>> result;
-
-        std::ifstream is;
-        is.open(fileName.data());
-
-        if (!is.is_open())
-        {
-            spdlog::error("Can't open file: {0}", fileName.data());
-            return result;
-        }
-
-        std::string line;
-        std::string currentMeshName = "default";
-        auto currentMesh = std::make_shared<rt::Mesh>();
-        std::vector<glm::vec3> vertices, normals;
-        std::vector<glm::vec2> uvs;
-
-        const auto checkNewMesh = [&currentMesh, &result, &currentMeshName] {
-            if (currentMesh->GetTriangles().size() > 0) {
-                currentMesh->Compile();
-                result[currentMeshName] = std::move(currentMesh);
-                currentMesh = std::make_shared<rt::Mesh>();
-            }
-        };
-
-        const std::regex rComment("#\\s+(.+)");
-        const std::regex rVertex("v\\s+(-?[\\d\.]+)\\s+(-?[\\d\.]+)\\s+(-?[\\d\.]+)");
-        const std::regex rNormal("vn\\s+(-?[\\d\.]+)\\s+(-?[\\d\.]+)\\s+(-?[\\d\.]+)");
-        const std::regex rUv("vt\\s+(-?[\\d\.]+)\\s+(-?[\\d\.]+)");
-        const std::regex rObject("o\\s+(.+)");
-        const std::regex rFace0("f\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)");
-        const std::regex rFace1(
-            "f\\s+"
-            "([0-9]+)//([0-9]+)\\s+"
-            "([0-9]+)//([0-9]+)\\s+"
-            "([0-9]+)//([0-9]+)");
-        const std::regex rFace2(
-            "f\\s+"
-            "([0-9]+)/([0-9]+)\\s+"
-            "([0-9]+)/([0-9]+)\\s+"
-            "([0-9]+)/([0-9]+)");
-        const std::regex rFace3(
-            "f\\s+"
-            "([0-9]+)/([0-9]+)/([0-9]+)\\s+"
-            "([0-9]+)/([0-9]+)/([0-9]+)\\s+"
-            "([0-9]+)/([0-9]+)/([0-9]+)");
-
-        while (is.good())
-        {
-            std::getline(is, line);
-            std::smatch matches;
-
-            if (std::regex_search(line, matches, rVertex))
-            {
-                vertices.push_back({
-                    std::stof(matches.str(1)),
-                    std::stof(matches.str(2)),
-                    std::stof(matches.str(3))
-                    });
-            }
-            else if (std::regex_search(line, matches, rNormal))
-            {
-                normals.push_back({
-                    std::stof(matches.str(1)),
-                    std::stof(matches.str(2)),
-                    std::stof(matches.str(3))
-                    });
-            }
-            else if (std::regex_search(line, matches, rUv))
-            {
-                uvs.push_back({
-                    std::stof(matches.str(1)),
-                    std::stof(matches.str(2)),
-                    });
-            }
-            else if (std::regex_search(line, matches, rFace0))
-            {
-                auto& t = currentMesh->AddTriangle();
-
-                for (size_t i = 0; i < 3; ++i)
-                {
-                    t.Vertices[i].Position = vertices[std::stoi(matches.str(1 + i)) - 1];
-                }
-
-            }
-            else if (std::regex_search(line, matches, rFace1))
-            {
-                auto& t = currentMesh->AddTriangle();
-
-                for (size_t i = 0; i < 3; ++i)
-                {
-                    t.Vertices[i].Position = vertices[std::stoi(matches.str(1 + i * 2)) - 1];
-                    t.Vertices[i].Normal = normals[std::stoi(matches.str(2 + i * 2)) - 1];
-                }
-
-            }
-            else if (std::regex_search(line, matches, rFace2))
-            {
-                auto& t = currentMesh->AddTriangle();
-
-                for (size_t i = 0; i < 3; ++i)
-                {
-                    t.Vertices[i].Position = vertices[std::stoi(matches.str(1 + i * 2)) - 1];
-                    t.Vertices[i].UV = uvs[std::stoi(matches.str(2 + i * 2)) - 1];
-                }
-
-            }
-            else if (std::regex_search(line, matches, rFace3))
-            {
-                auto& t = currentMesh->AddTriangle();
-
-                for (size_t i = 0; i < 3; ++i)
-                {
-                    t.Vertices[i].Position = vertices[std::stoi(matches.str(1 + i * 3)) - 1];
-                    t.Vertices[i].UV = uvs[std::stoi(matches.str(2 + i * 3)) - 1];
-                    t.Vertices[i].Normal = normals[std::stoi(matches.str(3 + i * 3)) - 1];
-                }
-
-
-            }
-            else if (std::regex_search(line, matches, rObject))
-            {
-                checkNewMesh();
-                currentMeshName = matches.str(1);
-            }
-            else if (std::regex_search(line, matches, rComment))
-            {
-                spdlog::info("Comment: {0}", matches.str(1));
-            }
-            else
-            {
-                spdlog::warn("Unable to parse: {0}", line);
-            }
-
-
-        }
-
-        checkNewMesh();
-
-        is.close();
-
-        return result;
-
-    }
+    static constexpr float s_FovY = glm::pi<float>() / 4.0f;
 
 
     static void GLFW_CursorPos(GLFWwindow* window, double xpos, double ypos)
@@ -262,7 +109,7 @@ namespace sandbox
         }
 
         /* Create a windowed mode window and its OpenGL context */
-        m_Window = glfwCreateWindow(1280, 720, "Hello World", NULL, NULL);
+        m_Window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
         if (!m_Window)
         {
             glfwTerminate();
@@ -310,6 +157,12 @@ namespace sandbox
         return { w, h };
     }
 
+    std::pair<float, float> sandbox::Sandbox::GetScaledWindowSize(float width) const
+    {
+        auto [w, h] = GetWindowSize();
+        return { glm::round(width), glm::round(h / w * width) };
+    }
+
     void Sandbox::OnWheel(float offsetX, float offsetY)
     {
         m_Camera.Distance = glm::max(m_Camera.Distance + m_Camera.MoveSpeed * offsetY, 0.1f);
@@ -345,57 +198,18 @@ namespace sandbox
         return { x, y };
     }
 
-    rt::ViewParameters sandbox::Sandbox::GetDebugiViewParameters() const
-    {
-        rt::ViewParameters params;
-
-        const auto [width, height] = GetWindowSize();
-
-        params.Width = width / 4;
-        params.Height = height / 4;
-        params.NumThreads = 7;
-        params.Camera.Position = m_Camera.GetPosition();
-        params.Camera.Direction = m_Camera.GetDirection();
-
-        return params;
-    }
-
-    rt::ViewParameters sandbox::Sandbox::GetViewParameters() const
-    {
-        rt::ViewParameters params;
-
-        const auto [width, height] = GetWindowSize();
-
-        params.Width = width;
-        params.Height = height;
-        params.NumThreads = 4;
-        params.Camera.Position = m_Camera.GetPosition();
-        params.Camera.Direction = m_Camera.GetDirection();
-
-        return params;
-    }
-
     void Sandbox::Initialize()
     {
-
         // Load scene definitions
         LoadSceneDefinitions();
 
         // Render texture
         glGenTextures(1, &m_RenderTexture);
         glBindTexture(GL_TEXTURE_2D, m_RenderTexture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-
-        // Debug texture
-        glGenTextures(1, &m_DebugTexture);
-        glBindTexture(GL_TEXTURE_2D, m_DebugTexture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         // ImGui
-
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -414,46 +228,44 @@ namespace sandbox
         const auto [width, height] = GetWindowSize();
 
         glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glUseProgram(0);
 
-        if (m_State == SandboxState::Idle)
+
+        if(m_State == SandboxState::Idle)
         {
-            m_Debug.CurrentMode = rt::DebugRaytracer::Mode::Color;
-            auto result = m_Debug.Run(GetDebugiViewParameters(), m_Scene);
-            result->Wait();
-            ImageToTexture(result->GetImage(), m_DebugTexture);
+            if (m_GLRenderer)
+                m_GLRenderer->Render(m_Camera.GetPosition(), m_Camera.GetDirection(), s_FovY, width / height);
         }
         else
         {
-            auto iteration = m_RenderResult->Iteration.load();
-            if (iteration != m_CurrentIteration)
-            {
-                ImageToTexture(m_RenderResult->GetImage(), m_RenderTexture);
-                m_CurrentIteration = iteration;
-            }
             if (m_RenderResult->IsInterrupted())
                 m_State = SandboxState::Result;
+
+            UpdateTexture();
+
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, m_RenderTexture);
+
+            glBegin(GL_QUADS);
+            {
+                glColor3f(1, 1, 1);
+                glTexCoord2d(0, 1); glVertex2f(-1, -1);
+                glTexCoord2d(1, 1); glVertex2f(1, -1);
+                glTexCoord2d(1, 0); glVertex2f(1, 1);
+                glTexCoord2d(0, 0); glVertex2f(-1, 1);
+            }
+            glEnd();
         }
-
-
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, m_State == SandboxState::Idle ? m_DebugTexture : m_RenderTexture);
-
-        glBegin(GL_QUADS);
-        {
-            glColor3f(1, 1, 1);
-            glTexCoord2d(0, 1); glVertex2f(-1, -1);
-            glTexCoord2d(1, 1); glVertex2f(1, -1);
-            glTexCoord2d(1, 0); glVertex2f(1, 1);
-            glTexCoord2d(0, 0); glVertex2f(-1, 1);
-        }
-        glEnd();
 
 
     }
@@ -471,13 +283,62 @@ namespace sandbox
             ImGui::BeginMainMenuBar();
             if (ImGui::BeginMenu("File"))
             {
-                if (ImGui::MenuItem("Render"))
+                if (ImGui::BeginMenu("Render"))
                 {
-                    m_CurrentIteration = 0;
-                    m_RenderResult = m_Raytracer.Run(GetViewParameters(), m_Scene);
-                    m_State = SandboxState::Rendering;
-                }
+                    for (uint32_t s : {64, 128, 256, 512})
+                    {
+                        std::stringstream ss;
+                        ss << "Pathtracing (" << s << " px)";
 
+                        if (ImGui::MenuItem(ss.str().c_str()))
+                        {
+                            rt::ViewParameters params;
+                            auto [vw, vh] = GetScaledWindowSize(s);
+
+                            params.NumThreads = 4;
+                            params.Width = vw;
+                            params.Height = vh;
+                            params.FovY = s_FovY;
+                            params.Camera.Position = m_Camera.GetPosition();
+                            params.Camera.Direction = m_Camera.GetDirection();
+
+                            m_CurrentIteration = 0;
+                            m_RenderResult = m_Pathtracer.Run(params, m_Scene, 0);
+                            m_RenderResult->OnIterationEnd.Subscribe([&](const rt::Image& img, size_t iteration) {
+                                std::lock_guard guard(m_ImageMutex);
+                                m_TextureNeedsUpdate = true;
+                                m_Image = img;
+                                m_CurrentIteration = iteration + 1;
+                            });
+                            m_State = SandboxState::Rendering;
+                        }
+                    }
+
+                    if (ImGui::MenuItem("Pathtracing (full size)"))
+                    {
+                        rt::ViewParameters params;
+                        auto [vw, vh] = GetWindowSize();
+
+                        params.NumThreads = 4;
+                        params.Width = vw;
+                        params.Height = vh;
+                        params.FovY = s_FovY;
+                        params.Camera.Position = m_Camera.GetPosition();
+                        params.Camera.Direction = m_Camera.GetDirection();
+
+                        m_CurrentIteration = 0;
+                        m_RenderResult = m_Pathtracer.Run(params, m_Scene, 0);
+                        m_RenderResult->OnIterationEnd.Subscribe([&](const rt::Image& img, size_t iteration) {
+                            std::lock_guard guard(m_ImageMutex);
+                            m_Image = img;
+                            m_TextureNeedsUpdate = true;
+                            m_CurrentIteration = iteration + 1;
+                        });
+                        m_State = SandboxState::Rendering;
+                    }
+                    
+                    ImGui::EndMenu();
+                }
                 if (ImGui::BeginMenu("Load Scene"))
                 {
                     for (const auto& sceneDef : m_SceneDefs)
@@ -521,7 +382,6 @@ namespace sandbox
             ImGui::Begin("Test", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
             if (ImGui::Button("Back"))
             {
-                m_RenderResult->Wait();
                 m_RenderResult = nullptr;
                 m_State = SandboxState::Idle;
             }
@@ -576,7 +436,7 @@ namespace sandbox
             for (const auto& meshDef : sceneDef["meshes"])
             {
                 const auto ids = meshDef["ids"].get<std::vector<std::string>>();
-                for (auto [name, mesh] : LoadMeshesFromWavefront(meshDef["file"].get<std::string>()))
+                for (auto [name, mesh] : rt::utility::LoadMeshesFromWavefront(meshDef["file"].get<std::string>()))
                 {
                     if (std::find(ids.begin(), ids.end(), name) != ids.end())
                     {
@@ -636,39 +496,6 @@ namespace sandbox
 
         }
 
-        if (sceneDef.contains("lights"))
-        {
-            for (const auto& lightDef : sceneDef["lights"])
-            {
-                rt::Light light;
-
-                if (lightDef.contains("type"))
-                    lightDef["type"].get_to(light.Type);
-
-                if (lightDef.contains("direction"))
-                {
-                    lightDef["direction"].get_to(light.Direction);
-                    light.Direction = glm::normalize(light.Direction);
-                }
-
-
-                if (lightDef.contains("position"))
-                    lightDef["position"].get_to(light.Position);
-
-                if (lightDef.contains("color"))
-                    lightDef["color"].get_to(light.Color);
-
-
-                if (lightDef.contains("angle"))
-                {
-                    lightDef["angle"].get_to(light.Angle);
-                    light.Angle = glm::radians(light.Angle);
-                }
-
-                m_Scene.Lights.push_back(std::move(light));
-            }
-        }
-
         if (sceneDef.contains("nodes"))
         {
             for (const auto& nodeDef : sceneDef["nodes"])
@@ -698,7 +525,7 @@ namespace sandbox
 
                 if (nodeDef.contains("material"))
                 {
-                    auto matDef = nodeDef["material"];
+                    const auto matDef = nodeDef["material"];
 
                     if (matDef.contains("albedo"))
                         node->Material.Albedo = samplers2D.at(matDef["albedo"].get<std::string>());
@@ -709,6 +536,9 @@ namespace sandbox
                     if (matDef.contains("roughness"))
                         node->Material.Roughness = samplers2D.at(matDef["roughness"].get<std::string>());
 
+                    if (matDef.contains("metallic"))
+                        node->Material.Metallic = samplers2D.at(matDef["metallic"].get<std::string>());
+
                 }
 
                 m_Scene.Nodes.push_back(std::move(node));
@@ -716,36 +546,43 @@ namespace sandbox
             }
         }
 
+        m_GLRenderer = std::make_unique<GLSceneRenderer>(m_Scene);
 
     }
 
-    void Sandbox::ImageToTexture(const rt::Image& image, uint32_t texId)
+    void Sandbox::UpdateTexture()
     {
-        m_Pixels.resize(image.GetWidth() * image.GetHeight());
+        if (m_TextureNeedsUpdate)
+        {
+            std::lock_guard guard(m_ImageMutex);
 
-        for (size_t x = 0; x < image.GetWidth(); ++x) {
-            for (size_t y = 0; y < image.GetHeight(); ++y) {
-                auto color = image.GetPixel(x, y);
+            auto& image = m_Image;
 
-                // Tone mapping
-                // TODO maybe control exposure somewhere or not
-                color = glm::vec3(1.0f) - glm::exp(-color);
+            m_Pixels.resize(image.GetWidth() * image.GetHeight());
 
-                // Gamma correction
-                color = glm::pow(color, glm::vec3(1.0f / 2.2f));
+            for (size_t x = 0; x < image.GetWidth(); ++x) {
+                for (size_t y = 0; y < image.GetHeight(); ++y) {
+                    auto color = image.GetPixel(x, y);
 
-                m_Pixels[y * image.GetWidth() + x] =
-                    ((uint32_t(color.r * 255) << 0)) |
-                    ((uint32_t(color.g * 255) << 8)) |
-                    ((uint32_t(color.b * 255) << 16)) |
-                    ((uint32_t(255) << 24));
+                    // Tone mapping
+                    color = glm::vec3(1.0f) - glm::exp(-color);
 
+                    // Gamma correction
+                    color = glm::pow(color, glm::vec3(1.0f / 2.2f));
+
+                    m_Pixels[y * image.GetWidth() + x] =
+                        ((uint32_t(color.r * 255) << 0)) |
+                        ((uint32_t(color.g * 255) << 8)) |
+                        ((uint32_t(color.b * 255) << 16)) |
+                        ((uint32_t(255) << 24));
+
+                }
             }
+
+            glBindTexture(GL_TEXTURE_2D, m_RenderTexture);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.GetWidth(), image.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, m_Pixels.data());
+            m_TextureNeedsUpdate = false;
         }
-
-        glBindTexture(GL_TEXTURE_2D, texId);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.GetWidth(), image.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, m_Pixels.data());
-
     }
 
     glm::vec3 Sandbox::Camera::GetDirection() const

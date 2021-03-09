@@ -5,9 +5,12 @@
 #include <string_view>
 #include <json.hpp>
 
-#include "Scene.h"
-#include "DebugRaytracer.h"
-#include "Raytracer.h"
+#include <Scene.h>
+#include <DebugRaytracer.h>
+#include <Pathtracer.h>
+
+#include "GLSceneRenderer.h"
+
 
 
 struct GLFWwindow;
@@ -15,6 +18,7 @@ struct ImFont;
 
 namespace sandbox
 {
+	class GLSceneRenderer;
 
 	enum class SandboxState
 	{
@@ -36,6 +40,7 @@ namespace sandbox
 		bool Start();
 
 		std::pair<float, float> GetWindowSize() const;
+		std::pair<float, float> GetScaledWindowSize(float width) const;
 
 		void OnWheel(float offsetX, float offsetY);
 		void OnMousePressed(MouseButton button);
@@ -46,9 +51,6 @@ namespace sandbox
 
 	private:
 
-		rt::ViewParameters GetDebugiViewParameters() const;
-		rt::ViewParameters GetViewParameters() const;
-
 		void Initialize();
 		void Update();
 		void RenderGUI();
@@ -56,7 +58,7 @@ namespace sandbox
 		void LoadSceneDefinitions();
 		void LoadScene(const nlohmann::json& sceneDef);
 
-		void ImageToTexture(const rt::Image& image, uint32_t texId);
+		void UpdateTexture();
 
 		struct Camera {
 			float MoveSpeed = 1.5f;
@@ -84,11 +86,16 @@ namespace sandbox
 
 		rt::Scene m_Scene;
 
-		rt::DebugRaytracer m_Debug;
-		rt::Raytracer m_Raytracer;
+		rt::utility::DebugRaytracer m_Debug;
+		rt::Pathtracer m_Pathtracer;
+		std::unique_ptr<GLSceneRenderer> m_GLRenderer;
+
+		rt::Image m_Image;
 
 		std::shared_ptr<rt::RaytracerResult> m_RenderResult = nullptr;
-		uint32_t m_RenderTexture, m_DebugTexture;
+		uint32_t m_RenderTexture;
+
+		std::mutex m_ImageMutex;
 
 		GLFWwindow* m_Window;
 		std::vector<uint32_t> m_Pixels;
@@ -96,7 +103,9 @@ namespace sandbox
 		ImFont* m_Font;
 
 		bool m_Running = false;
+		bool m_TextureNeedsUpdate = false;
 		size_t m_CurrentIteration = 0;
+
 
 	};
 }

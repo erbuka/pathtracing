@@ -11,10 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{59CAB741-4582-F98E-AE89-D2EA9A60947F}</ProjectGuid>
+    <ProjectGuid>{2D350908-994B-079E-E2C2-92BF4E18D825}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Raytracing</RootNamespace>
+    <RootNamespace>RaytracingUtility</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -41,15 +41,15 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\bin\Debug\Raytracing\</OutDir>
-    <IntDir>..\bin-int\Debug\Raytracing\</IntDir>
-    <TargetName>Raytracing</TargetName>
+    <OutDir>..\bin\Debug\RaytracingUtility\</OutDir>
+    <IntDir>..\bin-int\Debug\RaytracingUtility\</IntDir>
+    <TargetName>RaytracingUtility</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\bin\Release\Raytracing\</OutDir>
-    <IntDir>..\bin-int\Release\Raytracing\</IntDir>
-    <TargetName>Raytracing</TargetName>
+    <OutDir>..\bin\Release\RaytracingUtility\</OutDir>
+    <IntDir>..\bin-int\Release\RaytracingUtility\</IntDir>
+    <TargetName>RaytracingUtility</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -57,7 +57,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\vendor\glm;..\vendor\glad\include;..\vendor\glfw\include;..\vendor\spdlog\include;..\vendor\stb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vendor\glm;..\vendor\glad\include;..\vendor\spdlog\include;..\src\Raytracing;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -72,7 +72,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\vendor\glm;..\vendor\glad\include;..\vendor\glfw\include;..\vendor\spdlog\include;..\vendor\stb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vendor\glm;..\vendor\glad\include;..\vendor\spdlog\include;..\src\Raytracing;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -89,18 +89,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\Raytracing\AbstractRaytracer.h" />
-    <ClInclude Include="..\src\Raytracing\Common.h" />
-    <ClInclude Include="..\src\Raytracing\Pathtracer.h" />
-    <ClInclude Include="..\src\Raytracing\Sampler.h" />
-    <ClInclude Include="..\src\Raytracing\Scene.h" />
+    <ClInclude Include="..\src\RaytracingUtility\DebugRaytracer.h" />
+    <ClInclude Include="..\src\RaytracingUtility\MeshLoader.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\Raytracing\AbstractRaytracer.cpp" />
-    <ClCompile Include="..\src\Raytracing\Common.cpp" />
-    <ClCompile Include="..\src\Raytracing\Pathtracer.cpp" />
-    <ClCompile Include="..\src\Raytracing\Sampler.cpp" />
-    <ClCompile Include="..\src\Raytracing\Scene.cpp" />
+    <ClCompile Include="..\src\RaytracingUtility\DebugRaytracer.cpp" />
+    <ClCompile Include="..\src\RaytracingUtility\MeshLoader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Raytracing.vcxproj">
+      <Project>{59CAB741-4582-F98E-AE89-D2EA9A60947F}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -37,4 +37,5 @@ for (let x = 0; x < 10; x++) {
   }
 }
 
-console.log(JSON.stringify(scene));
+const fs = require("fs");
+fs.writeFileSync("test2.json", JSON.stringify(scene), { encoding: "utf-8" });

@@ -112,6 +112,27 @@ project "Raytracing"
 
     files { "src/Raytracing/**.cpp", "src/Raytracing/**.h"  }
 
+project "RaytracingUtility"
+    location(_ACTION)
+    kind "StaticLib"
+    language "C++"
+    cppdialect "C++17"
+
+    objdir "bin-int/%{cfg.buildcfg}/%{prj.name}"
+    targetdir "bin/%{cfg.buildcfg}/%{prj.name}"
+    debugdir "bin/%{cfg.buildcfg}/%{prj.name}"
+
+    includedirs { 
+        "vendor/glm",
+        "vendor/glad/include",
+        "vendor/spdlog/include",
+        "src/Raytracing"
+    }
+
+    links { "Raytracing" }
+
+    files { "src/RaytracingUtility/**.cpp", "src/RaytracingUtility/**.h"  } 
+
 project "Sandbox"
     location(_ACTION)
     kind "ConsoleApp"
@@ -131,12 +152,13 @@ project "Sandbox"
         "vendor/imgui",
         "vendor/imgui/backends",
         "vendor/json",
-        "src/Raytracing"
+        "src/Raytracing",
+        "src/RaytracingUtility"
     }
 
     files { "src/Sandbox/**.cpp", "src/Sandbox/**.h"  }
 
-    links { "opengl32", "Glad", "GLFW", "ImGui", "Raytracing" }
+    links { "opengl32", "Glad", "GLFW", "ImGui", "Raytracing", "RaytracingUtility" }
 
     postbuildcommands {
         "{COPY} ../src/Sandbox/res ../bin/%{cfg.buildcfg}/%{prj.name}/res"

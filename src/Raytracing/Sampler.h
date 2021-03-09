@@ -1,12 +1,13 @@
 #pragma once
 
-#include "Common.h"
+#include <glm\glm.hpp>
 
 #include <string_view>
 #include <cinttypes>
 #include <vector>
 #include <memory>
 
+#include "Common.h"
 
 namespace rt {
 

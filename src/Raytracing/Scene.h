@@ -8,13 +8,21 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
-#include "Common.h"
-
 
 namespace rt {
 
 	class Sampler2D;
 	class Sampler3D;
+
+	enum class Axis : uint32_t { X = 0, Y = 1, Z = 2 };
+
+	struct Ray {
+		glm::vec3 Origin;
+		glm::vec3 Direction;
+	};
+
+	Ray operator*(const glm::mat4& m, const Ray& r);
+
 
 	struct Vertex
 	{
@@ -69,21 +77,6 @@ namespace rt {
 		float m_InvDen;
 	};
 
-	enum class LightType
-	{
-		Directional, Point, Spot
-	};
-
-
-	struct Light
-	{
-		LightType Type = LightType::Directional;
-		glm::vec3 Color = { 1.0f, 1.0f, 1.0f };
-		glm::vec3 Direction = { 0.0f, 1.0f, 0.0f };
-		glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
-		float Attenuation = 1.0f;
-		float Angle = glm::pi<float>() / 4.0f;
-	};
 
 	struct Material
 	{
@@ -91,6 +84,7 @@ namespace rt {
 		std::shared_ptr<Sampler2D> Albedo;
 		std::shared_ptr<Sampler2D> Emission;
 		std::shared_ptr<Sampler2D> Roughness;
+		std::shared_ptr<Sampler2D> Metallic;
 	};
 
 	class KDTreeNode
@@ -112,27 +106,36 @@ namespace rt {
 		std::unique_ptr<KDTreeNode> m_Right = nullptr;
 	};
 
+	class ObjectID
+	{
+	public:
+		const size_t ID;
+		ObjectID(): ID(s_Next++) {}
+	private:
+		static size_t s_Next;
+	};
+
 	class Shape 
 	{
 	public:
+		virtual void Compile() = 0;
 		virtual RaycastResult Intersect(const Ray& ray) const = 0;
 	};
 
 	class Sphere : public Shape
 	{
 	public:
+		void Compile() override {}
 		RaycastResult Intersect(const Ray& ray) const override;
 	};
 
-	class Mesh: public Shape
+	class Mesh: public Shape, public ObjectID
 	{
 	public:
-
-		
 		const std::vector<Triangle>& GetTriangles() const { return m_Triangles; }
 		Triangle& AddTriangle();
 		RaycastResult Intersect(const Ray& ray) const override;
-		void Compile();
+		void Compile() override;
 
 	private:
 
@@ -159,13 +162,11 @@ namespace rt {
 
 		
 	};
-
-
+	
 	class Scene 
 	{
 	public:
-
-		std::vector<Light> Lights;
+		void Compile();
 		std::shared_ptr<Sampler3D> Background = nullptr;
 		std::vector<std::shared_ptr<SceneNode>> Nodes;
 		std::tuple<RaycastResult, std::shared_ptr<SceneNode>> Scene::CastRay(const Ray& ray, bool returnOnFirstHit = false, const std::vector<std::shared_ptr<SceneNode>>& avoidNodes = {}) const;
