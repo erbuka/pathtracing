@@ -50,7 +50,7 @@ namespace rt {
 
 				const auto threadFunc = [&] {
 
-					auto forward = glm::normalize(params.Camera.Direction);
+					auto forward = glm::normalize(scene.Camera.GetDirection());
 					auto right = glm::normalize(glm::cross(forward, glm::vec3{ 0.0f, 1.0f, 0.0f }));
 					auto up = glm::cross(right, forward);
 
@@ -72,7 +72,7 @@ namespace rt {
 							float xFactor = fx / params.Width * 2.0f - 1.0f;
 							float yFactor = 1.0f - fy / params.Height * 2.0f;
 
-							ray.Origin = params.Camera.Position;
+							ray.Origin = scene.Camera.Position;
 							ray.Direction = glm::normalize(forward + right * xFactor * w2 + up * yFactor * h2);
 
 							auto color = Trace(params, ray, scene);

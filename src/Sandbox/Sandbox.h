@@ -61,16 +61,11 @@ namespace sandbox
 
 	private:
 
-		struct Camera {
+		struct CameraSettings {
 			float MoveSpeed = 1.5f;
 			float RotateSpeed = 3.0f;
-			float Alpha = -glm::pi<float>() / 2.0f;
-			float Beta = 0.0f;
-			float Distance = 3.0f;
 			glm::vec3 LookAt = { 0.0f, 0.0f, 0.0f };
-			glm::vec3 GetDirection() const;
-			glm::vec3 GetPosition() const;
-		} m_Camera;
+		} m_CameraSettings;
 
 		struct {
 			glm::vec2 Position = { 0.0f, 0.0f };
@@ -109,16 +104,16 @@ namespace sandbox
 		bool m_TextureNeedsUpdate = false;
 		size_t m_CurrentIteration = 0;
 
-
 		void Initialize();
 		void Update();
 		void RenderGUI();
 
 		void LoadSceneDefinitions();
-		void LoadScene(const nlohmann::json& sceneDef);
 
 		void UpdateTexture();
 		void SaveImage();
+
+		std::tuple<float, float> SphericalAngles(const glm::vec3& dir);
 
 	};
 }

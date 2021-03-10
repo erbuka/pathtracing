@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 {
 	uint32_t width = 512;
 	uint32_t height = 512;
-	size_t iterations = 100000;
+	size_t iterations = 10;
 	size_t threads = 4;
 	std::string sceneFile;
 	std::string outFile = "result.png";
@@ -66,9 +66,6 @@ int main(int argc, char** argv)
 	params.Height = height;
 	params.NumThreads = threads;
 	params.FovY = glm::pi<float>() / 4.0f;
-	params.Camera.Position = { 0.0f, 0.0f, 0.0f };
-	params.Camera.Direction = { 0.0f, 0.0f, -1.0f };
-
 
 	auto result = pathtracer.Run(params, scene, iterations);
 	

@@ -154,7 +154,10 @@ namespace sandbox
 
     void Sandbox::OnWheel(float offsetX, float offsetY)
     {
-        m_Camera.Distance = glm::max(m_Camera.Distance + m_Camera.MoveSpeed * offsetY, 0.1f);
+        auto& camera = m_Scene.Camera;
+        float distance = glm::length(camera.Position - m_CameraSettings.LookAt);
+        float offset = glm::max(distance + m_CameraSettings.MoveSpeed * offsetY, 0.1f);
+        camera.Position = m_CameraSettings.LookAt - camera.GetDirection() * offset;
     }
 
     void Sandbox::OnMousePressed(MouseButton button)
@@ -172,10 +175,26 @@ namespace sandbox
     {
         if (m_State == SandboxState::Idle && m_Mouse.Button[MouseButton::Left])
         {
+            auto& camera = m_Scene.Camera;
             auto [w, h] = GetWindowSize();
             auto delta = (pos - m_Mouse.Position) / glm::vec2(w, h);
-            m_Camera.Alpha += -delta.x * m_Camera.RotateSpeed;
-            m_Camera.Beta += delta.y * m_Camera.RotateSpeed;
+
+            const float distance = glm::length(m_CameraSettings.LookAt - camera.Position);
+
+            auto [beta, alpha] = SphericalAngles(camera.GetDirection());
+
+            spdlog::info("{0} {1}", glm::degrees(beta), glm::degrees(alpha));
+
+            beta += delta.y * m_CameraSettings.RotateSpeed;
+            alpha -= delta.x * m_CameraSettings.RotateSpeed;
+
+            camera.SetDirection({
+                glm::sin(alpha) * glm::sin(beta),
+                glm::cos(beta),
+                glm::cos(alpha) * glm::sin(beta)
+                });
+
+            camera.Position = m_CameraSettings.LookAt - camera.GetDirection() * distance;
         }
         m_Mouse.Position = pos;
     }
@@ -227,7 +246,7 @@ namespace sandbox
         if(m_State == SandboxState::Idle)
         {
             if (m_GLRenderer)
-                m_GLRenderer->Render(m_Camera.GetPosition(), m_Camera.GetDirection(), s_FovY, width / height);
+                m_GLRenderer->Render(m_Scene.Camera.Position, m_Scene.Camera.GetDirection(), s_FovY, width / height);
         }
         else
         {
@@ -293,8 +312,6 @@ namespace sandbox
                             params.Width = vw;
                             params.Height = vh;
                             params.FovY = s_FovY;
-                            params.Camera.Position = m_Camera.GetPosition();
-                            params.Camera.Direction = m_Camera.GetDirection();
 
                             m_CurrentIteration = 0;
                             m_RenderResult = m_Pathtracer.Run(params, m_Scene, 0);
@@ -317,8 +334,6 @@ namespace sandbox
                         params.Width = vw;
                         params.Height = vh;
                         params.FovY = s_FovY;
-                        params.Camera.Position = m_Camera.GetPosition();
-                        params.Camera.Direction = m_Camera.GetDirection();
 
                         m_CurrentIteration = 0;
                         m_RenderResult = m_Pathtracer.Run(params, m_Scene, 0);
@@ -356,6 +371,17 @@ namespace sandbox
                 ImGui::EndMenu();
             }
             ImGui::EndMainMenuBar();
+
+            auto eye = m_Scene.Camera.Position;
+            auto direction = m_Scene.Camera.GetDirection();
+
+            ImGui::SetNextWindowPos({ 10.0f, 40.0f });
+            ImGui::SetNextWindowSize({ 300.0f, -1.0f });
+            ImGui::Begin("Info", nullptr, ImGuiWindowFlags_NoDecoration);
+            ImGui::InputFloat3("Eye", glm::value_ptr(eye), "%.3f", ImGuiInputTextFlags_ReadOnly);
+            ImGui::InputFloat3("Direction", glm::value_ptr(direction), "%.3f", ImGuiInputTextFlags_ReadOnly);
+            ImGui::End();
+
         }
         else if (m_State == SandboxState::Rendering)
         {
@@ -481,17 +507,12 @@ namespace sandbox
 
 	}
 
-    glm::vec3 Sandbox::Camera::GetDirection() const
+    std::tuple<float, float> Sandbox::SphericalAngles(const glm::vec3& dir)
     {
-        return glm::normalize(glm::vec3(
-            std::cos(Beta) * std::cos(Alpha),
-            std::sin(Beta),
-            std::cos(Beta) * std::sin(Alpha)
-            ));
+        const float beta = glm::acos(glm::dot(dir, glm::vec3(0.0f, 1.0f, 0.0f)));
+        //float beta = glm::atan(glm::sqrt(dir.x * dir.x + dir.z * dir.z) / dir.y);
+        float alpha = std::atan2(dir.x, dir.z);
+        return { beta, alpha };
     }
 
-    glm::vec3 sandbox::Sandbox::Camera::GetPosition() const
-    {
-        return LookAt - GetDirection() * Distance;
-    }
 }

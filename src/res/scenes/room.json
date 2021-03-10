@@ -7,6 +7,10 @@
         { "id" : "rWall", "color" : [0.9, 0.0, 0.0] },
         { "id" : "ambient", "color" : [1,1,1] }
     ],
+    "camera" : {
+        "position" : [0,0,36],
+        "lookAt" : [0,0,0]
+    },
     "meshes" : [
         {
             "file" : "res/meshes/plane.obj",

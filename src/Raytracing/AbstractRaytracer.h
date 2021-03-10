@@ -49,11 +49,6 @@ namespace rt {
 		uint32_t Width = 800;
 		uint32_t Height = 600;
 		float FovY = glm::pi<float>() / 4.0f;
-		struct 
-		{
-			glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
-			glm::vec3 Direction = { 0.0f, 0.0f, -1.0f };
-		} Camera;
 	};
 
 	class RaytracerResult

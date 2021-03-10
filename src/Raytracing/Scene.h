@@ -16,12 +16,25 @@ namespace rt {
 
 	enum class Axis : uint32_t { X = 0, Y = 1, Z = 2 };
 
-	struct Ray {
+	struct Ray 
+	{
 		glm::vec3 Origin;
 		glm::vec3 Direction;
 	};
 
 	Ray operator*(const glm::mat4& m, const Ray& r);
+
+	struct Camera
+	{
+	public:
+		glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
+
+		const glm::vec3& GetDirection() const { return m_Direction; }
+		void SetDirection(const glm::vec3& dir) { m_Direction = glm::normalize(dir); }
+
+	private:
+		glm::vec3 m_Direction = { 0.0f, 0.0f, -1.0f };
+	};
 
 
 	struct Vertex
@@ -166,9 +179,12 @@ namespace rt {
 	class Scene 
 	{
 	public:
-		void Compile();
+		
+		Camera Camera;
 		std::shared_ptr<Sampler3D> Background = nullptr;
 		std::vector<std::shared_ptr<SceneNode>> Nodes;
 		std::tuple<RaycastResult, std::shared_ptr<SceneNode>> Scene::CastRay(const Ray& ray, bool returnOnFirstHit = false, const std::vector<std::shared_ptr<SceneNode>>& avoidNodes = {}) const;
+		
+		void Compile();
 	};
 }

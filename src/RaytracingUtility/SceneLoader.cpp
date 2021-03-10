@@ -73,6 +73,26 @@ namespace rt::utility
             }
         }
 
+        if (sceneDef.contains("camera"))
+        {
+            auto camera = sceneDef["camera"];
+
+            if (camera.contains("position"))
+                camera["position"].get_to(result.Camera.Position);
+
+            if (camera.contains("lookAt"))
+            {
+                auto target = camera["lookAt"].get<glm::vec3>();
+                result.Camera.SetDirection(target - result.Camera.Position);
+            }
+            else if (camera.contains("direction"))
+            {
+                result.Camera.SetDirection(camera["direction"].get<glm::vec3>());
+            }
+
+
+        }
+
         if (sceneDef.contains("samplers"))
         {
             for (const auto& samplerDef : sceneDef["samplers"])
