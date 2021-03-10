@@ -11,7 +11,7 @@ workspace "Raytracing"
 
     filter "configurations:Release"
         defines { "NDEBUG" }
-        symbols "Off"
+        symbols "On"
         optimize "On"
         
     filter "system:windows"
@@ -124,14 +124,41 @@ project "RaytracingUtility"
 
     includedirs { 
         "vendor/glm",
-        "vendor/glad/include",
         "vendor/spdlog/include",
+        "vendor/json",
         "src/Raytracing"
     }
 
     links { "Raytracing" }
 
     files { "src/RaytracingUtility/**.cpp", "src/RaytracingUtility/**.h"  } 
+
+project "CLI"
+    location(_ACTION)
+    kind "ConsoleApp"
+    language "C++"
+    cppdialect "C++17"
+
+    objdir "bin-int/%{cfg.buildcfg}/%{prj.name}"
+    targetdir "bin/%{cfg.buildcfg}/%{prj.name}"
+    debugdir "bin/%{cfg.buildcfg}/%{prj.name}"
+
+    includedirs { 
+        "vendor/glm",
+        "vendor/spdlog/include",
+        "vendor/stb/include",
+        "vendor/json",
+        "src/Raytracing",
+        "src/RaytracingUtility"
+    }
+
+    files { "src/CLI/**.cpp", "src/CLI/**.h"  }
+
+    links { "Raytracing", "RaytracingUtility" }
+
+    postbuildcommands {
+        "{COPY} ../src/res ../bin/%{cfg.buildcfg}/%{prj.name}/res"
+    }
 
 project "Sandbox"
     location(_ACTION)
@@ -161,5 +188,5 @@ project "Sandbox"
     links { "opengl32", "Glad", "GLFW", "ImGui", "Raytracing", "RaytracingUtility" }
 
     postbuildcommands {
-        "{COPY} ../src/Sandbox/res ../bin/%{cfg.buildcfg}/%{prj.name}/res"
+        "{COPY} ../src/res ../bin/%{cfg.buildcfg}/%{prj.name}/res"
     }

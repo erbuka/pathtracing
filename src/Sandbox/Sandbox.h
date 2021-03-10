@@ -6,13 +6,13 @@
 #include <string_view>
 #include <json.hpp>
 #include <string>
+#include <filesystem>
 
 #include <Scene.h>
 #include <DebugRaytracer.h>
 #include <Pathtracer.h>
 
 #include "GLSceneRenderer.h"
-
 
 
 struct GLFWwindow;
@@ -83,7 +83,7 @@ namespace sandbox
 
 		SandboxState m_State = SandboxState::Idle;
 
-		std::vector<nlohmann::json> m_SceneDefs;
+		std::vector<std::filesystem::path> m_SceneFiles;
 
 		rt::Scene m_Scene;
 

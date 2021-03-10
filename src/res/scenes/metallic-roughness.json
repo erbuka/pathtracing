@@ -1,0 +1,1403 @@
+{
+    "name": "Metalllic/Roughness",
+    "background": {
+        "color": "background"
+    },
+    "samplers": [
+        {
+            "id": "red",
+            "color": [
+                0.9,
+                0.1,
+                0.1
+            ]
+        },
+        {
+            "id": "background",
+            "type": "equirectangular",
+            "file": "res/textures/bg0.hdr"
+        },
+        {
+            "id": "s0",
+            "color": [
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "id": "s1",
+            "color": [
+                0.1,
+                0,
+                0
+            ]
+        },
+        {
+            "id": "s2",
+            "color": [
+                0.2,
+                0,
+                0
+            ]
+        },
+        {
+            "id": "s3",
+            "color": [
+                0.3,
+                0,
+                0
+            ]
+        },
+        {
+            "id": "s4",
+            "color": [
+                0.4,
+                0,
+                0
+            ]
+        },
+        {
+            "id": "s5",
+            "color": [
+                0.5,
+                0,
+                0
+            ]
+        },
+        {
+            "id": "s6",
+            "color": [
+                0.6,
+                0,
+                0
+            ]
+        },
+        {
+            "id": "s7",
+            "color": [
+                0.7,
+                0,
+                0
+            ]
+        },
+        {
+            "id": "s8",
+            "color": [
+                0.8,
+                0,
+                0
+            ]
+        },
+        {
+            "id": "s9",
+            "color": [
+                0.9,
+                0,
+                0
+            ]
+        }
+    ],
+    "nodes": [
+        {
+            "translate": [
+                -15,
+                -15,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s0",
+                "metallic": "s0"
+            }
+        },
+        {
+            "translate": [
+                -15,
+                -12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s0",
+                "metallic": "s1"
+            }
+        },
+        {
+            "translate": [
+                -15,
+                -9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s0",
+                "metallic": "s2"
+            }
+        },
+        {
+            "translate": [
+                -15,
+                -6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s0",
+                "metallic": "s3"
+            }
+        },
+        {
+            "translate": [
+                -15,
+                -3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s0",
+                "metallic": "s4"
+            }
+        },
+        {
+            "translate": [
+                -15,
+                0,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s0",
+                "metallic": "s5"
+            }
+        },
+        {
+            "translate": [
+                -15,
+                3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s0",
+                "metallic": "s6"
+            }
+        },
+        {
+            "translate": [
+                -15,
+                6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s0",
+                "metallic": "s7"
+            }
+        },
+        {
+            "translate": [
+                -15,
+                9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s0",
+                "metallic": "s8"
+            }
+        },
+        {
+            "translate": [
+                -15,
+                12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s0",
+                "metallic": "s9"
+            }
+        },
+        {
+            "translate": [
+                -12,
+                -15,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s1",
+                "metallic": "s0"
+            }
+        },
+        {
+            "translate": [
+                -12,
+                -12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s1",
+                "metallic": "s1"
+            }
+        },
+        {
+            "translate": [
+                -12,
+                -9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s1",
+                "metallic": "s2"
+            }
+        },
+        {
+            "translate": [
+                -12,
+                -6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s1",
+                "metallic": "s3"
+            }
+        },
+        {
+            "translate": [
+                -12,
+                -3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s1",
+                "metallic": "s4"
+            }
+        },
+        {
+            "translate": [
+                -12,
+                0,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s1",
+                "metallic": "s5"
+            }
+        },
+        {
+            "translate": [
+                -12,
+                3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s1",
+                "metallic": "s6"
+            }
+        },
+        {
+            "translate": [
+                -12,
+                6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s1",
+                "metallic": "s7"
+            }
+        },
+        {
+            "translate": [
+                -12,
+                9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s1",
+                "metallic": "s8"
+            }
+        },
+        {
+            "translate": [
+                -12,
+                12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s1",
+                "metallic": "s9"
+            }
+        },
+        {
+            "translate": [
+                -9,
+                -15,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s2",
+                "metallic": "s0"
+            }
+        },
+        {
+            "translate": [
+                -9,
+                -12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s2",
+                "metallic": "s1"
+            }
+        },
+        {
+            "translate": [
+                -9,
+                -9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s2",
+                "metallic": "s2"
+            }
+        },
+        {
+            "translate": [
+                -9,
+                -6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s2",
+                "metallic": "s3"
+            }
+        },
+        {
+            "translate": [
+                -9,
+                -3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s2",
+                "metallic": "s4"
+            }
+        },
+        {
+            "translate": [
+                -9,
+                0,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s2",
+                "metallic": "s5"
+            }
+        },
+        {
+            "translate": [
+                -9,
+                3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s2",
+                "metallic": "s6"
+            }
+        },
+        {
+            "translate": [
+                -9,
+                6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s2",
+                "metallic": "s7"
+            }
+        },
+        {
+            "translate": [
+                -9,
+                9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s2",
+                "metallic": "s8"
+            }
+        },
+        {
+            "translate": [
+                -9,
+                12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s2",
+                "metallic": "s9"
+            }
+        },
+        {
+            "translate": [
+                -6,
+                -15,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s3",
+                "metallic": "s0"
+            }
+        },
+        {
+            "translate": [
+                -6,
+                -12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s3",
+                "metallic": "s1"
+            }
+        },
+        {
+            "translate": [
+                -6,
+                -9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s3",
+                "metallic": "s2"
+            }
+        },
+        {
+            "translate": [
+                -6,
+                -6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s3",
+                "metallic": "s3"
+            }
+        },
+        {
+            "translate": [
+                -6,
+                -3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s3",
+                "metallic": "s4"
+            }
+        },
+        {
+            "translate": [
+                -6,
+                0,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s3",
+                "metallic": "s5"
+            }
+        },
+        {
+            "translate": [
+                -6,
+                3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s3",
+                "metallic": "s6"
+            }
+        },
+        {
+            "translate": [
+                -6,
+                6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s3",
+                "metallic": "s7"
+            }
+        },
+        {
+            "translate": [
+                -6,
+                9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s3",
+                "metallic": "s8"
+            }
+        },
+        {
+            "translate": [
+                -6,
+                12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s3",
+                "metallic": "s9"
+            }
+        },
+        {
+            "translate": [
+                -3,
+                -15,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s4",
+                "metallic": "s0"
+            }
+        },
+        {
+            "translate": [
+                -3,
+                -12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s4",
+                "metallic": "s1"
+            }
+        },
+        {
+            "translate": [
+                -3,
+                -9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s4",
+                "metallic": "s2"
+            }
+        },
+        {
+            "translate": [
+                -3,
+                -6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s4",
+                "metallic": "s3"
+            }
+        },
+        {
+            "translate": [
+                -3,
+                -3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s4",
+                "metallic": "s4"
+            }
+        },
+        {
+            "translate": [
+                -3,
+                0,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s4",
+                "metallic": "s5"
+            }
+        },
+        {
+            "translate": [
+                -3,
+                3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s4",
+                "metallic": "s6"
+            }
+        },
+        {
+            "translate": [
+                -3,
+                6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s4",
+                "metallic": "s7"
+            }
+        },
+        {
+            "translate": [
+                -3,
+                9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s4",
+                "metallic": "s8"
+            }
+        },
+        {
+            "translate": [
+                -3,
+                12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s4",
+                "metallic": "s9"
+            }
+        },
+        {
+            "translate": [
+                0,
+                -15,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s5",
+                "metallic": "s0"
+            }
+        },
+        {
+            "translate": [
+                0,
+                -12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s5",
+                "metallic": "s1"
+            }
+        },
+        {
+            "translate": [
+                0,
+                -9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s5",
+                "metallic": "s2"
+            }
+        },
+        {
+            "translate": [
+                0,
+                -6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s5",
+                "metallic": "s3"
+            }
+        },
+        {
+            "translate": [
+                0,
+                -3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s5",
+                "metallic": "s4"
+            }
+        },
+        {
+            "translate": [
+                0,
+                0,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s5",
+                "metallic": "s5"
+            }
+        },
+        {
+            "translate": [
+                0,
+                3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s5",
+                "metallic": "s6"
+            }
+        },
+        {
+            "translate": [
+                0,
+                6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s5",
+                "metallic": "s7"
+            }
+        },
+        {
+            "translate": [
+                0,
+                9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s5",
+                "metallic": "s8"
+            }
+        },
+        {
+            "translate": [
+                0,
+                12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s5",
+                "metallic": "s9"
+            }
+        },
+        {
+            "translate": [
+                3,
+                -15,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s6",
+                "metallic": "s0"
+            }
+        },
+        {
+            "translate": [
+                3,
+                -12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s6",
+                "metallic": "s1"
+            }
+        },
+        {
+            "translate": [
+                3,
+                -9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s6",
+                "metallic": "s2"
+            }
+        },
+        {
+            "translate": [
+                3,
+                -6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s6",
+                "metallic": "s3"
+            }
+        },
+        {
+            "translate": [
+                3,
+                -3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s6",
+                "metallic": "s4"
+            }
+        },
+        {
+            "translate": [
+                3,
+                0,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s6",
+                "metallic": "s5"
+            }
+        },
+        {
+            "translate": [
+                3,
+                3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s6",
+                "metallic": "s6"
+            }
+        },
+        {
+            "translate": [
+                3,
+                6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s6",
+                "metallic": "s7"
+            }
+        },
+        {
+            "translate": [
+                3,
+                9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s6",
+                "metallic": "s8"
+            }
+        },
+        {
+            "translate": [
+                3,
+                12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s6",
+                "metallic": "s9"
+            }
+        },
+        {
+            "translate": [
+                6,
+                -15,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s7",
+                "metallic": "s0"
+            }
+        },
+        {
+            "translate": [
+                6,
+                -12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s7",
+                "metallic": "s1"
+            }
+        },
+        {
+            "translate": [
+                6,
+                -9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s7",
+                "metallic": "s2"
+            }
+        },
+        {
+            "translate": [
+                6,
+                -6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s7",
+                "metallic": "s3"
+            }
+        },
+        {
+            "translate": [
+                6,
+                -3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s7",
+                "metallic": "s4"
+            }
+        },
+        {
+            "translate": [
+                6,
+                0,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s7",
+                "metallic": "s5"
+            }
+        },
+        {
+            "translate": [
+                6,
+                3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s7",
+                "metallic": "s6"
+            }
+        },
+        {
+            "translate": [
+                6,
+                6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s7",
+                "metallic": "s7"
+            }
+        },
+        {
+            "translate": [
+                6,
+                9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s7",
+                "metallic": "s8"
+            }
+        },
+        {
+            "translate": [
+                6,
+                12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s7",
+                "metallic": "s9"
+            }
+        },
+        {
+            "translate": [
+                9,
+                -15,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s8",
+                "metallic": "s0"
+            }
+        },
+        {
+            "translate": [
+                9,
+                -12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s8",
+                "metallic": "s1"
+            }
+        },
+        {
+            "translate": [
+                9,
+                -9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s8",
+                "metallic": "s2"
+            }
+        },
+        {
+            "translate": [
+                9,
+                -6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s8",
+                "metallic": "s3"
+            }
+        },
+        {
+            "translate": [
+                9,
+                -3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s8",
+                "metallic": "s4"
+            }
+        },
+        {
+            "translate": [
+                9,
+                0,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s8",
+                "metallic": "s5"
+            }
+        },
+        {
+            "translate": [
+                9,
+                3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s8",
+                "metallic": "s6"
+            }
+        },
+        {
+            "translate": [
+                9,
+                6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s8",
+                "metallic": "s7"
+            }
+        },
+        {
+            "translate": [
+                9,
+                9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s8",
+                "metallic": "s8"
+            }
+        },
+        {
+            "translate": [
+                9,
+                12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s8",
+                "metallic": "s9"
+            }
+        },
+        {
+            "translate": [
+                12,
+                -15,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s9",
+                "metallic": "s0"
+            }
+        },
+        {
+            "translate": [
+                12,
+                -12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s9",
+                "metallic": "s1"
+            }
+        },
+        {
+            "translate": [
+                12,
+                -9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s9",
+                "metallic": "s2"
+            }
+        },
+        {
+            "translate": [
+                12,
+                -6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s9",
+                "metallic": "s3"
+            }
+        },
+        {
+            "translate": [
+                12,
+                -3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s9",
+                "metallic": "s4"
+            }
+        },
+        {
+            "translate": [
+                12,
+                0,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s9",
+                "metallic": "s5"
+            }
+        },
+        {
+            "translate": [
+                12,
+                3,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s9",
+                "metallic": "s6"
+            }
+        },
+        {
+            "translate": [
+                12,
+                6,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s9",
+                "metallic": "s7"
+            }
+        },
+        {
+            "translate": [
+                12,
+                9,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s9",
+                "metallic": "s8"
+            }
+        },
+        {
+            "translate": [
+                12,
+                12,
+                0
+            ],
+            "shape": "sphere",
+            "material": {
+                "albedo": "red",
+                "roughness": "s9",
+                "metallic": "s9"
+            }
+        }
+    ]
+}

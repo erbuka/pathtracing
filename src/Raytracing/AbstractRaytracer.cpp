@@ -3,11 +3,13 @@
 #include <optional>
 #include <random>
 
+#include <spdlog\spdlog.h>
+
 namespace rt {
 	std::shared_ptr<RaytracerResult> AbstractRaytracer::Run(const ViewParameters& params, Scene& scene, size_t iterations)
 	{
 		scene.Compile();
-		return std::make_shared<RaytracerResult>(params, [&, params](RaytracerResult& self) -> void {
+		return std::make_shared<RaytracerResult>([&, iterations, params](RaytracerResult& self) -> void {
 			
 			std::mt19937 rng;
 			std::uniform_real_distribution<float> r01(0.0f, 1.0f);
@@ -29,6 +31,7 @@ namespace rt {
 
 			for (auto it = nextIteration(); it.has_value() && !self.IsInterrupted(); it = nextIteration())
 			{
+
 				self.Iteration = it.value();
 
 				auto nextScanLine = [&, current = uint32_t(0)]() mutable -> std::optional<uint32_t> {
@@ -84,6 +87,8 @@ namespace rt {
 
 				std::vector<std::thread> threads(params.NumThreads);
 
+
+
 				for (size_t i = 0; i < threads.size(); ++i)
 					threads[i] = std::thread(threadFunc);
 
@@ -93,22 +98,23 @@ namespace rt {
 				// Iteration End
 				self.OnIterationEnd(image, self.Iteration);
 
+
 			}
 
 			self.OnEnd(image);
+
 
 		});
 
 	}
 	
-	RaytracerResult::RaytracerResult(const ViewParameters& viewParams, const Fn& fn)
+	RaytracerResult::RaytracerResult(const Fn& fn)
 	{
 		m_Thread = std::thread([&, fn] { fn(*this); });
 	}
 
 	RaytracerResult::~RaytracerResult()
 	{
-		//Interrupt();
 		if (m_Thread.joinable())
 			m_Thread.join();
 	}

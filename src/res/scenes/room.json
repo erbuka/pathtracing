@@ -1,11 +1,5 @@
 {
     "name" : "Room",
-    "camera" : {
-        "position" : [0,0,-3],
-        "lookAt" : [0,0,0]
-    },
-    "background" : {
-    },
     "samplers" : [
         { "id" : "red", "color" : [1.0, 0.1, 0.1] },
         { "id" : "green", "color" : [0.1, 1.0, 0.1] },

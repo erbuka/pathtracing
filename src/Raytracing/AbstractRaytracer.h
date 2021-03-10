@@ -63,7 +63,7 @@ namespace rt {
 		std::atomic<float> Progress = 0.0f;
 		std::atomic_uint64_t Iteration = 0;
 
-		RaytracerResult(const ViewParameters& viewParams, const Fn& fn);
+		RaytracerResult(const Fn& fn);
 		~RaytracerResult();
 		
 		void Wait() { m_Thread.join(); }
