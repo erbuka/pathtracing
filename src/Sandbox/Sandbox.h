@@ -1,9 +1,11 @@
 #include <cinttypes>
 #include <vector>
+#include <chrono>
 #include <future>
 #include <map>
 #include <string_view>
 #include <json.hpp>
+#include <string>
 
 #include <Scene.h>
 #include <DebugRaytracer.h>
@@ -25,6 +27,14 @@ namespace sandbox
 		Idle,
 		Rendering,
 		Result
+	};
+
+	struct Toast
+	{
+		std::string Title;
+		std::string Message;
+		std::chrono::milliseconds EndTime;
+		Toast(const std::string& title, const std::string& message);
 	};
 
 	class Sandbox {
@@ -50,15 +60,6 @@ namespace sandbox
 		glm::vec2 GetMousePostion() const;
 
 	private:
-
-		void Initialize();
-		void Update();
-		void RenderGUI();
-
-		void LoadSceneDefinitions();
-		void LoadScene(const nlohmann::json& sceneDef);
-
-		void UpdateTexture();
 
 		struct Camera {
 			float MoveSpeed = 1.5f;
@@ -100,12 +101,24 @@ namespace sandbox
 		GLFWwindow* m_Window;
 		std::vector<uint32_t> m_Pixels;
 
+		std::vector<Toast> m_Toasts;
+
 		ImFont* m_Font;
 
 		bool m_Running = false;
 		bool m_TextureNeedsUpdate = false;
 		size_t m_CurrentIteration = 0;
 
+
+		void Initialize();
+		void Update();
+		void RenderGUI();
+
+		void LoadSceneDefinitions();
+		void LoadScene(const nlohmann::json& sceneDef);
+
+		void UpdateTexture();
+		void SaveImage();
 
 	};
 }

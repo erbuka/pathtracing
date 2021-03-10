@@ -1,7 +1,6 @@
 #include "Sandbox.h"
 
 
-#include <chrono>
 #include <fstream>
 #include <filesystem>
 #include <regex>
@@ -20,7 +19,8 @@
 
 #include <MeshLoader.h>
 
-
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
 
 #define RT_SANDBOX(window) ((Sandbox*)glfwGetWindowUserPointer(window))
 
@@ -52,6 +52,14 @@ namespace sandbox
 {
 
     static constexpr float s_FovY = glm::pi<float>() / 4.0f;
+
+    Toast::Toast(const std::string& title, const std::string& message) :
+        Title(title),
+        Message(message)
+    {
+        EndTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()) +
+            std::chrono::milliseconds(2500);
+    }
 
 
     static void GLFW_CursorPos(GLFWwindow* window, double xpos, double ypos)
@@ -109,7 +117,7 @@ namespace sandbox
         }
 
         /* Create a windowed mode window and its OpenGL context */
-        m_Window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+        m_Window = glfwCreateWindow(1280, 768, "Hello World", NULL, NULL);
         if (!m_Window)
         {
             glfwTerminate();
@@ -272,6 +280,11 @@ namespace sandbox
 
     void sandbox::Sandbox::RenderGUI()
     {
+
+        m_Toasts.erase(std::remove_if(m_Toasts.begin(), m_Toasts.end(), [](const Toast& t) {
+            return t.EndTime < std::chrono::system_clock::now().time_since_epoch();
+        }), m_Toasts.end());
+
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -365,22 +378,26 @@ namespace sandbox
         else if (m_State == SandboxState::Rendering)
         {
             const auto iteration = m_RenderResult->Iteration.load();
-            ImGui::SetNextWindowPos({ 0.0f, 0.0f });
-            //ImGui::Begin("Test", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
-            ImGui::Begin("Test", nullptr);
-            ImGui::Text("Rendering");
-            ImGui::ProgressBar(m_RenderResult->Progress);
+            ImGui::SetNextWindowPos({ 10.0f, 10.0f });
+            ImGui::SetNextWindowSize({ 300.0f, -1.0f });
+            ImGui::Begin("Render", nullptr, ImGuiWindowFlags_NoDecoration);
             ImGui::Text("Iteration #%d", iteration);
-            if (ImGui::Button("Interrupt")) {
+            ImGui::ProgressBar(m_RenderResult->Progress);
+            if (ImGui::Button("Interrupt", { -1.0f, 0.0f })) {
                 m_RenderResult->Interrupt();
             }
             ImGui::End();
         }
         else if (m_State == SandboxState::Result)
         {
-            ImGui::SetNextWindowPos({ 0.0f, 0.0f });
-            ImGui::Begin("Test", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
-            if (ImGui::Button("Back"))
+            ImGui::SetNextWindowPos({ 10.0f, 10.0f });
+            ImGui::SetNextWindowSize({ 300.0f, -1.0f });
+            ImGui::Begin("Render", nullptr, ImGuiWindowFlags_NoDecoration);
+            if (ImGui::Button("Save", { -1.0f, 0.0f }))
+            {
+                SaveImage();
+            }
+            if (ImGui::Button("Back", { -1.0f, 0.0f }))
             {
                 m_RenderResult = nullptr;
                 m_State = SandboxState::Idle;
@@ -388,6 +405,24 @@ namespace sandbox
             ImGui::End();
         }
 
+        const auto [width, height] = GetWindowSize();
+        constexpr float toastWidth = 350.0f;
+        constexpr float toastPadding = 10.0f;
+
+        ImVec2 pos = { width - (toastWidth + toastPadding), toastPadding };
+        size_t index = 0;
+        for (const auto& toast : m_Toasts)
+        {
+            std::stringstream ss;
+            ss << "Toast-" << index++;
+            ImGui::SetNextWindowSize({ toastWidth, -1.0f });
+            ImGui::SetNextWindowPos(pos);
+            ImGui::Begin(ss.str().c_str(), nullptr, ImGuiWindowFlags_NoDecoration);
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), toast.Title.c_str());
+            ImGui::TextWrapped(toast.Message.c_str());
+            pos.y += ImGui::GetWindowSize().y + toastPadding;
+            ImGui::End();
+        }
 
         ImGui::PopFont();
 
@@ -584,6 +619,25 @@ namespace sandbox
             m_TextureNeedsUpdate = false;
         }
     }
+
+	void sandbox::Sandbox::SaveImage()
+	{
+        const size_t w = m_Image.GetWidth();
+        const size_t h = m_Image.GetHeight();
+        std::vector<uint32_t> data;
+        auto now = std::chrono::system_clock::now();
+        std::stringstream path;
+
+        data.resize(w * h);
+        glBindTexture(GL_TEXTURE_2D, m_RenderTexture);
+        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.data());
+        
+        path << "res/screenshots/" << std::hex << now.time_since_epoch().count() << ".png";
+        stbi_write_png(path.str().c_str(), w, h, 4, data.data(), 0);
+
+        m_Toasts.emplace_back("Screenshot Saved", path.str());
+
+	}
 
     glm::vec3 Sandbox::Camera::GetDirection() const
     {
