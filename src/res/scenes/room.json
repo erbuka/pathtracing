@@ -11,7 +11,7 @@
         { "id" : "r10", "color" : [1.0, 0.0, 0.0] }
     ],
     "camera" : {
-        "position" : [0,0,36],
+        "position" : [0,0,29],
         "lookAt" : [0,0,0]
     },
     "meshes" : [

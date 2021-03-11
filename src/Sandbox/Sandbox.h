@@ -14,7 +14,6 @@
 
 #include "GLSceneRenderer.h"
 
-
 struct GLFWwindow;
 struct ImFont;
 
