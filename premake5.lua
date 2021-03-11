@@ -100,7 +100,7 @@ project "ImGui"
         "vendor/imgui/*.cpp",
         "vendor/imgui/backends/imgui_impl_glfw.cpp",
         "vendor/imgui/backends/imgui_impl_opengl3.cpp",
-     }
+    }
 
 project "Raytracing"
     location(_ACTION)
@@ -169,6 +169,9 @@ project "CLI"
     postbuildcommands {
         "{COPY} ../src/res ../bin/%{cfg.buildcfg}/%{prj.name}/res"
     }
+
+    filter "system:linux"
+        links { "pthread" }
 
 project "Sandbox"
     location(_ACTION)
