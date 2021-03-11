@@ -165,8 +165,8 @@ namespace rt {
 	public:
 
 		glm::mat4 Transform = glm::identity<glm::mat4>();
-		Material Material;
-		std::shared_ptr<Shape> Shape = nullptr;
+		rt::Material Material;
+		std::shared_ptr<rt::Shape> Shape = nullptr;
 
 		void LoadIdentity();
 		void Translate(const glm::vec3& t);
@@ -180,7 +180,7 @@ namespace rt {
 	{
 	public:
 		
-		Camera Camera;
+		rt::Camera Camera;
 		std::shared_ptr<Sampler3D> Background = nullptr;
 		std::vector<std::shared_ptr<SceneNode>> Nodes;
 		std::tuple<RaycastResult, std::shared_ptr<SceneNode>> CastRay(const Ray& ray, bool returnOnFirstHit = false, const std::vector<std::shared_ptr<SceneNode>>& avoidNodes = {}) const;
