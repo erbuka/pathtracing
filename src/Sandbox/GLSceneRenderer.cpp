@@ -71,7 +71,7 @@ namespace sandbox
 				const auto& vao = m_Vao[mesh->ID];
 
 				m_Nodes.push_back({ 
-					node->Transform, 
+					node->GetTransform(), 
 					s_Colors[idx % s_Colors.size()],
 					vao.ID,
 					vao.VertexCount
@@ -81,7 +81,7 @@ namespace sandbox
 			else if (sphere)
 			{
 				m_Nodes.push_back({ 
-					node->Transform,
+					node->GetTransform(),
 					s_Colors[idx % s_Colors.size()],
 					m_ShereVao.ID,
 					m_ShereVao.VertexCount

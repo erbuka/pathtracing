@@ -22,13 +22,25 @@ namespace rt {
 	class EventEmitter
 	{
 	public:
+		
 		using HandlerFn = std::function<void(Args...)>;
+		template<typename T>
+		using MemberHandlerFn = void(T::*)(Args...);
+
 	private:
 		std::list<HandlerFn> m_Handlers;
 	public:
 		void Subscribe(const HandlerFn& fn)
 		{
 			m_Handlers.push_back(fn);
+		}
+
+		template<typename T>
+		void Subscribe(T* instance, MemberHandlerFn<T> fn)
+		{
+			Subscribe([instance, fn](Args&&... args) {
+				(instance->*fn)(std::forward<Args>(args)...);
+			});
 		}
 
 		void Emit(Args&&... evt) 

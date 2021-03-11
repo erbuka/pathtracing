@@ -162,9 +162,15 @@ namespace rt {
 
 	class SceneNode
 	{
+
+	private:
+		glm::mat4 m_Transform = glm::identity<glm::mat4>();
+		glm::mat4 m_InvTransform = glm::identity<glm::mat4>();
+		glm::mat4 m_NormalTransform = glm::identity<glm::mat4>();
+		void UpdateMatrices();
+
 	public:
 
-		glm::mat4 Transform = glm::identity<glm::mat4>();
 		rt::Material Material;
 		std::shared_ptr<rt::Shape> Shape = nullptr;
 
@@ -172,8 +178,11 @@ namespace rt {
 		void Translate(const glm::vec3& t);
 		void Rotate(const glm::vec3& axis, float angle);
 		void Scale(const glm::vec3& s);
+		void Multiply(const glm::mat4& mat);
 
-		
+		const glm::mat4& GetTransform() const { return m_Transform; }
+		const glm::mat4& GetInverseTransform() const { return m_InvTransform; }
+		const glm::mat4& GetNormalTransform() const { return m_NormalTransform; }
 	};
 	
 	class Scene 

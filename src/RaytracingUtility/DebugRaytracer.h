@@ -10,11 +10,14 @@ namespace rt::utility
 
 		enum class Mode
 		{
-			Color,
+			Albedo,
+			Emission,
+			Roughness,
+			Metallic,
 			Normal
 		};
 
-		Mode CurrentMode = Mode::Color;
+		Mode CurrentMode = Mode::Albedo;
 
 		glm::vec3 Trace(const ViewParameters& params, const Ray& ray, const Scene& scene) override;
 

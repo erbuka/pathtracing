@@ -112,6 +112,8 @@ namespace sandbox
 
 		void UpdateTexture();
 		void SaveImage();
+		
+		void OnIterationEndHandler(const rt::Image& image, size_t iteration);
 
 		std::tuple<float, float> SphericalAngles(const glm::vec3& dir);
 

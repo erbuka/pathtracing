@@ -154,10 +154,10 @@ namespace rt::utility
                 if (nodeDef.contains("rotate"))
                 {
                     glm::vec3 angles = nodeDef["rotate"].get<glm::vec3>();
-                    node->Transform *=
+                    node->Multiply(
                         glm::rotate(glm::radians(angles.z), glm::vec3(0.0f, 0.0f, 1.0f)) *
                         glm::rotate(glm::radians(angles.y), glm::vec3(0.0f, 1.0f, 0.0f)) *
-                        glm::rotate(glm::radians(angles.x), glm::vec3(1.0f, 0.0f, 0.0f));
+                        glm::rotate(glm::radians(angles.x), glm::vec3(1.0f, 0.0f, 0.0f)));
                 }
 
                 if (nodeDef.contains("scale"))

@@ -13,25 +13,21 @@ namespace rt::utility
 		{
 			switch (CurrentMode)
 			{
-			case DebugRaytracer::Mode::Color:
-				return node->Material.Albedo->Sample(result.UV) + node->Material.Emission->Sample(result.UV);
+			case DebugRaytracer::Mode::Albedo:
+				return node->Material.Albedo->Sample(result.UV);
+			case DebugRaytracer::Mode::Emission:
+				return node->Material.Emission->Sample(result.UV);
+			case DebugRaytracer::Mode::Metallic:
+				return node->Material.Metallic->Sample(result.UV);
+			case DebugRaytracer::Mode::Roughness:
+				return node->Material.Roughness->Sample(result.UV);
 			case DebugRaytracer::Mode::Normal:
 				return result.Normal * 0.5f + 0.5f;
-			default:
-				break;
 			}
 		}
 		else
 		{
-			switch (CurrentMode)
-			{
-			case DebugRaytracer::Mode::Color:
-				return scene.Background ? scene.Background->Sample(ray.Direction) : glm::vec3(0.0f);
-			case DebugRaytracer::Mode::Normal:
-				return glm::vec3(0.0f);
-			default:
-				break;
-			}
+			return scene.Background ? scene.Background->Sample(ray.Direction) : glm::vec3(0.0f);
 		}
 	}
 }

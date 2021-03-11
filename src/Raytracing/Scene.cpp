@@ -288,24 +288,40 @@ namespace rt
 		}
 	}
 
+	void SceneNode::UpdateMatrices()
+	{
+		m_InvTransform = glm::inverse(m_Transform);
+		m_NormalTransform = glm::transpose(m_InvTransform);
+	}
+
 	void SceneNode::LoadIdentity()
 	{
-		Transform = glm::identity<glm::mat4>();
+		m_Transform = glm::identity<glm::mat4>();
+		UpdateMatrices();
 	}
 
 	void SceneNode::Translate(const glm::vec3& t)
 	{
-		Transform *= glm::translate(t);
+		m_Transform *= glm::translate(t);
+		UpdateMatrices();
 	}
 
 	void SceneNode::Rotate(const glm::vec3& axis, float angle)
 	{
-		Transform *= glm::rotate(angle, axis);
+		m_Transform *= glm::rotate(angle, axis);
+		UpdateMatrices();
 	}
 
 	void SceneNode::Scale(const glm::vec3& s)
 	{
-		Transform *= glm::scale(s);
+		m_Transform *= glm::scale(s);
+		UpdateMatrices();
+	}
+
+	void SceneNode::Multiply(const glm::mat4& mat)
+	{
+		m_Transform *= mat;
+		UpdateMatrices();
 	}
 
 	void Scene::Compile()
@@ -332,13 +348,13 @@ namespace rt
 			// Ray is transformed by the inverse tranform of the node
 			// The intersection test is performed in local coordinates, because
 			// transforming the ray is faster than transforming all the vertices
-			auto r0 = node->Shape->Intersect(glm::inverse(node->Transform) * ray);
+			auto r0 = node->Shape->Intersect(node->GetInverseTransform() * ray);
 			if (r0.Hit)
 			{
 
 				// Transform to world coordinates
-				r0.Position = node->Transform * glm::vec4(r0.Position, 1.0f);
-				r0.Normal = glm::normalize(node->Transform * glm::vec4(r0.Normal, 0.0f));
+				r0.Position = node->GetTransform() * glm::vec4(r0.Position, 1.0f);
+				r0.Normal = glm::normalize(node->GetNormalTransform() * glm::vec4(r0.Normal, 0.0f));
 				
 				if (returnOnFirstHit)
 					return { r0, node };

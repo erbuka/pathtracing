@@ -301,7 +301,7 @@ namespace sandbox
                     for (uint32_t s : {64, 128, 256, 512})
                     {
                         std::stringstream ss;
-                        ss << "Pathtracing (" << s << " px)";
+                        ss << s << " px";
 
                         if (ImGui::MenuItem(ss.str().c_str()))
                         {
@@ -325,7 +325,7 @@ namespace sandbox
                         }
                     }
 
-                    if (ImGui::MenuItem("Pathtracing (full size)"))
+                    if (ImGui::MenuItem("Full size"))
                     {
                         rt::ViewParameters params;
                         auto [vw, vh] = GetWindowSize();
@@ -346,6 +346,24 @@ namespace sandbox
                         m_State = SandboxState::Rendering;
                     }
                     
+
+                    ImGui::Separator();
+
+                    if (ImGui::MenuItem("Debug - Normals"))
+                    {
+                        rt::ViewParameters params;
+                        auto [vw, vh] = GetWindowSize();
+
+                        params.NumThreads = 4;
+                        params.Width = vw;
+                        params.Height = vh;
+                        params.FovY = s_FovY;
+                        m_Debug.CurrentMode = rt::utility::DebugRaytracer::Mode::Normal;
+                        m_RenderResult = m_Debug.Run(params, m_Scene, 0);
+                        m_RenderResult->OnIterationEnd.Subscribe(this, &Sandbox::OnIterationEndHandler);
+                        m_State = SandboxState::Rendering;
+                    }
+
                     ImGui::EndMenu();
                 }
                 if (ImGui::BeginMenu("Load Scene"))
@@ -506,6 +524,14 @@ namespace sandbox
         m_Toasts.emplace_back("Screenshot Saved", path.str());
 
 	}
+
+    void sandbox::Sandbox::OnIterationEndHandler(const rt::Image& image, size_t iteration)
+    {
+        std::lock_guard guard(m_ImageMutex);
+        m_Image = image;
+        m_TextureNeedsUpdate = true;
+        m_CurrentIteration = iteration + 1;
+    }
 
     std::tuple<float, float> Sandbox::SphericalAngles(const glm::vec3& dir)
     {
