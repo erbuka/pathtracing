@@ -42,7 +42,7 @@ namespace rt {
 	{
 	public:
 
-		SampleMode SampleMode = SampleMode::Linear;
+		rt::SampleMode SampleMode = rt::SampleMode::Linear;
 
 		Image();
 		Image(size_t width, size_t height);
