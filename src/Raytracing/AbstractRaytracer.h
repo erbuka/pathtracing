@@ -5,6 +5,7 @@
 #include <future>
 #include <atomic>
 #include <optional>
+#include <list>
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
@@ -20,6 +21,8 @@ namespace rt {
 	template<typename... Args>
 	class EventEmitter
 	{
+	private:
+		std::list<HandlerFn> m_Handlers;
 	public:
 		using HandlerFn = std::function<void(Args...)>;
 
@@ -39,8 +42,6 @@ namespace rt {
 			Emit(std::forward<Args>(evt)...);
 		}
 
-	private:
-		std::list<HandlerFn> m_Handlers;
 	};
 
 	struct ViewParameters 
