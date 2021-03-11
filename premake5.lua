@@ -202,7 +202,13 @@ project "Sandbox"
 
     files { "src/Sandbox/**.cpp", "src/Sandbox/**.h"  }
 
-    links { "opengl32", "Glad", "GLFW", "ImGui", "Raytracing", "RaytracingUtility" }
+    links { "Glad", "GLFW", "ImGui", "Raytracing", "RaytracingUtility" }
+
+    filter "system:windows"
+        links { "opengl32" }
+    
+    filter "system:linux"
+        links { "gl" }
 
     postbuildcommands {
         "{COPY} ../src/res ../bin/%{cfg.buildcfg}/%{prj.name}/res"
