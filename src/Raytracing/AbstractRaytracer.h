@@ -21,11 +21,11 @@ namespace rt {
 	template<typename... Args>
 	class EventEmitter
 	{
+	public:
+		using HandlerFn = std::function<void(Args...)>;
 	private:
 		std::list<HandlerFn> m_Handlers;
 	public:
-		using HandlerFn = std::function<void(Args...)>;
-
 		void Subscribe(const HandlerFn& fn)
 		{
 			m_Handlers.push_back(fn);
