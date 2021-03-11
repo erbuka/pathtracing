@@ -3,8 +3,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include <glm\glm.hpp>
-#include <glm\ext.hpp>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 namespace rt
 {

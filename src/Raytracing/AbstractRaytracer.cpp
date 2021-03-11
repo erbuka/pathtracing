@@ -3,7 +3,7 @@
 #include <optional>
 #include <random>
 
-#include <spdlog\spdlog.h>
+#include <spdlog/spdlog.h>
 
 namespace rt {
 	std::shared_ptr<RaytracerResult> AbstractRaytracer::Run(const ViewParameters& params, Scene& scene, size_t iterations)

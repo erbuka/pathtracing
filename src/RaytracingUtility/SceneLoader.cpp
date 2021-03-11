@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <Sampler.h>
-#include <spdlog\spdlog.h>
+#include <spdlog/spdlog.h>
 
 namespace glm {
     void to_json(nlohmann::json& j, const glm::vec3& v) {

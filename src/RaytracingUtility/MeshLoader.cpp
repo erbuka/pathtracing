@@ -1,8 +1,8 @@
 #include "MeshLoader.h"
 
 #include <fstream>
-#include <spdlog\spdlog.h>
-#include <glm\glm.hpp>
+#include <spdlog/spdlog.h>
+#include <glm/glm.hpp>
 #include <regex>
 
 #include "Scene.h"

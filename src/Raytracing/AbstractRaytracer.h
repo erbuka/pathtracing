@@ -6,8 +6,8 @@
 #include <atomic>
 #include <optional>
 
-#include <glm\glm.hpp>
-#include <glm\ext.hpp>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 #include "Scene.h"
 #include "Sampler.h"

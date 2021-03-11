@@ -1,7 +1,7 @@
 #include "GLSceneRenderer.h"
 
-#include <glad\glad.h>
-#include <spdlog\spdlog.h>
+#include <glad/glad.h>
+#include <spdlog/spdlog.h>
 
 #include <Scene.h>
 #include <MeshLoader.h>

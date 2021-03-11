@@ -1,6 +1,6 @@
 #include "Pathtracer.h"
 
-#include <spdlog\spdlog.h>
+#include <spdlog/spdlog.h>
 
 #include <glm/gtx/norm.hpp>
 

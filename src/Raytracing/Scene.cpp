@@ -3,10 +3,10 @@
 #include <fstream>
 #include <regex>
 
-#include <spdlog\spdlog.h>
+#include <spdlog\/spdlog.h>
 
 #include <glm/gtx/norm.hpp>
-#include <glm\gtx\transform.hpp>
+#include <glm/gtx/transform.hpp>
 
 #include "Sampler.h"
 

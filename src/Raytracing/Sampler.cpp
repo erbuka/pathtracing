@@ -1,6 +1,6 @@
 #include "Sampler.h"
 
-#include <spdlog\spdlog.h>
+#include <spdlog/spdlog.h>
 
 #include <glm/ext.hpp>
 
