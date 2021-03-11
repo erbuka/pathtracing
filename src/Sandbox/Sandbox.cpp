@@ -364,6 +364,21 @@ namespace sandbox
                         m_State = SandboxState::Rendering;
                     }
 
+                    if (ImGui::MenuItem("Debug - Albedo"))
+                    {
+                        rt::ViewParameters params;
+                        auto [vw, vh] = GetWindowSize();
+
+                        params.NumThreads = 4;
+                        params.Width = vw;
+                        params.Height = vh;
+                        params.FovY = s_FovY;
+                        m_Debug.CurrentMode = rt::utility::DebugRaytracer::Mode::Albedo;
+                        m_RenderResult = m_Debug.Run(params, m_Scene, 0);
+                        m_RenderResult->OnIterationEnd.Subscribe(this, &Sandbox::OnIterationEndHandler);
+                        m_State = SandboxState::Rendering;
+                    }
+
                     ImGui::EndMenu();
                 }
                 if (ImGui::BeginMenu("Load Scene"))

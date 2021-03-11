@@ -3,9 +3,12 @@
     "samplers" : [
         { "id" : "red", "color" : [1.0, 0.1, 0.1] },
         { "id" : "green", "color" : [0.1, 1.0, 0.1] },
+        { "id" : "white", "color" : [1, 1, 1] },
         { "id" : "whiteLight", "color" : [50, 50, 50] },
-        { "id" : "rWall", "color" : [0.9, 0.0, 0.0] },
-        { "id" : "ambient", "color" : [1,1,1] }
+        { "id" : "r00", "color" : [0.0, 0.0, 0.0] },
+        { "id" : "r03", "color" : [0.3, 0.0, 0.0] },
+        { "id" : "r09", "color" : [0.9, 0.0, 0.0] },
+        { "id" : "r10", "color" : [1.0, 0.0, 0.0] }
     ],
     "camera" : {
         "position" : [0,0,36],
@@ -15,6 +18,10 @@
         {
             "file" : "res/meshes/plane.obj",
             "ids" : ["plane"]
+        },
+        {
+            "file" : "res/meshes/cube.obj",
+            "ids" : ["cube"]
         }
     ],
     "nodes" : [
@@ -27,10 +34,40 @@
             }
         },
         {
+            "mesh" : "cube",
+            "translate" : [-6.5, -5.0, -6.5],
+            "scale": [2, 5, 2],
+            "rotate" : [0, 30, 0],
+            "material" : {
+                "albedo" : "white",
+                "roughness" : "r09"
+            }
+        },
+        {
+            "mesh" : "cube",
+            "translate" : [6, -6, -6],
+            "scale": [2, 4, 2],
+            "rotate" : [0, -45, 0],
+            "material" : {
+                "albedo" : "white",
+                "roughness" : "r09"
+            }
+        },
+        {
+            "shape" : "sphere",
+            "translate" : [0,-7, 0],
+            "scale" : [3,3,3],
+            "material" : {
+                "albedo" : "white",
+                "roughness" : "r03",
+                "metallic" : "r09"
+            }
+        },
+        {
             "translate" : [0, -10, 0],
             "mesh" : "plane",
             "material": {
-                "roughness" : "rWall"
+                "roughness" : "r09"
             }
         },
         {
@@ -38,7 +75,7 @@
             "rotate" : [180, 0, 0],
             "mesh" : "plane",
             "material": {
-                "roughness" : "rWall"
+                "roughness" : "r09"
             }
         },
         {
@@ -46,7 +83,7 @@
             "rotate" : [90, 0, 0],
             "mesh" : "plane",
             "material": {
-                "roughness" : "rWall"
+                "roughness" : "r09"
             }
         },
         {
@@ -54,7 +91,7 @@
             "rotate" : [-90, 0, 0],
             "mesh" : "plane",
             "material": {
-                "roughness" : "rWall"
+                "roughness" : "r09"
             }
         },
         {
@@ -63,7 +100,7 @@
             "mesh" : "plane",
             "material" : {
                 "albedo" : "green",
-                "roughness" : "rWall"
+                "roughness" : "r09"
             }
         },
         {
@@ -72,7 +109,7 @@
             "mesh" : "plane",
             "material" : {
                 "albedo" : "red",
-                "roughness" : "rWall"
+                "roughness" : "r09"
             }
         }
     ]

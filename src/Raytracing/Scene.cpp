@@ -351,10 +351,11 @@ namespace rt
 			auto r0 = node->Shape->Intersect(node->GetInverseTransform() * ray);
 			if (r0.Hit)
 			{
-
 				// Transform to world coordinates
 				r0.Position = node->GetTransform() * glm::vec4(r0.Position, 1.0f);
-				r0.Normal = glm::normalize(node->GetNormalTransform() * glm::vec4(r0.Normal, 0.0f));
+
+				// The vec3 cast is needed otherwise it would normalize as a vec4
+				r0.Normal = glm::normalize(glm::vec3(node->GetNormalTransform() * glm::vec4(r0.Normal, 0.0f)));
 				
 				if (returnOnFirstHit)
 					return { r0, node };
