@@ -67,7 +67,17 @@ project "GLFW"
             "vendor/glfw/src/win32_window.c",
         }
 
-
+    filter "system:linux"
+        defines { "_GLFW_X11 " }
+        files {
+            "vendor/glfw/src/x11_init.c",
+            "vendor/glfw/src/x11_monitor.c",
+            "vendor/glfw/src/x11_window.c",  
+            "vendor/glfw/src/posix_thread.c",
+            "vendor/glfw/src/posix_time.c",
+            "vendor/glfw/src/linux_joystick.c",
+        }
+    
 project "ImGui"
     location(_ACTION)
     kind "StaticLib"
