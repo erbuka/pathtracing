@@ -183,7 +183,7 @@ namespace rt {
 		Camera Camera;
 		std::shared_ptr<Sampler3D> Background = nullptr;
 		std::vector<std::shared_ptr<SceneNode>> Nodes;
-		std::tuple<RaycastResult, std::shared_ptr<SceneNode>> Scene::CastRay(const Ray& ray, bool returnOnFirstHit = false, const std::vector<std::shared_ptr<SceneNode>>& avoidNodes = {}) const;
+		std::tuple<RaycastResult, std::shared_ptr<SceneNode>> CastRay(const Ray& ray, bool returnOnFirstHit = false, const std::vector<std::shared_ptr<SceneNode>>& avoidNodes = {}) const;
 		
 		void Compile();
 	};
