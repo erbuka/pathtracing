@@ -1,0 +1,27 @@
+{
+    "camera" : {
+        "position" : [0,0, 5],
+        "lookAt" : [0,0,0]
+    },
+    "background" : {
+        "color" : "white"
+    },
+    "samplers" : [
+        {
+            "id" : "white",
+            "color" : [1,1,1]
+        },
+        {
+            "id" :"gray",
+            "color" : [0.18,0.18,0.18]
+        }
+    ],
+    "nodes" : [
+        {
+            "shape" : "sphere",
+            "material" : {
+                "albedo" : "gray"
+            }
+        }
+    ]
+}

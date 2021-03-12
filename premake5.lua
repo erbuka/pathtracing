@@ -11,7 +11,7 @@ workspace "Raytracing"
 
     filter "configurations:Release"
         defines { "NDEBUG" }
-        symbols "On"
+        symbols "Off"
         optimize "On"
         
     filter "system:windows"

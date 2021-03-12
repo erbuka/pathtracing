@@ -69,8 +69,10 @@ int main(int argc, char** argv)
 
 	auto result = pathtracer.Run(params, scene, iterations);
 	
-	result->OnIterationEnd.Subscribe([iterations](const rt::Image& img, size_t iteration) {
-		spdlog::info("Iteration completed: {0} / {1}", iteration + 1, iterations);
+	result->OnIterationEnd.Subscribe([result, iterations](const rt::Image& img, size_t iteration) {
+		const float elapsedTime = result->GetElapsedTime();
+
+		spdlog::info("Iteration completed: {0} / {1}, Elasped Time: {2}, {3} it/sec", iteration + 1, iterations, elapsedTime, iteration / elapsedTime);
 	});
 
 	result->OnEnd.Subscribe([outFile](const rt::Image& image) {

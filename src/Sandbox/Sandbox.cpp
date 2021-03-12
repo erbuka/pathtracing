@@ -183,8 +183,6 @@ namespace sandbox
 
             auto [beta, alpha] = SphericalAngles(camera.GetDirection());
 
-            spdlog::info("{0} {1}", glm::degrees(beta), glm::degrees(alpha));
-
             beta += delta.y * m_CameraSettings.RotateSpeed;
             alpha -= delta.x * m_CameraSettings.RotateSpeed;
 
@@ -308,19 +306,14 @@ namespace sandbox
                             rt::ViewParameters params;
                             auto [vw, vh] = GetScaledWindowSize(s);
 
-                            params.NumThreads = 4;
+                            params.NumThreads = 8;
                             params.Width = vw;
                             params.Height = vh;
                             params.FovY = s_FovY;
 
                             m_CurrentIteration = 0;
                             m_RenderResult = m_Pathtracer.Run(params, m_Scene, 0);
-                            m_RenderResult->OnIterationEnd.Subscribe([&](const rt::Image& img, size_t iteration) {
-                                std::lock_guard guard(m_ImageMutex);
-                                m_TextureNeedsUpdate = true;
-                                m_Image = img;
-                                m_CurrentIteration = iteration + 1;
-                            });
+                            m_RenderResult->OnIterationEnd.Subscribe(this, &Sandbox::OnIterationEndHandler);
                             m_State = SandboxState::Rendering;
                         }
                     }
@@ -330,7 +323,7 @@ namespace sandbox
                         rt::ViewParameters params;
                         auto [vw, vh] = GetWindowSize();
 
-                        params.NumThreads = 4;
+                        params.NumThreads = 8;
                         params.Width = vw;
                         params.Height = vh;
                         params.FovY = s_FovY;
@@ -419,10 +412,15 @@ namespace sandbox
         else if (m_State == SandboxState::Rendering)
         {
             const auto iteration = m_RenderResult->Iteration.load();
+            const float elapsedTime = m_RenderResult->GetElapsedTime();
+
+            const uint32_t iterationsPerSecond = iteration / elapsedTime;
+
             ImGui::SetNextWindowPos({ 10.0f, 10.0f });
             ImGui::SetNextWindowSize({ 300.0f, -1.0f });
             ImGui::Begin("Render", nullptr, ImGuiWindowFlags_NoDecoration);
-            ImGui::Text("Iteration #%d", iteration);
+            ImGui::Text("Elapsted Time: %.2f", m_RenderResult->GetElapsedTime());
+            ImGui::Text("Iteration #%d, %d it/sec", iteration, iterationsPerSecond);
             ImGui::ProgressBar(m_RenderResult->Progress);
             if (ImGui::Button("Interrupt", { -1.0f, 0.0f })) {
                 m_RenderResult->Interrupt();
@@ -499,7 +497,8 @@ namespace sandbox
             for (size_t x = 0; x < image.GetWidth(); ++x) {
                 for (size_t y = 0; y < image.GetHeight(); ++y) {
                     auto color = image.GetPixel(x, y);
-
+                    
+                    
                     // Tone mapping
                     color = glm::vec3(1.0f) - glm::exp(-color);
 

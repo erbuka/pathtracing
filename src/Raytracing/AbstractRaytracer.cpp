@@ -17,6 +17,13 @@ namespace rt {
 			std::mutex lineMutex;
 
 			Image image(params.Width, params.Height);
+			
+			const auto forward = glm::normalize(scene.Camera.GetDirection());
+			const auto right = glm::normalize(glm::cross(forward, glm::vec3{ 0.0f, 1.0f, 0.0f }));
+			const auto up = glm::cross(right, forward);
+
+			const float h2 = std::atan(params.FovY / 2.0f);
+			const float w2 = h2 * (float)params.Width / params.Height;
 
 			auto nextIteration = [iterations, current = size_t(0)] () mutable -> std::optional<size_t> {
 				if (iterations != 0 && current == iterations)
@@ -50,12 +57,7 @@ namespace rt {
 
 				const auto threadFunc = [&] {
 
-					auto forward = glm::normalize(scene.Camera.GetDirection());
-					auto right = glm::normalize(glm::cross(forward, glm::vec3{ 0.0f, 1.0f, 0.0f }));
-					auto up = glm::cross(right, forward);
-
-					float h2 = std::atan(params.FovY / 2.0f);
-					float w2 = h2 * (float)params.Width / params.Height;
+					// Sync here ?
 
 					for (auto scanLine = nextScanLine(); !self.IsInterrupted() && scanLine.has_value(); scanLine = nextScanLine())
 					{
@@ -111,12 +113,20 @@ namespace rt {
 	RaytracerResult::RaytracerResult(const Fn& fn)
 	{
 		m_Thread = std::thread([&, fn] { fn(*this); });
+		m_StartTime = std::chrono::system_clock::now();
 	}
 
 	RaytracerResult::~RaytracerResult()
 	{
 		if (m_Thread.joinable())
 			m_Thread.join();
+	}
+
+	float RaytracerResult::GetElapsedTime() const
+	{
+		using seconds = std::chrono::duration<float, std::ratio<1>>;
+		std::chrono::duration<float> x;
+		return seconds(std::chrono::system_clock::now() - m_StartTime).count();
 	}
 
 }

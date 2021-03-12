@@ -6,6 +6,7 @@
 #include <atomic>
 #include <optional>
 #include <list>
+#include <chrono>
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
@@ -77,6 +78,7 @@ namespace rt {
 		void Wait() { m_Thread.join(); }
 		void Interrupt() { m_Interrupted = true; }
 		bool IsInterrupted() const { return m_Interrupted; }
+		float GetElapsedTime() const;
 
 		EventEmitter<const Image&, size_t> OnIterationEnd;
 		EventEmitter<const Image&> OnEnd;
@@ -84,6 +86,7 @@ namespace rt {
 	private:
 		std::thread m_Thread;
 		std::atomic_bool m_Interrupted = false;
+		std::chrono::system_clock::time_point m_StartTime;
 	};
 
 

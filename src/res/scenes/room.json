@@ -4,7 +4,7 @@
         { "id" : "red", "color" : [1.0, 0.1, 0.1] },
         { "id" : "green", "color" : [0.1, 1.0, 0.1] },
         { "id" : "white", "color" : [1, 1, 1] },
-        { "id" : "whiteLight", "color" : [50, 50, 50] },
+        { "id" : "whiteLight", "color" : [25, 25, 25] },
         { "id" : "r00", "color" : [0.0, 0.0, 0.0] },
         { "id" : "r03", "color" : [0.3, 0.0, 0.0] },
         { "id" : "r09", "color" : [0.9, 0.0, 0.0] },
@@ -40,7 +40,7 @@
             "rotate" : [0, 30, 0],
             "material" : {
                 "albedo" : "white",
-                "roughness" : "r09"
+                "roughness" : "r10"
             }
         },
         {
@@ -50,7 +50,7 @@
             "rotate" : [0, -45, 0],
             "material" : {
                 "albedo" : "white",
-                "roughness" : "r09"
+                "roughness" : "r10"
             }
         },
         {
@@ -59,15 +59,15 @@
             "scale" : [3,3,3],
             "material" : {
                 "albedo" : "white",
-                "roughness" : "r03",
-                "metallic" : "r09"
+                "roughness" : "r00",
+                "metallic" : "r10"
             }
         },
         {
             "translate" : [0, -10, 0],
             "mesh" : "plane",
             "material": {
-                "roughness" : "r09"
+                "roughness" : "r10"
             }
         },
         {
@@ -75,7 +75,7 @@
             "rotate" : [180, 0, 0],
             "mesh" : "plane",
             "material": {
-                "roughness" : "r09"
+                "roughness" : "r10"
             }
         },
         {
@@ -83,7 +83,7 @@
             "rotate" : [90, 0, 0],
             "mesh" : "plane",
             "material": {
-                "roughness" : "r09"
+                "roughness" : "r10"
             }
         },
         {
@@ -91,7 +91,7 @@
             "rotate" : [-90, 0, 0],
             "mesh" : "plane",
             "material": {
-                "roughness" : "r09"
+                "roughness" : "r10"
             }
         },
         {
@@ -100,7 +100,7 @@
             "mesh" : "plane",
             "material" : {
                 "albedo" : "green",
-                "roughness" : "r09"
+                "roughness" : "r10"
             }
         },
         {
@@ -109,7 +109,7 @@
             "mesh" : "plane",
             "material" : {
                 "albedo" : "red",
-                "roughness" : "r09"
+                "roughness" : "r10"
             }
         }
     ]
