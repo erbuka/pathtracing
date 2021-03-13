@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string_view>
+
 #include <Scene.h>
 
 namespace rt::utility

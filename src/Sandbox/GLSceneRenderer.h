@@ -63,6 +63,7 @@ namespace sandbox
 		std::vector<GLSceneNode> m_Nodes;
 
 		GLVao CreateMesh(rt::Mesh& mesh) const;
+		GLVao CreateVao(const std::vector<GLVertex>& vertices) const;
 		GLProgram LoadProgram(std::string_view vsSource, std::string_view fsSource) const;
 	};
 }

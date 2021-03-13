@@ -23,6 +23,7 @@ namespace rt::utility
 				return node->Material.Roughness->Sample(result.UV);
 			case DebugRaytracer::Mode::Normal:
 				return result.Normal * 0.5f + 0.5f;
+
 			}
 		}
 		else

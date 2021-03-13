@@ -140,6 +140,7 @@ namespace sandbox
 
 	}
 
+
 	GLVao GLSceneRenderer::CreateMesh(rt::Mesh& mesh) const
 	{
 		std::vector<GLVertex> vertices;
@@ -149,6 +150,12 @@ namespace sandbox
 			for (const auto& v : triangle.Vertices)
 				vertices.push_back({ v.Position, v.Normal, v.UV });
 
+		return CreateVao(vertices);
+
+	}
+
+	GLVao GLSceneRenderer::CreateVao(const std::vector<GLVertex>& vertices) const
+	{
 		uint32_t vao, vb;
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
@@ -166,7 +173,6 @@ namespace sandbox
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(GLVertex), (void*)24);
 
 		return { vao, vb, vertices.size() };
-
 	}
 
 	GLProgram GLSceneRenderer::LoadProgram(std::string_view vsSource, std::string_view fsSource) const

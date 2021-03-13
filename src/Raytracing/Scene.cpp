@@ -288,6 +288,13 @@ namespace rt
 		}
 	}
 
+	const uint32_t KDTreeNode::GetMaxDepth() const
+	{
+		const auto d0 = m_Left ? m_Left->GetMaxDepth() : m_Depth;
+		const auto d1 = m_Right ? m_Left->GetMaxDepth() : m_Depth;
+		return std::max(d0, d1);
+	}
+
 	void SceneNode::UpdateMatrices()
 	{
 		m_InvTransform = glm::inverse(m_Transform);

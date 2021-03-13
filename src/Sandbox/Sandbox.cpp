@@ -26,6 +26,7 @@
 namespace sandbox
 {
 
+
     static constexpr float s_FovY = glm::pi<float>() / 4.0f;
 
     Toast::Toast(const std::string& title, const std::string& message) :
@@ -279,6 +280,16 @@ namespace sandbox
     void sandbox::Sandbox::RenderGUI()
     {
 
+        constexpr rt::TraceParameters renderTraceParams = {
+            0,
+            256
+        };
+
+        constexpr rt::TraceParameters debugTraceParams = {
+            1,
+            1
+        };
+
         m_Toasts.erase(std::remove_if(m_Toasts.begin(), m_Toasts.end(), [](const Toast& t) {
             return t.EndTime < std::chrono::system_clock::now().time_since_epoch();
         }), m_Toasts.end());
@@ -303,16 +314,16 @@ namespace sandbox
 
                         if (ImGui::MenuItem(ss.str().c_str()))
                         {
-                            rt::ViewParameters params;
+                            rt::ViewParameters viewParams;
                             auto [vw, vh] = GetScaledWindowSize(s);
 
-                            params.NumThreads = 8;
-                            params.Width = vw;
-                            params.Height = vh;
-                            params.FovY = s_FovY;
+                            viewParams.NumThreads = 8;
+                            viewParams.Width = vw;
+                            viewParams.Height = vh;
+                            viewParams.FovY = s_FovY;
 
-                            m_CurrentIteration = 0;
-                            m_RenderResult = m_Pathtracer.Run(params, m_Scene, 0);
+                            m_RenderStats.CurrentIteration = 0;
+                            m_RenderResult = m_Pathtracer.Run(viewParams, renderTraceParams, m_Scene);
                             m_RenderResult->OnIterationEnd.Subscribe(this, &Sandbox::OnIterationEndHandler);
                             m_State = SandboxState::Rendering;
                         }
@@ -320,22 +331,17 @@ namespace sandbox
 
                     if (ImGui::MenuItem("Full size"))
                     {
-                        rt::ViewParameters params;
+                        rt::ViewParameters viewParams;
                         auto [vw, vh] = GetWindowSize();
 
-                        params.NumThreads = 8;
-                        params.Width = vw;
-                        params.Height = vh;
-                        params.FovY = s_FovY;
+                        viewParams.NumThreads = 8;
+                        viewParams.Width = vw;
+                        viewParams.Height = vh;
+                        viewParams.FovY = s_FovY;
 
-                        m_CurrentIteration = 0;
-                        m_RenderResult = m_Pathtracer.Run(params, m_Scene, 0);
-                        m_RenderResult->OnIterationEnd.Subscribe([&](const rt::Image& img, size_t iteration) {
-                            std::lock_guard guard(m_ImageMutex);
-                            m_Image = img;
-                            m_TextureNeedsUpdate = true;
-                            m_CurrentIteration = iteration + 1;
-                        });
+                        m_RenderStats.CurrentIteration = 0;
+                        m_RenderResult = m_Pathtracer.Run(viewParams, renderTraceParams, m_Scene);
+                        m_RenderResult->OnIterationEnd.Subscribe(this, &Sandbox::OnIterationEndHandler);
                         m_State = SandboxState::Rendering;
                     }
                     
@@ -344,30 +350,30 @@ namespace sandbox
 
                     if (ImGui::MenuItem("Debug - Normals"))
                     {
-                        rt::ViewParameters params;
+                        rt::ViewParameters viewParams;
                         auto [vw, vh] = GetWindowSize();
 
-                        params.NumThreads = 4;
-                        params.Width = vw;
-                        params.Height = vh;
-                        params.FovY = s_FovY;
+                        viewParams.NumThreads = 4;
+                        viewParams.Width = vw;
+                        viewParams.Height = vh;
+                        viewParams.FovY = s_FovY;
                         m_Debug.CurrentMode = rt::utility::DebugRaytracer::Mode::Normal;
-                        m_RenderResult = m_Debug.Run(params, m_Scene, 0);
+                        m_RenderResult = m_Debug.Run(viewParams, debugTraceParams, m_Scene);
                         m_RenderResult->OnIterationEnd.Subscribe(this, &Sandbox::OnIterationEndHandler);
                         m_State = SandboxState::Rendering;
                     }
 
                     if (ImGui::MenuItem("Debug - Albedo"))
                     {
-                        rt::ViewParameters params;
+                        rt::ViewParameters viewParams;
                         auto [vw, vh] = GetWindowSize();
 
-                        params.NumThreads = 4;
-                        params.Width = vw;
-                        params.Height = vh;
-                        params.FovY = s_FovY;
+                        viewParams.NumThreads = 4;
+                        viewParams.Width = vw;
+                        viewParams.Height = vh;
+                        viewParams.FovY = s_FovY;
                         m_Debug.CurrentMode = rt::utility::DebugRaytracer::Mode::Albedo;
-                        m_RenderResult = m_Debug.Run(params, m_Scene, 0);
+                        m_RenderResult = m_Debug.Run(viewParams, debugTraceParams, m_Scene);
                         m_RenderResult->OnIterationEnd.Subscribe(this, &Sandbox::OnIterationEndHandler);
                         m_State = SandboxState::Rendering;
                     }
@@ -412,15 +418,15 @@ namespace sandbox
         else if (m_State == SandboxState::Rendering)
         {
             const auto iteration = m_RenderResult->Iteration.load();
+            const auto samplesPerPixel = m_RenderResult->SamplesPerPixel.load();
             const float elapsedTime = m_RenderResult->GetElapsedTime();
-
-            const uint32_t iterationsPerSecond = iteration / elapsedTime;
 
             ImGui::SetNextWindowPos({ 10.0f, 10.0f });
             ImGui::SetNextWindowSize({ 300.0f, -1.0f });
             ImGui::Begin("Render", nullptr, ImGuiWindowFlags_NoDecoration);
             ImGui::Text("Elapsted Time: %.2f", m_RenderResult->GetElapsedTime());
-            ImGui::Text("Iteration #%d, %d it/sec", iteration, iterationsPerSecond);
+            ImGui::Text("%.2f spp/second", m_RenderStats.SSPperSecond);
+            ImGui::Text("Iteration #%d", iteration);
             ImGui::ProgressBar(m_RenderResult->Progress);
             if (ImGui::Button("Interrupt", { -1.0f, 0.0f })) {
                 m_RenderResult->Interrupt();
@@ -539,12 +545,13 @@ namespace sandbox
 
 	}
 
-    void sandbox::Sandbox::OnIterationEndHandler(const rt::Image& image, size_t iteration)
+    void sandbox::Sandbox::OnIterationEndHandler(const rt::Image& image, const uint64_t& iteration)
     {
         std::lock_guard guard(m_ImageMutex);
         m_Image = image;
         m_TextureNeedsUpdate = true;
-        m_CurrentIteration = iteration + 1;
+        m_RenderStats.CurrentIteration = iteration + 1;
+        m_RenderStats.SSPperSecond = m_RenderResult->SamplesPerPixel.load() / m_RenderResult->GetElapsedTime();
     }
 
     std::tuple<float, float> Sandbox::SphericalAngles(const glm::vec3& dir)

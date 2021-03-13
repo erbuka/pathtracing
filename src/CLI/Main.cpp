@@ -9,8 +9,6 @@
 #include <SceneLoader.h>
 
 
-
-
 int main(int argc, char** argv)
 {
 	uint32_t width = 512;
@@ -60,20 +58,26 @@ int main(int argc, char** argv)
 	spdlog::info(" Viewport: {0} x {1} px", width, height);
 		
 	rt::Pathtracer pathtracer;
-	rt::ViewParameters params;
+	rt::ViewParameters viewParams;
+	rt::TraceParameters traceParams;
 
-	params.Width = width;
-	params.Height = height;
-	params.NumThreads = threads;
-	params.FovY = glm::pi<float>() / 4.0f;
+	viewParams.Width = width;
+	viewParams.Height = height;
+	viewParams.NumThreads = threads;
+	viewParams.FovY = glm::pi<float>() / 4.0f;
 
-	auto result = pathtracer.Run(params, scene, iterations);
+	traceParams.Iterations = iterations;
+	traceParams.SamplesPerIteration = 256;
+
+	auto result = pathtracer.Run(viewParams, traceParams, scene);
 	
-	result->OnIterationEnd.Subscribe([result, iterations](const rt::Image& img, size_t iteration) {
+	result->OnIterationEnd.Subscribe([result, iterations](const rt::Image& img, const uint64_t& iteration) {
 		const float elapsedTime = result->GetElapsedTime();
+		const auto samples = result->SamplesPerPixel.load();
 
-		spdlog::info("Iteration completed: {0} / {1}, Elasped Time: {2}, {3} it/sec", iteration + 1, iterations, elapsedTime, iteration / elapsedTime);
+		spdlog::info("Iteration completed: {0} / {1}, Elasped Time: {2}, {3} spp/sec", iteration + 1, iterations, elapsedTime, samples / elapsedTime);
 	});
+
 
 	result->OnEnd.Subscribe([outFile](const rt::Image& image) {
 		// Save image here

@@ -105,7 +105,8 @@ namespace rt {
 	public:
 		KDTreeNode() {}
 		KDTreeNode(const std::vector<Triangle>& triangles, const BoundingBox& bounds, uint32_t depth);
-			
+
+		const uint32_t GetMaxDepth() const;
 		const std::vector<Triangle>& GetTriangles() const { return m_Triangles; }
 		const BoundingBox& GetBounds() const { return m_Bounds; }
 		const std::unique_ptr<KDTreeNode>& GetLeft() const { return m_Left; }
@@ -144,12 +145,6 @@ namespace rt {
 
 	class Mesh: public Shape, public ObjectID
 	{
-	public:
-		const std::vector<Triangle>& GetTriangles() const { return m_Triangles; }
-		Triangle& AddTriangle();
-		RaycastResult Intersect(const Ray& ray) const override;
-		void Compile() override;
-
 	private:
 
 		RaycastResult IntersectTriangle(const Ray& ray, const Triangle& triangle) const;
@@ -158,6 +153,14 @@ namespace rt {
 		BoundingBox m_BoundingBox;
 		std::vector<Triangle> m_Triangles;
 		std::unique_ptr<KDTreeNode> m_Tree;
+	
+	public:
+
+		const std::vector<Triangle>& GetTriangles() const { return m_Triangles; }
+		Triangle& AddTriangle();
+		RaycastResult Intersect(const Ray& ray) const override;
+		void Compile() override;
+		const std::unique_ptr<KDTreeNode>& GetKDTree() const { return m_Tree; }
 	};
 
 	class SceneNode

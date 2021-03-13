@@ -75,6 +75,11 @@ namespace sandbox
 			};
 		} m_Mouse;
 
+		struct {
+			uint64_t CurrentIteration = 0;
+			float SSPperSecond = 0.0f; 
+		} m_RenderStats;
+
 		SandboxState m_State = SandboxState::Idle;
 
 		std::vector<std::filesystem::path> m_SceneFiles;
@@ -101,7 +106,6 @@ namespace sandbox
 
 		bool m_Running = false;
 		bool m_TextureNeedsUpdate = false;
-		size_t m_CurrentIteration = 0;
 
 		void Initialize();
 		void Update();
@@ -112,7 +116,7 @@ namespace sandbox
 		void UpdateTexture();
 		void SaveImage();
 		
-		void OnIterationEndHandler(const rt::Image& image, size_t iteration);
+		void OnIterationEndHandler(const rt::Image& image, const uint64_t& iteration);
 
 		std::tuple<float, float> SphericalAngles(const glm::vec3& dir);
 

@@ -65,12 +65,19 @@ namespace rt {
 		float FovY = glm::pi<float>() / 4.0f;
 	};
 
+	struct TraceParameters
+	{
+		uint64_t Iterations = 1;
+		uint64_t SamplesPerIteration = 1;
+	};
+
 	class RaytracerResult
 	{
 	public:
 		using Fn = std::function<void(RaytracerResult&)>;
 		std::atomic<float> Progress = 0.0f;
 		std::atomic_uint64_t Iteration = 0;
+		std::atomic_uint64_t SamplesPerPixel = 0;
 
 		RaytracerResult(const Fn& fn);
 		~RaytracerResult();
@@ -80,7 +87,8 @@ namespace rt {
 		bool IsInterrupted() const { return m_Interrupted; }
 		float GetElapsedTime() const;
 
-		EventEmitter<const Image&, size_t> OnIterationEnd;
+		EventEmitter<const uint64_t&> OnIterationStart;
+		EventEmitter<const Image&, const uint64_t&> OnIterationEnd;
 		EventEmitter<const Image&> OnEnd;
 
 	private:
@@ -94,7 +102,7 @@ namespace rt {
 	{
 	public:
 
-		std::shared_ptr<RaytracerResult> Run(const ViewParameters& params, Scene& scene, size_t iterations);
+		std::shared_ptr<RaytracerResult> Run(const ViewParameters& viewParams, const TraceParameters& traceParams, Scene& scene);
 		virtual glm::vec3 Trace(const ViewParameters& params, const Ray& ray, const Scene& scene) = 0;
 	};
 

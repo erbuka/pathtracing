@@ -11,7 +11,7 @@ workspace "Raytracing"
 
     filter "configurations:Release"
         defines { "NDEBUG" }
-        symbols "Off"
+        symbols "On"
         optimize "On"
         
     filter "system:windows"
@@ -204,12 +204,14 @@ project "Sandbox"
 
     links { "Glad", "GLFW", "ImGui", "Raytracing", "RaytracingUtility" }
 
+    postbuildcommands {
+        "{COPY} ../src/res ../bin/%{cfg.buildcfg}/%{prj.name}/res"
+    }
+
     filter "system:windows"
         links { "opengl32" }
     
     filter "system:linux"
         links { "gl" }
 
-    postbuildcommands {
-        "{COPY} ../src/res ../bin/%{cfg.buildcfg}/%{prj.name}/res"
-    }
+

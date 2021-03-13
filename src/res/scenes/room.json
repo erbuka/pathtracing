@@ -12,7 +12,7 @@
     ],
     "camera" : {
         "position" : [0,0,29],
-        "lookAt" : [0,0,0]
+        "direction" : [0,0,-1]
     },
     "meshes" : [
         {

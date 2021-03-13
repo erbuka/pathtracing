@@ -1,0 +1,48 @@
+{
+    "name": "TestScene 2",
+    "camera": {
+        "position": [
+            0,
+            0,
+            -1
+        ],
+        "direction" : [
+            0,
+            0,
+            -1
+        ]
+    },
+    "background": {
+        "color": "background"
+    },
+    "meshes" : [
+        {
+            "file" : "res/meshes/bunny.obj",
+            "ids" : ["bunny"]
+        }
+    ],
+    "samplers": [
+        {
+            "id": "green",
+            "color": [
+                0.1,
+                0.9,
+                0.1
+            ]
+        },
+        {
+            "id": "background",
+            "type": "equirectangular",
+            "file": "res/textures/bg0.hdr"
+        }
+    ],
+    "nodes" : [
+        {
+            "translate" : [0,-0.15,0],
+            "mesh" : "bunny",
+            "material" : {
+                "albedo" : "green"
+            }
+        }
+    ]
+}

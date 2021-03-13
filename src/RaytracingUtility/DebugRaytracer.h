@@ -14,7 +14,7 @@ namespace rt::utility
 			Emission,
 			Roughness,
 			Metallic,
-			Normal
+			Normal,
 		};
 
 		Mode CurrentMode = Mode::Albedo;

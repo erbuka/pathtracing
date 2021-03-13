@@ -51,7 +51,7 @@ namespace rt
 				const auto albedo = node->Material.Albedo->Sample(result.UV);
 				const auto emission = node->Material.Emission->Sample(result.UV);
 				const float roughness = node->Material.Roughness->Sample(result.UV).r;
-				const float specular = node->Material.Metallic->Sample(result.UV).r;
+				const float metallic = node->Material.Metallic->Sample(result.UV).r;
 
 				// Reflected ray on hemisphere
 
@@ -68,7 +68,6 @@ namespace rt
 				const auto reflectDir = glm::reflect(ray.Direction, result.Normal);
 				const auto hemiDir = tangentSample.x * T + tangentSample.y * B + tangentSample.z * N;
 
-
 				const auto dir = glm::normalize(glm::mix(reflectDir, hemiDir, roughness));
 
 				Ray reflectedRay = {
@@ -81,7 +80,7 @@ namespace rt
 
 				const auto [radiance, distance] = TraceRecursive(params, reflectedRay, scene, recursion - 1);
 
-				auto color = emission + glm::mix(albedo, glm::vec3(1.0f), specular) * radiance * cosTheta * 2.0f;
+				auto color = emission + glm::mix(albedo, glm::vec3(1.0f), metallic) * radiance * cosTheta * 2.0f;
 
 				return { color, glm::distance(ray.Origin, result.Position) };
 			}
