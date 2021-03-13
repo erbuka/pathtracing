@@ -37,6 +37,14 @@ namespace sandbox
             std::chrono::milliseconds(2500);
     }
 
+    static void GL_DebugMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+    {
+
+        if (type == GL_DEBUG_TYPE_ERROR)
+        {
+            spdlog::error("OpenGL Error severity: {0:x}, message: {1}", severity, message);
+        }
+    }
 
     static void GLFW_CursorPos(GLFWwindow* window, double xpos, double ypos)
     {
@@ -104,6 +112,10 @@ namespace sandbox
         /* Make the window's context current */
         glfwMakeContextCurrent(m_Window);
         gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
+        spdlog::info("OpenGL Version: {0}", (const char*)glGetString(GL_VERSION));
+
+        glDebugMessageCallback(&GL_DebugMessage, nullptr);
 
         // Events
         glfwSetWindowUserPointer(m_Window, this);
