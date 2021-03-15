@@ -11,14 +11,14 @@ namespace rt
 
 	glm::vec3 Pathtracer::Trace(const ViewParameters& params, const Ray& ray, const Scene& scene)
 	{
-		return std::get<0>(TraceRecursive(params, ray, scene, 5));
+		return TraceRecursive(params, ray, scene, 5);
 	}
 
-	std::tuple<glm::vec3, float> Pathtracer::TraceRecursive(const ViewParameters& params, const Ray& ray, const Scene& scene, uint32_t recursion)
+	glm::vec3 Pathtracer::TraceRecursive(const ViewParameters& params, const Ray& ray, const Scene& scene, uint32_t recursion)
 	{
 		if (recursion == 0)
 		{
-			return { scene.Background ? scene.Background->Sample(ray.Direction) : glm::vec3(0.0f), 0.0f };
+			return scene.Background->Sample(ray.Direction);
 		}
 		else
 		{
@@ -39,22 +39,22 @@ namespace rt
 				const auto dir = glm::normalize(glm::mix(reflectDir, hemiDir, roughness));
 
 				Ray reflectedRay = {
-					result.Position + dir * 0.01f,
+					result.Position + dir * s_Epsilon,
 					dir
 				};
 
 
 				const auto cosTheta = glm::max(0.0f, glm::dot(reflectedRay.Direction, result.Normal));
 
-				const auto [radiance, distance] = TraceRecursive(params, reflectedRay, scene, recursion - 1);
+				const auto radiance = TraceRecursive(params, reflectedRay, scene, recursion - 1);
 
 				auto color = emission + glm::mix(albedo, glm::vec3(1.0f), metallic) * radiance * cosTheta * 2.0f;
 
-				return { color, glm::distance(ray.Origin, result.Position) };
+				return color;
 			}
 			else
 			{	
-				return { scene.Background ? scene.Background->Sample(ray.Direction) : glm::vec3(0.0f), 0.0f };
+				return scene.Background->Sample(ray.Direction);
 			}
 		}
 	}
