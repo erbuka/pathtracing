@@ -134,6 +134,7 @@ namespace rt {
 	public:
 		virtual void Compile() = 0;
 		virtual RaycastResult Intersect(const Ray& ray) const = 0;
+		virtual const BoundingBox& GetBounds() const = 0;
 	};
 
 	class Sphere : public Shape
@@ -141,6 +142,9 @@ namespace rt {
 	public:
 		void Compile() override {}
 		RaycastResult Intersect(const Ray& ray) const override;
+		const BoundingBox& GetBounds() const override { return m_Bounds; }
+	private:
+		BoundingBox m_Bounds = BoundingBox({ -1, -1, -1 }, { 1, 1, 1 });
 	};
 
 	class Mesh: public Shape, public ObjectID
@@ -150,12 +154,12 @@ namespace rt {
 		RaycastResult IntersectTriangle(const Ray& ray, const Triangle& triangle) const;
 		void IntersectInternal(const Ray& ray, const std::unique_ptr<KDTreeNode>& node, RaycastResult& result, float& distance) const;
 
-		BoundingBox m_BoundingBox;
+		BoundingBox m_Bounds;
 		std::vector<Triangle> m_Triangles;
 		std::unique_ptr<KDTreeNode> m_Tree;
 	
 	public:
-
+		const BoundingBox& GetBounds() const override { return m_Bounds; }
 		const std::vector<Triangle>& GetTriangles() const { return m_Triangles; }
 		Triangle& AddTriangle();
 		RaycastResult Intersect(const Ray& ray) const override;
@@ -192,11 +196,18 @@ namespace rt {
 	{
 	public:
 		
+		Scene();
+
 		rt::Camera Camera;
 		std::shared_ptr<Sampler3D> Background = nullptr;
 		std::vector<std::shared_ptr<SceneNode>> Nodes;
 		std::tuple<RaycastResult, std::shared_ptr<SceneNode>> CastRay(const Ray& ray, bool returnOnFirstHit = false, const std::vector<std::shared_ptr<SceneNode>>& avoidNodes = {}) const;
 		
+		const std::vector<std::shared_ptr<SceneNode>>& GetLightSources() const { return m_LightSources; }
+
 		void Compile();
+
+	private:
+		std::vector<std::shared_ptr<SceneNode>> m_LightSources;
 	};
 }

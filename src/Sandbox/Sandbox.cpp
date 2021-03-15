@@ -317,77 +317,71 @@ namespace sandbox
             ImGui::BeginMainMenuBar();
             if (ImGui::BeginMenu("File"))
             {
+
+
+
                 if (ImGui::BeginMenu("Render"))
                 {
-                    for (uint32_t s : {64, 128, 256, 512})
+                    const auto modes = {
+                        std::make_tuple("Pathtracer", static_cast<rt::AbstractRaytracer*>(&m_Pathtracer)),
+                    };
+
+                    const auto debugModes = {
+                        std::make_tuple("Albedo", rt::utility::DebugRaytracer::Mode::Albedo),
+                        std::make_tuple("Normals", rt::utility::DebugRaytracer::Mode::Normal),
+                    };
+
+                    for (const auto& [title, renderer] : modes)
                     {
-                        std::stringstream ss;
-                        ss << s << " px";
-
-                        if (ImGui::MenuItem(ss.str().c_str()))
+                        if (ImGui::BeginMenu(title))
                         {
-                            rt::ViewParameters viewParams;
-                            auto [vw, vh] = GetScaledWindowSize(s);
+                            for (const size_t s : { 64, 128, 256, 512 })
+                            {
+                                std::stringstream ss;
+                                ss << s << " px";
 
-                            viewParams.NumThreads = 8;
-                            viewParams.Width = vw;
-                            viewParams.Height = vh;
-                            viewParams.FovY = s_FovY;
+                                if (ImGui::MenuItem(ss.str().c_str()))
+                                {
+                                    rt::ViewParameters viewParams;
+                                    auto [vw, vh] = GetScaledWindowSize(s);
 
-                            m_RenderStats.CurrentIteration = 0;
-                            m_RenderResult = m_Pathtracer.Run(viewParams, renderTraceParams, m_Scene);
-                            m_RenderResult->OnIterationEnd.Subscribe(this, &Sandbox::OnIterationEndHandler);
-                            m_State = SandboxState::Rendering;
+                                    viewParams.NumThreads = 8;
+                                    viewParams.Width = vw;
+                                    viewParams.Height = vh;
+                                    viewParams.FovY = s_FovY;
+
+                                    m_RenderStats.CurrentIteration = 0;
+                                    m_RenderResult = renderer->Run(viewParams, renderTraceParams, m_Scene);
+                                    m_RenderResult->OnIterationEnd.Subscribe(this, &Sandbox::OnIterationEndHandler);
+                                    m_State = SandboxState::Rendering;
+                                }
+                            }
+                            ImGui::EndMenu();
                         }
                     }
 
-                    if (ImGui::MenuItem("Full size"))
+
+                    if (ImGui::BeginMenu("Debug"))
                     {
-                        rt::ViewParameters viewParams;
-                        auto [vw, vh] = GetWindowSize();
+                        for (const auto& [title, mode] : debugModes)
+                        {
+                            if (ImGui::MenuItem(title))
+                            {
+                                rt::ViewParameters viewParams;
+                                auto [vw, vh] = GetWindowSize();
 
-                        viewParams.NumThreads = 8;
-                        viewParams.Width = vw;
-                        viewParams.Height = vh;
-                        viewParams.FovY = s_FovY;
+                                viewParams.NumThreads = 4;
+                                viewParams.Width = vw;
+                                viewParams.Height = vh;
+                                viewParams.FovY = s_FovY;
+                                m_Debug.CurrentMode = mode;
+                                m_RenderResult = m_Debug.Run(viewParams, debugTraceParams, m_Scene);
+                                m_RenderResult->OnIterationEnd.Subscribe(this, &Sandbox::OnIterationEndHandler);
+                                m_State = SandboxState::Rendering;
+                            }
+                        }
 
-                        m_RenderStats.CurrentIteration = 0;
-                        m_RenderResult = m_Pathtracer.Run(viewParams, renderTraceParams, m_Scene);
-                        m_RenderResult->OnIterationEnd.Subscribe(this, &Sandbox::OnIterationEndHandler);
-                        m_State = SandboxState::Rendering;
-                    }
-                    
-
-                    ImGui::Separator();
-
-                    if (ImGui::MenuItem("Debug - Normals"))
-                    {
-                        rt::ViewParameters viewParams;
-                        auto [vw, vh] = GetWindowSize();
-
-                        viewParams.NumThreads = 4;
-                        viewParams.Width = vw;
-                        viewParams.Height = vh;
-                        viewParams.FovY = s_FovY;
-                        m_Debug.CurrentMode = rt::utility::DebugRaytracer::Mode::Normal;
-                        m_RenderResult = m_Debug.Run(viewParams, debugTraceParams, m_Scene);
-                        m_RenderResult->OnIterationEnd.Subscribe(this, &Sandbox::OnIterationEndHandler);
-                        m_State = SandboxState::Rendering;
-                    }
-
-                    if (ImGui::MenuItem("Debug - Albedo"))
-                    {
-                        rt::ViewParameters viewParams;
-                        auto [vw, vh] = GetWindowSize();
-
-                        viewParams.NumThreads = 4;
-                        viewParams.Width = vw;
-                        viewParams.Height = vh;
-                        viewParams.FovY = s_FovY;
-                        m_Debug.CurrentMode = rt::utility::DebugRaytracer::Mode::Albedo;
-                        m_RenderResult = m_Debug.Run(viewParams, debugTraceParams, m_Scene);
-                        m_RenderResult->OnIterationEnd.Subscribe(this, &Sandbox::OnIterationEndHandler);
-                        m_State = SandboxState::Rendering;
+                        ImGui::EndMenu();
                     }
 
                     ImGui::EndMenu();

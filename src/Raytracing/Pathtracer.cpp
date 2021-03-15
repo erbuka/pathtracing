@@ -8,32 +8,10 @@
 
 namespace rt
 {
-	Pathtracer::Pathtracer()
-	{
-		m_01 = std::uniform_real_distribution<float>();
-	}
-
 
 	glm::vec3 Pathtracer::Trace(const ViewParameters& params, const Ray& ray, const Scene& scene)
 	{
 		return std::get<0>(TraceRecursive(params, ray, scene, 5));
-	}
-
-	std::tuple<glm::vec3, glm::vec3> Pathtracer::GenerateCoordinateSystem(const glm::vec3& n)
-	{
-		glm::vec3 t;
-
-		if (glm::abs(n.x) > glm::abs(n.y))
-		{
-			t = glm::normalize(glm::vec3(n.z, 0.0f, -n.x));
-		}
-		else
-		{
-			t = glm::normalize(glm::vec3(0.0f, -n.z, n.y));
-		}
-
-		return { t, glm::cross(n, t) };
-
 	}
 
 	std::tuple<glm::vec3, float> Pathtracer::TraceRecursive(const ViewParameters& params, const Ray& ray, const Scene& scene, uint32_t recursion)
@@ -55,18 +33,8 @@ namespace rt
 
 				// Reflected ray on hemisphere
 
-				const glm::vec3 N = result.Normal;
-				const auto [T, B] = GenerateCoordinateSystem(N);
-
-				// TODO double check this thing but I think it's good now
-				//const float z = 1.0f - m_01(m_E) * 2.0f;
-				const float z = m_01(m_E);
-				const float r = glm::sqrt(1.0f - z * z);
-				const float phi = glm::pi<float>() * 2.0f * m_01(m_E);
-				glm::vec3 tangentSample = { r * glm::cos(phi), r * glm::sin(phi), z };
-
+				const auto hemiDir = m_RNG.Hemisphere(result.Normal);
 				const auto reflectDir = glm::reflect(ray.Direction, result.Normal);
-				const auto hemiDir = tangentSample.x * T + tangentSample.y * B + tangentSample.z * N;
 
 				const auto dir = glm::normalize(glm::mix(reflectDir, hemiDir, roughness));
 

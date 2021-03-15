@@ -15,6 +15,7 @@ namespace rt {
 	{
 	public:
 		virtual glm::vec3 Sample(const glm::vec2& uv) const = 0;
+		virtual glm::vec3 Average() const = 0;
 	};
 
 	class Sampler3D
@@ -29,6 +30,7 @@ namespace rt {
 		ColorSampler(const glm::vec3& color) : m_Color(color) {}
 		glm::vec3 Sample(const glm::vec2& uv) const override { return m_Color; }
 		glm::vec3 Sample(const glm::vec3& uvw) const override { return m_Color; }
+		glm::vec3 Average() const override { return m_Color; }
 	private:
 		glm::vec3 m_Color;
 	};
@@ -49,6 +51,7 @@ namespace rt {
 
 		void Resize(size_t width, size_t height);
 
+		glm::vec3 Average() const override;
 		glm::vec3 Sample(const glm::vec2& uv) const override;
 
 		void SetPixel(size_t x, size_t y, const glm::vec3& color);

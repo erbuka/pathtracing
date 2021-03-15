@@ -23,6 +23,14 @@ namespace rt {
 		m_Height = height;
 		m_Pixels.resize(width * height);
 	}
+	glm::vec3 Image::Average() const
+	{
+		glm::vec3 avg(0.0f);
+		for (size_t x = 0; x < m_Width; ++x)
+			for (size_t y = 0; y < m_Height; ++y)
+				avg += GetPixel({ x, y });
+		return avg / float(m_Width * m_Height);
+	}
 	glm::vec3 Image::Sample(const glm::vec2& uv) const
 	{
 		const auto uv0 = glm::fract(uv);

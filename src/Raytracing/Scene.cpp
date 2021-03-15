@@ -123,8 +123,8 @@ namespace rt
 
 	void Mesh::Compile()
 	{
-		auto& min = m_BoundingBox.Min;
-		auto& max = m_BoundingBox.Max;
+		auto& min = m_Bounds.Min;
+		auto& max = m_Bounds.Max;
 
 		for (auto& t : m_Triangles) 
 		{
@@ -138,7 +138,7 @@ namespace rt
 
 		}
 
-		m_Tree = std::make_unique<KDTreeNode>(m_Triangles, m_BoundingBox, 0);
+		m_Tree = std::make_unique<KDTreeNode>(m_Triangles, m_Bounds, 0);
 
 	}
 
@@ -333,10 +333,26 @@ namespace rt
 
 	void Scene::Compile()
 	{
+
 		std::for_each(Nodes.begin(), Nodes.end(), [](std::shared_ptr<SceneNode>& n) {
 			if (n->Shape)
 				n->Shape->Compile();
 		});
+		
+		m_LightSources.clear();
+
+		for (auto& n : Nodes)
+		{
+			const auto avg = n->Material.Emission->Average();
+			if (avg.r + avg.g + avg.b > 0.0f)
+				m_LightSources.push_back(n);
+		}
+
+	}
+
+	Scene::Scene()
+	{
+		Background = std::make_shared<ColorSampler>(glm::vec3{ 0.0f, 0.0f, 0.0f });
 	}
 
 	std::tuple<RaycastResult, std::shared_ptr<SceneNode>> Scene::CastRay(const Ray& ray, bool returnOnFirstHit, const std::vector<std::shared_ptr<SceneNode>>& avoidNodes) const
