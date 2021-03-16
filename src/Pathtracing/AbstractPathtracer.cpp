@@ -92,7 +92,7 @@ namespace rt {
 					}
 				};
 
-				std::vector<std::thread> threads(viewParams.NumThreads);
+				std::vector<std::thread> threads(traceParams.NumThreads);
 
 				for (size_t i = 0; i < threads.size(); ++i)
 					threads[i] = std::thread(threadFunc);

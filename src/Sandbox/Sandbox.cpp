@@ -292,12 +292,14 @@ namespace sandbox
     void sandbox::Sandbox::RenderGUI()
     {
 
-        constexpr rt::TraceParameters renderTraceParams = {
+        const rt::TraceParameters renderTraceParams = {
+            std::thread::hardware_concurrency() - 1,
             0,
             256
         };
 
-        constexpr rt::TraceParameters debugTraceParams = {
+        const rt::TraceParameters debugTraceParams = {
+            std::thread::hardware_concurrency() - 1,
             1,
             1
         };
@@ -345,7 +347,6 @@ namespace sandbox
                                     rt::ViewParameters viewParams;
                                     auto [vw, vh] = GetScaledWindowSize(s);
 
-                                    viewParams.NumThreads = 8;
                                     viewParams.Width = vw;
                                     viewParams.Height = vh;
                                     viewParams.FovY = s_FovY;
@@ -370,7 +371,6 @@ namespace sandbox
                                 rt::ViewParameters viewParams;
                                 auto [vw, vh] = GetWindowSize();
 
-                                viewParams.NumThreads = 4;
                                 viewParams.Width = vw;
                                 viewParams.Height = vh;
                                 viewParams.FovY = s_FovY;

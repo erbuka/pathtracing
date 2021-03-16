@@ -63,9 +63,9 @@ int main(int argc, char** argv)
 
 	viewParams.Width = width;
 	viewParams.Height = height;
-	viewParams.NumThreads = threads;
 	viewParams.FovY = glm::pi<float>() / 4.0f;
 
+	traceParams.NumThreads = threads;
 	traceParams.Iterations = iterations;
 	traceParams.SamplesPerIteration = 256;
 

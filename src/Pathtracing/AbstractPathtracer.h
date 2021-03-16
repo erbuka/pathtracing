@@ -59,7 +59,6 @@ namespace rt {
 
 	struct ViewParameters 
 	{
-		uint32_t NumThreads = 4;
 		uint32_t Width = 800;
 		uint32_t Height = 600;
 		float FovY = glm::pi<float>() / 4.0f;
@@ -67,6 +66,7 @@ namespace rt {
 
 	struct TraceParameters
 	{
+		uint32_t NumThreads = 4;
 		uint64_t Iterations = 1;
 		uint64_t SamplesPerIteration = 1;
 	};
