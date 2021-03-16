@@ -1,0 +1,101 @@
+{
+    "name" : "Room",
+    "samplers" : [
+        { "id" : "red", "color" : [1.0, 0.1, 0.1] },
+        { "id" : "green", "color" : [0.1, 1.0, 0.1] },
+        { "id" : "white", "color" : [1, 1, 1] },
+        { "id" : "light", "color" : [5, 5, 5] },
+        { "id" : "r00", "color" : [0.0, 0.0, 0.0] },
+        { "id" : "r03", "color" : [0.3, 0.0, 0.0] },
+        { "id" : "r09", "color" : [0.9, 0.0, 0.0] },
+        { "id" : "r10", "color" : [1.0, 0.0, 0.0] },
+        { "id" : "marioD", "file" : "res/textures/marioD.jpg"}
+    ],
+    "camera" : {
+        "position" : [0,0,29],
+        "direction" : [0,0,-1]
+    },
+    "meshes" : [
+        {
+            "file" : "res/meshes/plane.obj",
+            "ids" : ["plane"]
+        },
+        {
+            "file" : "res/meshes/cube.obj",
+            "ids" : ["cube"]
+        },
+        {
+            "file" : "res/meshes/mario.obj",
+            "ids" : ["mario"]
+        }
+    ],
+    "nodes" : [
+        {
+            "shape" : "sphere",
+            "translate" : [0, 10, 0],
+            "scale" : [2, 2, 2],
+            "material" : {
+                "emission" : "light"
+            }
+        },
+        {
+            "mesh" : "mario",
+            "translate" : [0, -10, 0],
+            "rotate" : [0, -90, 0],
+            "scale" : [6,6,6],
+            "material" : {
+                "albedo" : "marioD"
+            }
+        },
+        {
+            "translate" : [0, -10, 0],
+            "mesh" : "plane",
+            "material": {
+                "roughness" : "r10"
+            }
+        },
+        {
+            "translate" : [0, 10, 0],
+            "rotate" : [180, 0, 0],
+            "mesh" : "plane",
+            "material": {
+                "roughness" : "r10"
+            }
+        },
+        {
+            "translate" : [0, 0, -10],
+            "rotate" : [90, 0, 0],
+            "mesh" : "plane",
+            "material": {
+                "roughness" : "r00",
+                "metallic" : "r10"
+            }
+        },
+        {
+            "translate" : [0, 0, 10],
+            "rotate" : [-90, 0, 0],
+            "mesh" : "plane",
+            "material": {
+                "roughness" : "r10"
+            }
+        },
+        {
+            "translate" : [-10, 0, 0],
+            "rotate" : [0, 0, -90],
+            "mesh" : "plane",
+            "material" : {
+                "albedo" : "green",
+                "roughness" : "r10"
+            }
+        },
+        {
+            "translate" : [10, 0, 0],
+            "rotate" : [0, 0, 90],
+            "mesh" : "plane",
+            "material" : {
+                "albedo" : "red",
+                "roughness" : "r10"
+            }
+        }
+    ]
+}

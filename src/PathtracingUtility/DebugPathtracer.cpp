@@ -1,11 +1,11 @@
-#include "DebugRaytracer.h"
+#include "DebugPathtracer.h"
 
 #include "Scene.h"
 #include "Sampler.h"
 
 namespace rt::utility
 {
-	glm::vec3 DebugRaytracer::Trace(const ViewParameters& params, const Ray& ray, const Scene& scene)
+	glm::vec3 DebugPathtracer::Trace(const ViewParameters& params, const Ray& ray, const Scene& scene)
 	{
 		auto [result, node] = scene.CastRay(ray);
 
@@ -13,15 +13,15 @@ namespace rt::utility
 		{
 			switch (CurrentMode)
 			{
-			case DebugRaytracer::Mode::Albedo:
+			case DebugPathtracer::Mode::Albedo:
 				return node->Material.Albedo->Sample(result.UV);
-			case DebugRaytracer::Mode::Emission:
+			case DebugPathtracer::Mode::Emission:
 				return node->Material.Emission->Sample(result.UV);
-			case DebugRaytracer::Mode::Metallic:
+			case DebugPathtracer::Mode::Metallic:
 				return node->Material.Metallic->Sample(result.UV);
-			case DebugRaytracer::Mode::Roughness:
+			case DebugPathtracer::Mode::Roughness:
 				return node->Material.Roughness->Sample(result.UV);
-			case DebugRaytracer::Mode::Normal:
+			case DebugPathtracer::Mode::Normal:
 				return result.Normal * 0.5f + 0.5f;
 
 			}

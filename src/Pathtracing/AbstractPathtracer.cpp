@@ -1,4 +1,4 @@
-#include "AbstractRaytracer.h"
+#include "AbstractPathtracer.h"
 
 #include <optional>
 #include <random>
@@ -6,10 +6,10 @@
 #include <spdlog/spdlog.h>
 
 namespace rt {
-	std::shared_ptr<RaytracerResult> AbstractRaytracer::Run(const ViewParameters& viewParams, const TraceParameters& traceParams, Scene& scene)
+	std::shared_ptr<PathtracerResult> AbstractPathtracer::Run(const ViewParameters& viewParams, const TraceParameters& traceParams, Scene& scene)
 	{
 		scene.Compile();
-		return std::make_shared<RaytracerResult>([&, traceParams, viewParams](RaytracerResult& self) -> void {
+		return std::make_shared<PathtracerResult>([&, traceParams, viewParams](PathtracerResult& self) -> void {
 			
 			std::mt19937_64 rng;
 			std::uniform_real_distribution<float> r01(0.0f, 1.0f);
@@ -116,19 +116,19 @@ namespace rt {
 
 	}
 	
-	RaytracerResult::RaytracerResult(const Fn& fn)
+	PathtracerResult::PathtracerResult(const Fn& fn)
 	{
 		m_Thread = std::thread([&, fn] { fn(*this); });
 		m_StartTime = std::chrono::system_clock::now();
 	}
 
-	RaytracerResult::~RaytracerResult()
+	PathtracerResult::~PathtracerResult()
 	{
 		if (m_Thread.joinable())
 			m_Thread.join();
 	}
 
-	float RaytracerResult::GetElapsedTime() const
+	float PathtracerResult::GetElapsedTime() const
 	{
 		using seconds = std::chrono::duration<float, std::ratio<1>>;
 		std::chrono::duration<float> x;

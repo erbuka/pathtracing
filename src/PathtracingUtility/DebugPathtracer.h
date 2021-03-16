@@ -1,10 +1,10 @@
 #pragma once
 
-#include "AbstractRaytracer.h"
+#include <AbstractPathtracer.h>
 
 namespace rt::utility
 {
-	class DebugRaytracer : public AbstractRaytracer
+	class DebugPathtracer : public AbstractPathtracer
 	{
 	public:
 

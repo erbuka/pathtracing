@@ -3,12 +3,12 @@
 #include <random>
 
 #include "RNG.h"
-#include "AbstractRaytracer.h"
+#include "AbstractPathtracer.h"
 
 
 namespace rt
 {
-	class Pathtracer : public AbstractRaytracer
+	class Pathtracer : public AbstractPathtracer
 	{
 	public:
 		glm::vec3 Trace(const ViewParameters& params, const Ray& ray, const Scene& scene) override;

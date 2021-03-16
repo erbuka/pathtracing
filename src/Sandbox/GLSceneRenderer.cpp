@@ -29,7 +29,7 @@ namespace sandbox
 		#version 330
 	
 		uniform vec3 uColor;	
-
+			
 		out vec4 oColor;
 
 		void main() {
@@ -49,6 +49,7 @@ namespace sandbox
 			glm::vec3(1.0f, 1.0f, 0.0f),
 			glm::vec3(1.0f, 1.0f, 1.0f),
 		};
+
 
 		auto sphereMesh = rt::utility::LoadMeshesFromWavefront("res/meshes/sphere.obj")["sphere"];
 		m_ShereVao = CreateMesh(*sphereMesh);

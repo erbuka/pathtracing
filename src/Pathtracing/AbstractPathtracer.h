@@ -17,7 +17,7 @@
 namespace rt {
 
 	class Scene;
-	class AbstractRaytracer;
+	class AbstractPathtracer;
 
 	template<typename... Args>
 	class EventEmitter
@@ -71,16 +71,16 @@ namespace rt {
 		uint64_t SamplesPerIteration = 1;
 	};
 
-	class RaytracerResult
+	class PathtracerResult
 	{
 	public:
-		using Fn = std::function<void(RaytracerResult&)>;
+		using Fn = std::function<void(PathtracerResult&)>;
 		std::atomic<float> Progress = 0.0f;
 		std::atomic_uint64_t Iteration = 0;
 		std::atomic_uint64_t SamplesPerPixel = 0;
 
-		RaytracerResult(const Fn& fn);
-		~RaytracerResult();
+		PathtracerResult(const Fn& fn);
+		~PathtracerResult();
 		
 		void Wait() { m_Thread.join(); }
 		void Interrupt() { m_Interrupted = true; }
@@ -98,11 +98,11 @@ namespace rt {
 	};
 
 
-	class AbstractRaytracer 
+	class AbstractPathtracer 
 	{
 	public:
 
-		std::shared_ptr<RaytracerResult> Run(const ViewParameters& viewParams, const TraceParameters& traceParams, Scene& scene);
+		std::shared_ptr<PathtracerResult> Run(const ViewParameters& viewParams, const TraceParameters& traceParams, Scene& scene);
 		virtual glm::vec3 Trace(const ViewParameters& params, const Ray& ray, const Scene& scene) = 0;
 	};
 

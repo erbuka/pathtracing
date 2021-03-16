@@ -1,4 +1,4 @@
-workspace "Raytracing"
+workspace "Pathtracing"
     architecture "x86_64"
     configurations { "Debug", "Release" }
     startproject "Sandbox"
@@ -106,7 +106,7 @@ project "ImGui"
         "vendor/imgui/backends/imgui_impl_opengl3.cpp",
     }
 
-project "Raytracing"
+project "Pathtracing"
     location(_ACTION)
     kind "StaticLib"
     language "C++"
@@ -124,9 +124,9 @@ project "Raytracing"
         "vendor/stb/include",
     }
 
-    files { "src/Raytracing/**.cpp", "src/Raytracing/**.h"  }
+    files { "src/Pathtracing/**.cpp", "src/Pathtracing/**.h"  }
 
-project "RaytracingUtility"
+project "PathtracingUtility"
     location(_ACTION)
     kind "StaticLib"
     language "C++"
@@ -140,12 +140,12 @@ project "RaytracingUtility"
         "vendor/glm",
         "vendor/spdlog/include",
         "vendor/json",
-        "src/Raytracing"
+        "src/Pathtracing"
     }
 
-    links { "Raytracing" }
+    links { "Pathtracing" }
 
-    files { "src/RaytracingUtility/**.cpp", "src/RaytracingUtility/**.h"  } 
+    files { "src/PathtracingUtility/**.cpp", "src/PathtracingUtility/**.h"  } 
 
 project "CLI"
     location(_ACTION)
@@ -162,13 +162,13 @@ project "CLI"
         "vendor/spdlog/include",
         "vendor/stb/include",
         "vendor/json",
-        "src/Raytracing",
-        "src/RaytracingUtility"
+        "src/Pathtracing",
+        "src/PathtracingUtility"
     }
 
     files { "src/CLI/**.cpp", "src/CLI/**.h"  }
 
-    links { "Raytracing", "RaytracingUtility" }
+    links { "Pathtracing", "PathtracingUtility" }
 
     postbuildcommands {
         "{COPY} ../src/res ../bin/%{cfg.buildcfg}/%{prj.name}/res"
@@ -196,13 +196,13 @@ project "Sandbox"
         "vendor/imgui",
         "vendor/imgui/backends",
         "vendor/json",
-        "src/Raytracing",
-        "src/RaytracingUtility"
+        "src/Pathtracing",
+        "src/PathtracingUtility"
     }
 
     files { "src/Sandbox/**.cpp", "src/Sandbox/**.h"  }
 
-    links { "Glad", "GLFW", "ImGui", "Raytracing", "RaytracingUtility" }
+    links { "Glad", "GLFW", "ImGui", "Pathtracing", "PathtracingUtility" }
 
     postbuildcommands {
         "{COPY} ../src/res ../bin/%{cfg.buildcfg}/%{prj.name}/res"

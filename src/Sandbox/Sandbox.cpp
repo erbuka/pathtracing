@@ -323,12 +323,12 @@ namespace sandbox
                 if (ImGui::BeginMenu("Render"))
                 {
                     const auto modes = {
-                        std::make_tuple("Pathtracer", static_cast<rt::AbstractRaytracer*>(&m_Pathtracer)),
+                        std::make_tuple("Pathtracer", static_cast<rt::AbstractPathtracer*>(&m_Pathtracer)),
                     };
 
                     const auto debugModes = {
-                        std::make_tuple("Albedo", rt::utility::DebugRaytracer::Mode::Albedo),
-                        std::make_tuple("Normals", rt::utility::DebugRaytracer::Mode::Normal),
+                        std::make_tuple("Albedo", rt::utility::DebugPathtracer::Mode::Albedo),
+                        std::make_tuple("Normals", rt::utility::DebugPathtracer::Mode::Normal),
                     };
 
                     for (const auto& [title, renderer] : modes)

@@ -109,8 +109,7 @@ namespace rt
 
 	Triangle& Mesh::AddTriangle()
 	{
-		m_Triangles.push_back({});
-		return m_Triangles.back();
+		return m_Triangles.emplace_back();
 	}
 	
 	RaycastResult Mesh::Intersect(const Ray& ray) const

@@ -9,7 +9,7 @@
 #include <filesystem>
 
 #include <Scene.h>
-#include <DebugRaytracer.h>
+#include <DebugPathtracer.h>
 #include <Pathtracer.h>
 
 #include "GLSceneRenderer.h"
@@ -86,13 +86,13 @@ namespace sandbox
 
 		rt::Scene m_Scene;
 
-		rt::utility::DebugRaytracer m_Debug;
+		rt::utility::DebugPathtracer m_Debug;
 		rt::Pathtracer m_Pathtracer;
 		std::unique_ptr<GLSceneRenderer> m_GLRenderer;
 
 		rt::Image m_Image;
 
-		std::shared_ptr<rt::RaytracerResult> m_RenderResult = nullptr;
+		std::shared_ptr<rt::PathtracerResult> m_RenderResult = nullptr;
 		uint32_t m_RenderTexture;
 
 		std::mutex m_ImageMutex;

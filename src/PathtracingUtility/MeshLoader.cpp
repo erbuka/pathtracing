@@ -36,11 +36,12 @@ namespace rt::utility
             }
         };
 
+
         const std::regex rComment("#\\s+(.+)");
         const std::regex rVertex("v\\s+(-?[\\d\.]+)\\s+(-?[\\d\.]+)\\s+(-?[\\d\.]+)");
         const std::regex rNormal("vn\\s+(-?[\\d\.]+)\\s+(-?[\\d\.]+)\\s+(-?[\\d\.]+)");
         const std::regex rUv("vt\\s+(-?[\\d\.]+)\\s+(-?[\\d\.]+)");
-        const std::regex rObject("o\\s+(.+)");
+        const std::regex rObject("[og]\\s+(.+)");
         const std::regex rFace0("f\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)");
         const std::regex rFace1(
             "f\\s+"
