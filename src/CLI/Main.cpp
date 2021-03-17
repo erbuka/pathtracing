@@ -71,11 +71,12 @@ int main(int argc, char** argv)
 
 	auto result = pathtracer.Run(viewParams, traceParams, scene);
 	
-	result->OnIterationEnd.Subscribe([result, iterations](const rt::Image& img, const uint64_t& iteration) {
+	result->OnIterationEnd.Subscribe([traceParams, result, iterations](const rt::Image& img, const uint64_t& iteration) {
 		const float elapsedTime = result->GetElapsedTime();
 		const auto samples = result->SamplesPerPixel.load();
+		const float eta = (traceParams.Iterations - (iteration + 1)) * (elapsedTime / (iteration + 1));
 
-		spdlog::info("Iteration completed: {0} / {1}, Elasped Time: {2}, {3} spp/sec", iteration + 1, iterations, elapsedTime, samples / elapsedTime);
+		spdlog::info("Iteration completed: {0} / {1}, {2} spp/sec, ETA: {3:.2f}", iteration + 1, iterations, samples / elapsedTime, eta);
 	});
 
 

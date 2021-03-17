@@ -67,7 +67,7 @@
             "rotate" : [90, 0, 0],
             "mesh" : "plane",
             "material": {
-                "roughness" : "r00",
+                "roughness" : "r03",
                 "metallic" : "r10"
             }
         },
