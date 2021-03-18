@@ -98,6 +98,9 @@ namespace rt::utility
                     auto image = std::make_shared<rt::Image>();
                     image->Load(samplerDef["file"].get<std::string>());
 
+                    if (samplerDef.contains("ldr") && samplerDef["ldr"].get<bool>())
+                        image->ToLDR();
+
                     if (samplerDef.contains("mode"))
                         samplerDef["mode"].get_to(image->SampleMode);
 

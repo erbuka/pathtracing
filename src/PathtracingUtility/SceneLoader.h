@@ -6,5 +6,10 @@
 
 namespace rt::utility
 {
+	/// <summary>
+	/// Load a scene from file
+	/// </summary>
+	/// <param name="fileName">A JSON file</param>
+	/// <returns>The scene</returns>
 	Scene LoadScene(std::string_view fileName);
 }

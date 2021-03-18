@@ -1,19 +1,19 @@
 #include "AbstractPathtracer.h"
 
 #include <optional>
-#include <random>
 
 #include <spdlog/spdlog.h>
+
+#include "RNG.h"
 
 namespace rt {
 	std::shared_ptr<PathtracerResult> AbstractPathtracer::Run(const ViewParameters& viewParams, const TraceParameters& traceParams, Scene& scene)
 	{
 		scene.Compile();
 		return std::make_shared<PathtracerResult>([&, traceParams, viewParams](PathtracerResult& self) -> void {
+				
+			RNG rng;
 			
-			std::mt19937_64 rng;
-			std::uniform_real_distribution<float> r01(0.0f, 1.0f);
-
 			std::mutex lineMutex;
 
 			Image image(viewParams.Width, viewParams.Height);
@@ -71,8 +71,8 @@ namespace rt {
 							{
 								Ray ray;
 								
-								float fx = r01(rng) - 0.5f + x;
-								float fy = r01(rng) - 0.5f + y;
+								float fx = rng.Next() - 0.5f + x;
+								float fy = rng.Next() - 0.5f + y;
 								
 								float xFactor = fx / viewParams.Width * 2.0f - 1.0f;
 								float yFactor = 1.0f - fy / viewParams.Height * 2.0f;

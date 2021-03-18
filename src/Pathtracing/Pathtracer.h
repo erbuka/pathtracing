@@ -5,9 +5,11 @@
 #include "RNG.h"
 #include "AbstractPathtracer.h"
 
-
 namespace rt
 {
+	/// <summary>
+	/// Full integrator pathtracer implementation
+	/// </summary>
 	class Pathtracer : public AbstractPathtracer
 	{
 	public:

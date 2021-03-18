@@ -27,7 +27,8 @@
         {
             "id": "background",
             "type": "equirectangular",
-            "file": "res/textures/bg0.hdr"
+            "file": "res/textures/bg0.hdr",
+            "ldr" : true
         },
         {
             "id": "s0",

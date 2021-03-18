@@ -1,5 +1,7 @@
 #include "Sampler.h"
 
+#include <numeric>
+
 #include <spdlog/spdlog.h>
 
 #include <glm/ext.hpp>
@@ -92,6 +94,25 @@ namespace rt {
 			spdlog::error("Can't load image: {0}", fileName);
 		}
 	}
+	
+	void Image::ToLDR()
+	{
+		float max = 0.0f;
+
+		for (const auto& p : m_Pixels)
+			max = std::max({ max, p.x, p.y, p.z });
+
+		if (max > 1.0f)
+		{
+			std::for_each(m_Pixels.begin(), m_Pixels.end(), [](auto& p) { 
+				p = glm::vec3(1.0f) - glm::exp(-p);
+			});
+
+		}
+
+	}
+
+
 	glm::vec3 EquirectangularMap::Sample(const glm::vec3& uvw) const
 	{
 		const auto normal = glm::normalize(uvw);

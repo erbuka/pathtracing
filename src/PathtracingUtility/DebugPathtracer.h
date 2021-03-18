@@ -4,6 +4,10 @@
 
 namespace rt::utility
 {
+	/// <summary>
+	/// A simple tracer that outputs useful debug information, like normals,
+	/// albedo, emission, etc
+	/// </summary>
 	class DebugPathtracer : public AbstractPathtracer
 	{
 	public:
