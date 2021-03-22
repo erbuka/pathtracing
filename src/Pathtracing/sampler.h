@@ -7,8 +7,6 @@
 #include <vector>
 #include <memory>
 
-#include "Common.h"
-
 namespace rt {
 
 	/// <summary>
