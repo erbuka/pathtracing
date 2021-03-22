@@ -244,6 +244,7 @@ namespace rt {
 	class mesh: public shape, public object_id
 	{
 	private:
+		
 
 		raycast_result intersect_triangle(const ray& ray, const triangle& triangle) const;
 		void intersect_internal(const ray& ray, const std::unique_ptr<kd_tree_node>& node, raycast_result& result, float& distance) const;
