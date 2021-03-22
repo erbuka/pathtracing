@@ -5,7 +5,7 @@ A CPU Monte Carlo pathtracer implemented in C++. Features:
 - KD-tree optimization for triangle meshes
 - HDR output
 - Textures and samplers
-- Equirectangular maps (background)
+- Equirectangular maps for background
 
 ## Building
 
@@ -13,6 +13,8 @@ This project uses [Premake](https://premake.github.io/) to build project files.
 
 ## Results
 
+### Room, 256x256 px, 64K samples per pixel
 ![Room, 256x256, 64K samples per pixel](results/room-256-i250.png)
 
-Room, 256x256 px, 64K spp
+### Mario, 128x128, 25K sampler per pixel
+![Mario, 128x128, 25K sampler per pixel](results/mario-128-i100.png)
