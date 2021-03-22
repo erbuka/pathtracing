@@ -53,8 +53,8 @@ namespace rt {
 		}
 		else
 		{
-			uint32_t ix = uint32_t(glm::round(x)) % m_width;
-			uint32_t iy = uint32_t(glm::round(y)) % m_height;
+			const uint32_t ix = uint32_t(glm::round(x)) % m_width;
+			const uint32_t iy = uint32_t(glm::round(y)) % m_height;
 			return get_pixel(ix, iy);
 		}
 
