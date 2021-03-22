@@ -11,61 +11,61 @@
 
 namespace rt {
 
-	class Sampler2D;
-	class Sampler3D;
+	class sampler_2d;
+	class sampler_3d;
 
-	enum class Axis : uint32_t { X = 0, Y = 1, Z = 2 };
+	enum class axis : uint32_t { X = 0, Y = 1, Z = 2 };
 
-	struct Ray 
+	struct ray 
 	{
-		glm::vec3 Origin;
-		glm::vec3 Direction;
+		glm::vec3 origin;
+		glm::vec3 direction;
 	};
 
-	Ray operator*(const glm::mat4& m, const Ray& r);
+	ray operator*(const glm::mat4& m, const ray& r);
 
-	struct Camera
+	struct camera
 	{
 	public:
-		glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
+		glm::vec3 position = { 0.0f, 0.0f, 0.0f };
 
-		const glm::vec3& GetDirection() const { return m_Direction; }
-		void SetDirection(const glm::vec3& dir) { m_Direction = glm::normalize(dir); }
+		const glm::vec3& get_direction() const { return m_direction; }
+		void set_direction(const glm::vec3& dir) { m_direction = glm::normalize(dir); }
 
 	private:
-		glm::vec3 m_Direction = { 0.0f, 0.0f, -1.0f };
+		glm::vec3 m_direction = { 0.0f, 0.0f, -1.0f };
 	};
 
 
-	struct Vertex
+	struct vertex
 	{
-		glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
-		glm::vec3 Normal = { 0.0f, 0.0f, 0.0f };
-		glm::vec2 UV = { 0.0f, 0.0f };
+		glm::vec3 position = { 0.0f, 0.0f, 0.0f };
+		glm::vec3 normal = { 0.0f, 0.0f, 0.0f };
+		glm::vec2 uv = { 0.0f, 0.0f };
 	};
 
-	struct RaycastResult
+	struct raycast_result
 	{
-		bool Hit = false;
-		glm::vec3 Position;
-		glm::vec3 Normal;
-		glm::vec2 UV;
+		bool hit = false;
+		glm::vec3 position;
+		glm::vec3 normal;
+		glm::vec2 uv;
 	};
 
 	/// <summary>
 	/// A axis aligned bounding box
 	/// </summary>
-	class BoundingBox
+	class bounding_box
 	{
 	public:
 
 		/// <summary>
 		/// Minimum and maximum point
 		/// </summary>
-		glm::vec3 Min, Max;
+		glm::vec3 min, max;
 
-		BoundingBox() : Min(), Max() {}
-		BoundingBox(const glm::vec3& min, const glm::vec3& max) : Min(min), Max(max) {}
+		bounding_box() : min(), max() {}
+		bounding_box(const glm::vec3& min, const glm::vec3& max) : min(min), max(max) {}
 
 		/// <summary>
 		/// Split this bouning box into 2 bounding boxes along the given axis at the given value
@@ -74,81 +74,81 @@ namespace rt {
 		/// <param name="value">The value to split at</param>
 		/// <param name="left">The left part of the split</param>
 		/// <param name="right">The right part of the split</param>
-		void Split(Axis axis, float value, BoundingBox& left, BoundingBox& right) const;
+		void split(axis axis, float value, bounding_box& left, bounding_box& right) const;
 
 		/// <summary>
-		/// Returns the sturface of this bounding box
+		/// Returns the strface of this bounding box
 		/// </summary>
-		float Surface() const;
+		float surface() const;
 
 		/// <summary>
 		/// Tests if the given ray intersects this bounding box
 		/// </summary>
 		/// <param name="ray">The ray</param>
 		/// <returns>true of the ray intersects this bounding box</returns>
-		bool Intersect(const Ray& ray) const;
+		bool intersect(const ray& ray) const;
 	};
 
 	/// <summary>
 	/// A triangle
 	/// </summary>
-	class Triangle
+	class triangle
 	{
 	public:
 		/// <summary>
 		/// The vertices
 		/// </summary>
-		std::array<Vertex, 3> Vertices;
+		std::array<vertex, 3> vertices;
 
 		/// <summary>
 		/// Get the face normal (ai, cross product between 2 edges)
 		/// </summary>
 		/// <returns></returns>
-		const glm::vec3& GetFaceNormal() const { return m_FaceNormal; }
+		const glm::vec3& get_face_normal() const { return m_face_normal; }
 
 		/// <summary>
 		/// Compute baricentric coordinates
 		/// </summary>
 		/// <param name="point">The point</param>
 		/// <returns>The baricentric coordinates for the given point</returns>
-		glm::vec3 Baricentric(const glm::vec3& point) const;
+		glm::vec3 baricentric(const glm::vec3& point) const;
 
 		/// <summary>
 		/// Updates internal values that are used for computing intersection faster.
 		/// Must be called when vertices are updated
 		/// </summary>
-		void Update();
+		void update();
 
 	private:
-		std::array<glm::vec3, 3> m_Edges;
-		glm::vec3 m_FaceNormal;
-		float m_D00, m_D01, m_D11;
-		float m_InvDen;
+		std::array<glm::vec3, 3> m_edges;
+		glm::vec3 m_face_normal;
+		float m_d00, m_d01, m_d11;
+		float m_inv_den;
 	};
 
 
 	/// <summary>
 	/// A Material
 	/// </summary>
-	struct Material
+	struct material
 	{
-		Material();
-		std::shared_ptr<Sampler2D> Albedo;
-		std::shared_ptr<Sampler2D> Emission;
-		std::shared_ptr<Sampler2D> Roughness;
-		std::shared_ptr<Sampler2D> Metallic;
+		material();
+		std::shared_ptr<sampler_2d> albedo;
+		std::shared_ptr<sampler_2d> emission;
+		std::shared_ptr<sampler_2d> roughness;
+		std::shared_ptr<sampler_2d> metallic;
 	};
 
 	/// <summary>
 	/// A KD-tree for triangles. Internally used by Mesh to optimize intersection tests.
 	/// </summary>
-	class KDTreeNode
+	class kd_tree_node
 	{
 	public:
 		/// <summary>
 		/// Constructs and empty node
 		/// </summary>
-		KDTreeNode() {}
+		kd_tree_node() {}
 
 		/// <summary>
 		/// Recursively constructs a tree
@@ -156,239 +156,239 @@ namespace rt {
 		/// <param name="triangles">The triangles</param>
 		/// <param name="bounds">A bounding box that contains all the triangles</param>
 		/// <param name="depth">The depth of this node</param>
-		KDTreeNode(const std::vector<Triangle>& triangles, const BoundingBox& bounds, uint32_t depth);
+		kd_tree_node(const std::vector<triangle>& triangles, const bounding_box& bounds, uint32_t depth);
 
 		/// <summary>
 		/// Returns the maximum depth of the tree
 		/// </summary>
-		const uint32_t GetMaxDepth() const;
+		const uint32_t get_max_depth() const;
 
 		/// <summary>
 		/// Returns the triangles contained in this node
 		/// </summary>
-		const std::vector<Triangle>& GetTriangles() const { return m_Triangles; }
+		const std::vector<triangle>& get_triangles() const { return m_triangles; }
 		
 		/// <summary>
 		/// Returns the bounds of this node
 		/// </summary>
-		const BoundingBox& GetBounds() const { return m_Bounds; }
+		const bounding_box& get_bounds() const { return m_bounds; }
 
 		/// <summary>
 		/// Returns the left child, or nullptr if this node is a leaf
 		/// </summary>
-		const std::unique_ptr<KDTreeNode>& GetLeft() const { return m_Left; }
+		const std::unique_ptr<kd_tree_node>& get_left() const { return m_left; }
 		
 		/// <summary>
 		/// Returns the right child, or nullptr if this node is a leaf
 		/// </summary>
-		const std::unique_ptr<KDTreeNode>& GetRight() const { return  m_Right; }
+		const std::unique_ptr<kd_tree_node>& get_right() const { return  m_right; }
 
 	private:
-		uint32_t m_Depth = 0;
-		BoundingBox m_Bounds;
-		std::vector<Triangle> m_Triangles;
-		std::unique_ptr<KDTreeNode> m_Left = nullptr;
-		std::unique_ptr<KDTreeNode> m_Right = nullptr;
+		uint32_t m_depth = 0;
+		bounding_box m_bounds;
+		std::vector<triangle> m_triangles;
+		std::unique_ptr<kd_tree_node> m_left = nullptr;
+		std::unique_ptr<kd_tree_node> m_right = nullptr;
 	};
 
-	class ObjectID
+	class object_id
 	{
 	public:
-		const size_t ID;
-		ObjectID(): ID(s_Next++) {}
+		const size_t id;
+		object_id(): id(s_next++) {}
 	private:
-		static size_t s_Next;
+		static size_t s_next;
 	};
 
 	/// <summary>
 	/// A generic shape
 	/// </summary>
-	class Shape 
+	class shape 
 	{
 	public:
 		/// <summary>
 		/// Optimize the shape before rendering
 		/// </summary>
-		virtual void Compile() = 0;
+		virtual void compile() = 0;
 
 		/// <summary>
 		/// Intersection test with this shape
 		/// </summary>
 		/// <param name="ray">The ray, in local coordinates</param>
 		/// <returns>The result of the intersection</returns>
-		virtual RaycastResult Intersect(const Ray& ray) const = 0;
+		virtual raycast_result intersect(const ray& ray) const = 0;
 
 		/// <summary>
 		/// Get the local bounds of this shape
 		/// </summary>
 		/// <returns></returns>
-		virtual const BoundingBox& GetBounds() const = 0;
+		virtual const bounding_box& get_bounds() const = 0;
 	};
 
 	/// <summary>
 	/// A sphere
 	/// </summary>
-	class Sphere : public Shape
+	class sphere : public shape
 	{
 	public:
-		void Compile() override {}
-		RaycastResult Intersect(const Ray& ray) const override;
-		const BoundingBox& GetBounds() const override { return m_Bounds; }
+		void compile() override {}
+		raycast_result intersect(const ray& ray) const override;
+		const bounding_box& get_bounds() const override { return m_Bounds; }
 	private:
-		BoundingBox m_Bounds = BoundingBox({ -1, -1, -1 }, { 1, 1, 1 });
+		bounding_box m_Bounds = bounding_box({ -1, -1, -1 }, { 1, 1, 1 });
 	};
 
 	/// <summary>
 	/// A triangle mesh
 	/// </summary>
-	class Mesh: public Shape, public ObjectID
+	class mesh: public shape, public object_id
 	{
 	private:
 
-		RaycastResult IntersectTriangle(const Ray& ray, const Triangle& triangle) const;
-		void IntersectInternal(const Ray& ray, const std::unique_ptr<KDTreeNode>& node, RaycastResult& result, float& distance) const;
+		raycast_result intersect_triangle(const ray& ray, const triangle& triangle) const;
+		void intersect_internal(const ray& ray, const std::unique_ptr<kd_tree_node>& node, raycast_result& result, float& distance) const;
 
-		BoundingBox m_Bounds;
-		std::vector<Triangle> m_Triangles;
-		std::unique_ptr<KDTreeNode> m_Tree;
+		bounding_box m_bounds;
+		std::vector<triangle> m_triangles;
+		std::unique_ptr<kd_tree_node> m_tree;
 	
 	public:
-		const BoundingBox& GetBounds() const override { return m_Bounds; }
+		const bounding_box& get_bounds() const override { return m_bounds; }
 		
 		/// <summary>
 		/// Returns the triangles of this mesh
 		/// </summary>
-		const std::vector<Triangle>& GetTriangles() const { return m_Triangles; }
+		const std::vector<triangle>& get_triangles() const { return m_triangles; }
 
 		/// <summary>
 		/// Adds a new triangle
 		/// </summary>
 		/// <returns>A reference to the new triangle</returns>
-		Triangle& AddTriangle();
+		triangle& add_triangle();
 
 
-		RaycastResult Intersect(const Ray& ray) const override;
+		raycast_result intersect(const ray& ray) const override;
 		
-		void Compile() override;
+		void compile() override;
 		
 		/// <summary>
 		/// Returns the current KD-tree for this mesh
 		/// </summary>
-		const std::unique_ptr<KDTreeNode>& GetKDTree() const { return m_Tree; }
+		const std::unique_ptr<kd_tree_node>& GetKDTree() const { return m_tree; }
 	};
 
 	/// <summary>
 	/// A scene node
 	/// </summary>
-	class SceneNode
+	class scene_node
 	{
 
 	private:
-		glm::mat4 m_Transform = glm::identity<glm::mat4>();
-		glm::mat4 m_InvTransform = glm::identity<glm::mat4>();
-		glm::mat4 m_NormalTransform = glm::identity<glm::mat4>();
-		void UpdateMatrices();
+		glm::mat4 m_transform = glm::identity<glm::mat4>();
+		glm::mat4 m_inv_transform = glm::identity<glm::mat4>();
+		glm::mat4 m_normal_transform = glm::identity<glm::mat4>();
+		void update_matrices();
 
 	public:
 
 		/// <summary>
 		/// The material
 		/// </summary>
-		rt::Material Material;
+		rt::material material;
 
 		/// <summary>
 		/// The shape
 		/// </summary>
-		std::shared_ptr<rt::Shape> Shape = nullptr;
+		std::shared_ptr<rt::shape> shape = nullptr;
 		
 		/// <summary>
 		/// Sets the current transform to an identity matrix
 		/// </summary>
-		void LoadIdentity();
+		void load_identity();
 
 		/// <summary>
 		/// Translate this node
 		/// </summary>
 		/// <param name="t">Translation</param>
-		void Translate(const glm::vec3& t);
+		void translate(const glm::vec3& t);
 
 		/// <summary>
 		/// Rotate this node
 		/// </summary>
 		/// <param name="axis">The axis</param>
 		/// <param name="angle">The angle of rotation (radians)</param>
-		void Rotate(const glm::vec3& axis, float angle);
+		void rotate(const glm::vec3& axis, float angle);
 
 		/// <summary>
 		/// Scale this node
 		/// </summary>
 		/// <param name="s">The scale factor</param>
-		void Scale(const glm::vec3& s);
+		void scale(const glm::vec3& s);
 
 		/// <summary>
 		/// Post-multiply the current transform by the given matrix
 		/// </summary>
 		/// <param name="mat">The matrix to multiply</param>
-		void Multiply(const glm::mat4& mat);
+		void multiply(const glm::mat4& mat);
 
 		/// <summary>
 		/// Returns the current transform
 		/// </summary>
-		const glm::mat4& GetTransform() const { return m_Transform; }
+		const glm::mat4& get_transform() const { return m_transform; }
 		
 		/// <summary>
 		/// Returns the inverse of the current transform
 		/// </summary>
-		const glm::mat4& GetInverseTransform() const { return m_InvTransform; }
+		const glm::mat4& get_inverse_transform() const { return m_inv_transform; }
 		
 		/// <summary>
 		/// Returns the transform to apply to normal vectors (inverse-transpose of the current transform)
 		/// </summary>
 		/// <returns></returns>
-		const glm::mat4& GetNormalTransform() const { return m_NormalTransform; }
+		const glm::mat4& get_normal_transform() const { return m_normal_transform; }
 	};
 
 	/// <summary>
 	/// A scene
 	/// </summary>
-	class Scene 
+	class scene 
 	{
 	public:
 		
-		Scene();
+		scene();
 
 		/// <summary>
 		/// The camera to use when rendering
 		/// </summary>
-		rt::Camera Camera;
+		rt::camera camera;
 
 		/// <summary>
 		/// The scene's background
 		/// </summary>
-		std::shared_ptr<Sampler3D> Background = nullptr;
+		std::shared_ptr<sampler_3d> background = nullptr;
 
 		/// <summary>
 		/// The scene's nodes
 		/// </summary>
-		std::vector<std::shared_ptr<SceneNode>> Nodes;
+		std::vector<std::shared_ptr<scene_node>> nodes;
 
 		/// <summary>
 		/// Cast a ray on the scene
 		/// </summary>
 		/// <param name="ray">The ray</param>
-		/// <param name="returnOnFirstHit">If true, the function returns as soon as some node is hit</param>
-		/// <param name="avoidNodes">If non-emtpy, this nodes will not be considered for intersection tests</param>
+		/// <param name="return_on_first_hit">If true, the function returns as soon as some node is hit</param>
+		/// <param name="avoid_nodes">If non-emtpy, this nodes will not be considered for intersection tests</param>
 		/// <returns>The closest intersection</returns>
-		std::tuple<RaycastResult, std::shared_ptr<SceneNode>> CastRay(const Ray& ray, bool returnOnFirstHit = false, const std::vector<std::shared_ptr<SceneNode>>& avoidNodes = {}) const;
+		std::tuple<raycast_result, std::shared_ptr<scene_node>> cast_ray(const ray& ray, bool return_on_first_hit = false, const std::vector<std::shared_ptr<scene_node>>& avoid_nodes = {}) const;
 		
 		/// <summary>
 		/// Get all the nodes that emit light. This takes into account the Emission property of the material
 		/// </summary>
-		const std::vector<std::shared_ptr<SceneNode>>& GetLightSources() const { return m_LightSources; }
+		const std::vector<std::shared_ptr<scene_node>>& get_light_sources() const { return m_light_sources; }
 
-		void Compile();
+		void compile();
 
 	private:
-		std::vector<std::shared_ptr<SceneNode>> m_LightSources;
+		std::vector<std::shared_ptr<scene_node>> m_light_sources;
 	};
 }

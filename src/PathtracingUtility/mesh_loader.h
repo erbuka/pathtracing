@@ -7,15 +7,15 @@
 
 namespace rt
 {
-	class Mesh;
+	class mesh;
 
 	namespace utility
 	{
 		/// <summary>
 		/// Loads meshes from a Wavefront file
 		/// </summary>
-		/// <param name="fileName">The file</param>
+		/// <param name="file_name">The file</param>
 		/// <returns>A map of the meshes found in the given file</returns>
-		std::map<std::string, std::shared_ptr<rt::Mesh>> LoadMeshesFromWavefront(std::string_view fileName);
+		std::map<std::string, std::shared_ptr<rt::mesh>> load_meshes_from_wavefront(std::string_view file_name);
 	}
 }

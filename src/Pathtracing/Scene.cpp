@@ -1,4 +1,4 @@
-#include "Scene.h"
+#include "scene.h"
 
 #include <fstream>
 #include <regex>
@@ -8,145 +8,145 @@
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/transform.hpp>
 
-#include "Sampler.h"
+#include "sampler.h"
 
 namespace rt 
 {
 
-	size_t ObjectID::s_Next = 0;
+	size_t object_id::s_next = 0;
 
-	Ray operator*(const glm::mat4& m, const Ray& r)
+	ray operator*(const glm::mat4& m, const ray& r)
 	{
-		auto origin = glm::vec3(m * glm::vec4(r.Origin, 1.0f));
-		auto direction = glm::normalize(glm::vec3(m * glm::vec4(r.Direction, 0.0f)));
+		auto origin = glm::vec3(m * glm::vec4(r.origin, 1.0f));
+		auto direction = glm::normalize(glm::vec3(m * glm::vec4(r.direction, 0.0f)));
 		return { origin, direction };
 	}
 
-	float BoundingBox::Surface() const
+	float bounding_box::surface() const
 	{
-		return 2 * ((Max.x - Min.x) * (Max.y - Min.y) + (Max.x - Min.x) * (Max.z - Min.z) + (Max.z - Min.z) * (Max.y - Min.y));
+		return 2 * ((max.x - min.x) * (max.y - min.y) + (max.x - min.x) * (max.z - min.z) + (max.z - min.z) * (max.y - min.y));
 	}
 
 
-	void BoundingBox::Split(Axis axis, float value, BoundingBox& left, BoundingBox& right) const
+	void bounding_box::split(axis axis, float value, bounding_box& left, bounding_box& right) const
 	{
 		switch (axis)
 		{
-		case Axis::X:
-			left.Min = { Min.x, Min.y, Min.z };
-			left.Max = { value, Max.y, Max.z };
-			right.Min = { value, Min.y, Min.z };
-			right.Max = { Max.x, Max.y, Max.z };
+		case axis::X:
+			left.min = { min.x, min.y, min.z };
+			left.max = { value, max.y, max.z };
+			right.min = { value, min.y, min.z };
+			right.max = { max.x, max.y, max.z };
 			break;
-		case Axis::Y:
-			left.Min = { Min.x, Min.y, Min.z };
-			left.Max = { Max.x, value, Max.z };
-			right.Min = { Min.x, value, Min.z };
-			right.Max = { Max.x, Max.y, Max.z };
+		case axis::Y:
+			left.min = { min.x, min.y, min.z };
+			left.max = { max.x, value, max.z };
+			right.min = { min.x, value, min.z };
+			right.max = { max.x, max.y, max.z };
 			break;
-		case Axis::Z:
-			left.Min = { Min.x, Min.y, Min.z };
-			left.Max = { Max.x, Max.y, value };
-			right.Min = { Min.x, Min.y, value };
-			right.Max = { Max.x, Max.y, Max.z };
+		case axis::Z:
+			left.min = { min.x, min.y, min.z };
+			left.max = { max.x, max.y, value };
+			right.min = { min.x, min.y, value };
+			right.max = { max.x, max.y, max.z };
 			break;
 		default:
 			break;
 		}
 	}
 
-	bool BoundingBox::Intersect(const Ray& ray) const
+	bool bounding_box::intersect(const ray& ray) const
 	{
-		const float t1 = (Min.x - ray.Origin.x) / ray.Direction.x;
-		const float t2 = (Max.x - ray.Origin.x) / ray.Direction.x;
-		const float t3 = (Min.y - ray.Origin.y) / ray.Direction.y;
-		const float t4 = (Max.y - ray.Origin.y) / ray.Direction.y;
-		const float t5 = (Min.z - ray.Origin.z) / ray.Direction.z;
-		const float t6 = (Max.z - ray.Origin.z) / ray.Direction.z;
+		const float t1 = (min.x - ray.origin.x) / ray.direction.x;
+		const float t2 = (max.x - ray.origin.x) / ray.direction.x;
+		const float t3 = (min.y - ray.origin.y) / ray.direction.y;
+		const float t4 = (max.y - ray.origin.y) / ray.direction.y;
+		const float t5 = (min.z - ray.origin.z) / ray.direction.z;
+		const float t6 = (max.z - ray.origin.z) / ray.direction.z;
 		const float t7 = std::fmax(std::fmax(std::fmin(t1, t2), std::fmin(t3, t4)), std::fmin(t5, t6));
 		const float t8 = std::fmin(std::fmin(std::fmax(t1, t2), std::fmax(t3, t4)), std::fmax(t5, t6));
 		const float t9 = (t8 < 0 || t7 > t8) ? -1 : t7;
 		if (t9 != -1) {
-			//result.Point = ray.Direction * t9 + ray.Origin;
-			//result.Hit = true;
+			//result.Point = ray.direction * t9 + ray.origin;
+			//result.hit = true;
 			return true;
 		}
 		return false;
 	}
 
 
-	glm::vec3 Triangle::Baricentric(const glm::vec3& point) const
+	glm::vec3 triangle::baricentric(const glm::vec3& point) const
 	{
 		// Fast baricentric coordinates:
 		// https://gamedev.stackexchange.com/questions/23743/whats-the-most-efficient-way-to-find-barycentric-coordinates
-		const glm::vec3 v2 = point - Vertices[0].Position;
-		const float d20 = glm::dot(v2, m_Edges[0]);
-		const float d21 = glm::dot(v2, m_Edges[1]);
-		const float v = (m_D11 * d20 - m_D01 * d21) * m_InvDen;
-		const float w = (m_D00 * d21 - m_D01 * d20) * m_InvDen;
+		const glm::vec3 v2 = point - vertices[0].position;
+		const float d20 = glm::dot(v2, m_edges[0]);
+		const float d21 = glm::dot(v2, m_edges[1]);
+		const float v = (m_d11 * d20 - m_d01 * d21) * m_inv_den;
+		const float w = (m_d00 * d21 - m_d01 * d20) * m_inv_den;
 		const float u = 1.0f - v - w;
 		return { u, v, w };
 	}
 
-	void Triangle::Update()
+	void triangle::update()
 	{
-		m_FaceNormal = glm::normalize(glm::cross(Vertices[1].Position - Vertices[0].Position,
-			Vertices[2].Position - Vertices[1].Position));
+		m_face_normal = glm::normalize(glm::cross(vertices[1].position - vertices[0].position,
+			vertices[2].position - vertices[1].position));
 
-		m_Edges = {
-			Vertices[1].Position - Vertices[0].Position,
-			Vertices[2].Position - Vertices[0].Position,
-			Vertices[2].Position - Vertices[1].Position
+		m_edges = {
+			vertices[1].position - vertices[0].position,
+			vertices[2].position - vertices[0].position,
+			vertices[2].position - vertices[1].position
 		};
 
-		m_D00 = glm::dot(m_Edges[0], m_Edges[0]);
-		m_D01 = glm::dot(m_Edges[0], m_Edges[1]);
-		m_D11 = glm::dot(m_Edges[1], m_Edges[1]);
+		m_d00 = glm::dot(m_edges[0], m_edges[0]);
+		m_d01 = glm::dot(m_edges[0], m_edges[1]);
+		m_d11 = glm::dot(m_edges[1], m_edges[1]);
 
-		m_InvDen = 1.0f / (m_D00 * m_D11 - m_D01 * m_D01);
+		m_inv_den = 1.0f / (m_d00 * m_d11 - m_d01 * m_d01);
 	}
 	
 
-	Triangle& Mesh::AddTriangle()
+	triangle& mesh::add_triangle()
 	{
-		return m_Triangles.emplace_back();
+		return m_triangles.emplace_back();
 	}
 	
-	RaycastResult Mesh::Intersect(const Ray& ray) const
+	raycast_result mesh::intersect(const ray& ray) const
 	{
-		RaycastResult result;
+		raycast_result result;
 		float distance = std::numeric_limits<float>::max();
-		IntersectInternal(ray, m_Tree, result, distance);
+		intersect_internal(ray, m_tree, result, distance);
 		return result;
 	}
 
-	void Mesh::Compile()
+	void mesh::compile()
 	{
-		auto& min = m_Bounds.Min;
-		auto& max = m_Bounds.Max;
+		auto& min = m_bounds.min;
+		auto& max = m_bounds.max;
 
-		for (auto& t : m_Triangles) 
+		for (auto& t : m_triangles) 
 		{
-			t.Update();
+			t.update();
 
-			for (auto& v : t.Vertices)
+			for (auto& v : t.vertices)
 			{
-				min = glm::min(min, v.Position);
-				max = glm::max(max, v.Position);
+				min = glm::min(min, v.position);
+				max = glm::max(max, v.position);
 			}
 
 		}
 
-		m_Tree = std::make_unique<KDTreeNode>(m_Triangles, m_Bounds, 0);
+		m_tree = std::make_unique<kd_tree_node>(m_triangles, m_bounds, 0);
 
 	}
 
-	RaycastResult Mesh::IntersectTriangle(const Ray& ray, const Triangle& t) const
+	raycast_result mesh::intersect_triangle(const ray& ray, const triangle& t) const
 	{
-		RaycastResult result;
+		raycast_result result;
 
-		auto l = ray.Origin - t.Vertices[0].Position;
-		float distance = glm::dot(l, t.GetFaceNormal());
+		auto l = ray.origin - t.vertices[0].position;
+		float distance = glm::dot(l, t.get_face_normal());
 
 		if (distance < 0)
 		{
@@ -154,7 +154,7 @@ namespace rt
 			return result;
 		}
 
-		float cosine = glm::dot(ray.Direction, t.GetFaceNormal());
+		float cosine = glm::dot(ray.direction, t.get_face_normal());
 
 		// Check if the ray is never intersecting the triangle plane
 		if (cosine >= 0)
@@ -164,65 +164,65 @@ namespace rt
 
 
 		// Project the ray on the triangle plane 
-		auto projection = ray.Origin + ray.Direction * (distance / -cosine);
+		auto projection = ray.origin + ray.direction * (distance / -cosine);
 
 		// Use baricentric coordinates to check if the ray projection
 		// is contained in the triangle
-		auto bar = t.Baricentric(projection);
+		auto bar = t.baricentric(projection);
 
 		if (bar.x >= 0 && bar.y >= 0 && bar.z >= 0)
 		{
-			result.Hit = true;
-			result.Position = projection;
-			result.Normal = glm::normalize(
-				t.Vertices[0].Normal * bar.x +
-				t.Vertices[1].Normal * bar.y +
-				t.Vertices[2].Normal * bar.z);
-			result.UV =
-				bar.x * t.Vertices[0].UV +
-				bar.y * t.Vertices[1].UV +
-				bar.z * t.Vertices[2].UV;
+			result.hit = true;
+			result.position = projection;
+			result.normal = glm::normalize(
+				t.vertices[0].normal * bar.x +
+				t.vertices[1].normal * bar.y +
+				t.vertices[2].normal * bar.z);
+			result.uv =
+				bar.x * t.vertices[0].uv +
+				bar.y * t.vertices[1].uv +
+				bar.z * t.vertices[2].uv;
 		}
 
 		return result;
 	}
 
-	void Mesh::IntersectInternal(const Ray& ray, const std::unique_ptr<KDTreeNode>& node, RaycastResult& result, float& distance) const
+	void mesh::intersect_internal(const ray& ray, const std::unique_ptr<kd_tree_node>& node, raycast_result& result, float& distance) const
 	{
-		if (node->GetBounds().Intersect(ray))
+		if (node->get_bounds().intersect(ray))
 		{
-			for (auto& t : node->GetTriangles())
+			for (auto& t : node->get_triangles())
 			{
-				auto r = IntersectTriangle(ray, t);
+				auto r = intersect_triangle(ray, t);
 
-				auto d = glm::length2(ray.Origin - r.Position);
+				auto d = glm::length2(ray.origin - r.position);
 
-				if (d < distance && r.Hit)
+				if (d < distance && r.hit)
 				{
 					result = r;
 					distance = d;
 				}
 			}
 
-			if (node->GetLeft() != nullptr)
-				IntersectInternal(ray, node->GetLeft(), result, distance);
+			if (node->get_left() != nullptr)
+				intersect_internal(ray, node->get_left(), result, distance);
 
-			if (node->GetRight() != nullptr)
-				IntersectInternal(ray, node->GetRight(), result, distance);
+			if (node->get_right() != nullptr)
+				intersect_internal(ray, node->get_right(), result, distance);
 
 		}
 	}
 
-	KDTreeNode::KDTreeNode(const std::vector<Triangle>& triangles, const BoundingBox& bounds, uint32_t depth) :
-		m_Bounds(bounds),
-		m_Depth(depth)
+	kd_tree_node::kd_tree_node(const std::vector<triangle>& triangles, const bounding_box& bounds, uint32_t depth) :
+		m_bounds(bounds),
+		m_depth(depth)
 	{
 
 		// Stop condition
-		if (triangles.size() <= 1 || m_Depth == 100)
+		if (triangles.size() <= 1 || m_depth == 100)
 		{
 			for (auto& t : triangles)
-				m_Triangles.push_back(t);
+				m_triangles.push_back(t);
 			return;
 		}
 
@@ -234,8 +234,8 @@ namespace rt
 
 		struct
 		{
-			BoundingBox LeftBounds, RightBounds;
-			std::vector<Triangle> LeftTris, RightTris;
+			bounding_box LeftBounds, RightBounds;
+			std::vector<triangle> LeftTris, RightTris;
 		} result;
 
 		// Take the median of all points as split point
@@ -243,25 +243,25 @@ namespace rt
 
 		for (auto& t : triangles)
 		{
-			median += t.Vertices[0].Position[uAxis];
-			median += t.Vertices[1].Position[uAxis];
-			median += t.Vertices[2].Position[uAxis];
+			median += t.vertices[0].position[uAxis];
+			median += t.vertices[1].position[uAxis];
+			median += t.vertices[2].position[uAxis];
 		}
 
 		median /= 3 * triangles.size();
 
-		m_Bounds.Split(static_cast<Axis>(uAxis), median, result.LeftBounds, result.RightBounds);
+		m_bounds.split(static_cast<axis>(uAxis), median, result.LeftBounds, result.RightBounds);
 
 		// Test every triangle in both left and right bounding boxes
 		for (auto& t : triangles)
 		{
 
-			if (t.Vertices[0].Position[uAxis] <= median || t.Vertices[1].Position[uAxis] <= median || t.Vertices[2].Position[uAxis] <= median)
+			if (t.vertices[0].position[uAxis] <= median || t.vertices[1].position[uAxis] <= median || t.vertices[2].position[uAxis] <= median)
 			{
 				result.LeftTris.push_back(t);
 			}
 
-			if (t.Vertices[0].Position[uAxis] >= median || t.Vertices[1].Position[uAxis] >= median || t.Vertices[2].Position[uAxis] >= median)
+			if (t.vertices[0].position[uAxis] >= median || t.vertices[1].position[uAxis] >= median || t.vertices[2].position[uAxis] >= median)
 			{
 				result.RightTris.push_back(t);
 			}
@@ -273,96 +273,96 @@ namespace rt
 		if (result.LeftTris.size() + result.RightTris.size() > 1.5 * triangles.size())
 		{
 			// If so, subdiving is not efficent anymore
-			m_Triangles = triangles;
+			m_triangles = triangles;
 		}
 		else
 		{
 			// Subidivide
 
 			if (result.LeftTris.size() > 0)
-				m_Left = std::make_unique<KDTreeNode>(result.LeftTris, result.LeftBounds, depth + 1);
+				m_left = std::make_unique<kd_tree_node>(result.LeftTris, result.LeftBounds, depth + 1);
 
 			if (result.RightTris.size() > 0)
-				m_Right = std::make_unique<KDTreeNode>(result.RightTris, result.RightBounds, depth + 1);
+				m_right = std::make_unique<kd_tree_node>(result.RightTris, result.RightBounds, depth + 1);
 		}
 	}
 
-	const uint32_t KDTreeNode::GetMaxDepth() const
+	const uint32_t kd_tree_node::get_max_depth() const
 	{
-		const auto d0 = m_Left ? m_Left->GetMaxDepth() : m_Depth;
-		const auto d1 = m_Right ? m_Left->GetMaxDepth() : m_Depth;
+		const auto d0 = m_left ? m_left->get_max_depth() : m_depth;
+		const auto d1 = m_right ? m_left->get_max_depth() : m_depth;
 		return std::max(d0, d1);
 	}
 
-	void SceneNode::UpdateMatrices()
+	void scene_node::update_matrices()
 	{
-		m_InvTransform = glm::inverse(m_Transform);
-		m_NormalTransform = glm::transpose(m_InvTransform);
+		m_inv_transform = glm::inverse(m_transform);
+		m_normal_transform = glm::transpose(m_inv_transform);
 	}
 
-	void SceneNode::LoadIdentity()
+	void scene_node::load_identity()
 	{
-		m_Transform = glm::identity<glm::mat4>();
-		UpdateMatrices();
+		m_transform = glm::identity<glm::mat4>();
+		update_matrices();
 	}
 
-	void SceneNode::Translate(const glm::vec3& t)
+	void scene_node::translate(const glm::vec3& t)
 	{
-		m_Transform *= glm::translate(t);
-		UpdateMatrices();
+		m_transform *= glm::translate(t);
+		update_matrices();
 	}
 
-	void SceneNode::Rotate(const glm::vec3& axis, float angle)
+	void scene_node::rotate(const glm::vec3& axis, float angle)
 	{
-		m_Transform *= glm::rotate(angle, axis);
-		UpdateMatrices();
+		m_transform *= glm::rotate(angle, axis);
+		update_matrices();
 	}
 
-	void SceneNode::Scale(const glm::vec3& s)
+	void scene_node::scale(const glm::vec3& s)
 	{
-		m_Transform *= glm::scale(s);
-		UpdateMatrices();
+		m_transform *= glm::scale(s);
+		update_matrices();
 	}
 
-	void SceneNode::Multiply(const glm::mat4& mat)
+	void scene_node::multiply(const glm::mat4& mat)
 	{
-		m_Transform *= mat;
-		UpdateMatrices();
+		m_transform *= mat;
+		update_matrices();
 	}
 
-	void Scene::Compile()
+	void scene::compile()
 	{
 
-		std::for_each(Nodes.begin(), Nodes.end(), [](std::shared_ptr<SceneNode>& n) {
-			if (n->Shape)
-				n->Shape->Compile();
+		std::for_each(nodes.begin(), nodes.end(), [](std::shared_ptr<scene_node>& n) {
+			if (n->shape)
+				n->shape->compile();
 		});
 		
-		m_LightSources.clear();
+		m_light_sources.clear();
 
-		for (auto& n : Nodes)
+		for (auto& n : nodes)
 		{
-			const auto avg = n->Material.Emission->Average();
+			const auto avg = n->material.emission->average();
 			if (avg.r + avg.g + avg.b > 0.0f)
-				m_LightSources.push_back(n);
+				m_light_sources.push_back(n);
 		}
 
 	}
 
-	Scene::Scene()
+	scene::scene()
 	{
-		Background = std::make_shared<ColorSampler>(glm::vec3{ 0.0f, 0.0f, 0.0f });
+		background = std::make_shared<color_sampler>(glm::vec3{ 0.0f, 0.0f, 0.0f });
 	}
 
-	std::tuple<RaycastResult, std::shared_ptr<SceneNode>> Scene::CastRay(const Ray& ray, bool returnOnFirstHit, const std::vector<std::shared_ptr<SceneNode>>& avoidNodes) const
+	std::tuple<raycast_result, std::shared_ptr<scene_node>> scene::cast_ray(const ray& ray, bool return_on_first_hit, const std::vector<std::shared_ptr<scene_node>>& avoid_nodes) const
 	{
 		float distance = std::numeric_limits<float>::max();
-		RaycastResult raycastResult;
-		std::shared_ptr<SceneNode> sceneNode = nullptr;
+		raycast_result raycastResult;
+		std::shared_ptr<scene_node> sceneNode = nullptr;
 			
-		for (const auto& node : Nodes)
+		for (const auto& node : nodes)
 		{
-			if (!avoidNodes.empty() && std::find(avoidNodes.begin(), avoidNodes.end(), node) != avoidNodes.end())
+			if (!avoid_nodes.empty() && std::find(avoid_nodes.begin(), avoid_nodes.end(), node) != avoid_nodes.end())
 			{
 				continue;
 			}
@@ -370,19 +370,19 @@ namespace rt
 			// Ray is transformed by the inverse tranform of the node
 			// The intersection test is performed in local coordinates, because
 			// transforming the ray is faster than transforming all the vertices
-			auto r0 = node->Shape->Intersect(node->GetInverseTransform() * ray);
-			if (r0.Hit)
+			auto r0 = node->shape->intersect(node->get_inverse_transform() * ray);
+			if (r0.hit)
 			{
 				// Transform to world coordinates
-				r0.Position = node->GetTransform() * glm::vec4(r0.Position, 1.0f);
+				r0.position = node->get_transform() * glm::vec4(r0.position, 1.0f);
 
 				// The vec3 cast is needed otherwise it would normalize as a vec4
-				r0.Normal = glm::normalize(glm::vec3(node->GetNormalTransform() * glm::vec4(r0.Normal, 0.0f)));
+				r0.normal = glm::normalize(glm::vec3(node->get_normal_transform() * glm::vec4(r0.normal, 0.0f)));
 				
-				if (returnOnFirstHit)
+				if (return_on_first_hit)
 					return { r0, node };
 				
-				float d0 = glm::length2(r0.Position - ray.Origin);
+				float d0 = glm::length2(r0.position - ray.origin);
 
 
 				if (d0 < distance) 
@@ -400,12 +400,12 @@ namespace rt
 
 	}
 
-	RaycastResult Sphere::Intersect(const Ray& ray) const
+	raycast_result sphere::intersect(const ray& ray) const
 	{
-		RaycastResult result;
+		raycast_result result;
 
-		float projection = glm::dot((glm::vec3(0.0f, 0.0f, 0.0f) - ray.Origin), ray.Direction);
-		float squaredDistance = glm::dot(ray.Origin, ray.Origin) - projection * projection;
+		float projection = glm::dot((glm::vec3(0.0f, 0.0f, 0.0f) - ray.origin), ray.direction);
+		float squaredDistance = glm::dot(ray.origin, ray.origin) - projection * projection;
 
 		if (squaredDistance > 1.0f)
 		{
@@ -430,24 +430,24 @@ namespace rt
 		// t1 is the closest, but might be negative if the ray origin is
 		// inside the sphere
 
-		result.Hit = true;
-		result.Position = ray.Origin + ray.Direction * (t1 >= 0.0f ? t1 : t2);
-		result.Normal = glm::normalize(result.Position);
-		result.UV = {
-			std::atan2(result.Normal.x, result.Normal.z) / glm::pi<float>() + 0.5f,
-			result.Normal.y * 0.5f + 0.5f
+		result.hit = true;
+		result.position = ray.origin + ray.direction * (t1 >= 0.0f ? t1 : t2);
+		result.normal = glm::normalize(result.position);
+		result.uv = {
+			std::atan2(result.normal.x, result.normal.z) / glm::pi<float>() + 0.5f,
+			result.normal.y * 0.5f + 0.5f
 		};
 
 
 		return result;
 	}
 	
-	Material::Material()
+	material::material()
 	{
-		Albedo = std::make_shared<ColorSampler>(glm::vec3(1.0f, 1.0f, 1.0f));
-		Emission = std::make_shared<ColorSampler>(glm::vec3(0.0f));
-		Roughness = std::make_shared<ColorSampler>(glm::vec3(1.0f));
-		Metallic = std::make_shared<ColorSampler>(glm::vec3(0.0f));
+		albedo = std::make_shared<color_sampler>(glm::vec3(1.0f, 1.0f, 1.0f));
+		emission = std::make_shared<color_sampler>(glm::vec3(0.0f));
+		roughness = std::make_shared<color_sampler>(glm::vec3(1.0f));
+		metallic = std::make_shared<color_sampler>(glm::vec3(0.0f));
 	}
 
 }

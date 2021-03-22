@@ -2,14 +2,14 @@
 
 #include <string_view>
 
-#include <Scene.h>
+#include <scene.h>
 
 namespace rt::utility
 {
 	/// <summary>
 	/// Load a scene from file
 	/// </summary>
-	/// <param name="fileName">A JSON file</param>
+	/// <param name="file_name">A JSON file</param>
 	/// <returns>The scene</returns>
-	Scene LoadScene(std::string_view fileName);
+	scene load_scene(std::string_view file_name);
 }

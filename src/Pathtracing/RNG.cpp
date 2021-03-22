@@ -1,11 +1,11 @@
-#include "RNG.h"
+#include "rng.h"
 
 
 #include <glm/ext.hpp>
 
 namespace rt
 {
-	glm::vec3 RNG::Hemisphere(const glm::vec3& n)
+	glm::vec3 rng::hemisphere(const glm::vec3& n)
 	{
 		glm::vec3 t;
 
@@ -20,14 +20,14 @@ namespace rt
 
 		const glm::vec3 b = glm::cross(n, t);
 
-		const float z = m_01(m_E);
+		const float z = m_01(m_e);
 		const float r = glm::sqrt(1.0f - z * z);
-		const float phi = glm::pi<float>() * 2.0f * m_01(m_E);
-		glm::vec3 tangentSample = { r * glm::cos(phi), r * glm::sin(phi), z };
+		const float phi = glm::pi<float>() * 2.0f * m_01(m_e);
+		glm::vec3 tangent_sample = { r * glm::cos(phi), r * glm::sin(phi), z };
 
-		const auto hemiDir = tangentSample.x * t + tangentSample.y * b + tangentSample.z * n;
+		const auto hemi_dir = tangent_sample.x * t + tangent_sample.y * b + tangent_sample.z * n;
 
-		return hemiDir;
+		return hemi_dir;
 
 	}
 }

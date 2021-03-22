@@ -1,9 +1,9 @@
-#include "Sandbox.h"
+#include "rtsb.h"
 
 int main() 
 {
-	sandbox::Sandbox sandbox;
-	sandbox.Start();
+	rtsb::sandbox sandbox;
+	sandbox.start();
 	return 0;
 }
 
