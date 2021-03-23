@@ -16,5 +16,5 @@ This project uses [Premake](https://premake.github.io/) to build project files.
 ### Room, 256x256, 64K samples per pixel
 ![Room, 256x256, 64K samples per pixel](results/room-256-i250.png)
 
-### Mario, 128x128, 25K sampler per pixel
-![Mario, 128x128, 25K sampler per pixel](results/mario-128-i100.png)
+### Mario, 128x128, 25K samples per pixel
+![Mario, 128x128, 25K samples per pixel](results/mario-128-i100.png)
