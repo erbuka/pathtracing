@@ -131,7 +131,6 @@ namespace rt {
 	float pathtracer_result::get_elapsed_time() const
 	{
 		using seconds = std::chrono::duration<float, std::ratio<1>>;
-		std::chrono::duration<float> x;
 		return seconds(std::chrono::system_clock::now() - m_start_time).count();
 	}
 

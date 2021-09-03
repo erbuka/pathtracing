@@ -101,7 +101,7 @@ namespace rtsb
         }
 
         /* Create a windowed mode window and its OpenGL context */
-        m_window = glfwCreateWindow(1280, 768, "Hello World", NULL, NULL);
+        m_window = glfwCreateWindow(1280, 768, "Pathtracing - Sandbox", NULL, NULL);
         if (!m_window)
         {
             glfwTerminate();

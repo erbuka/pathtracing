@@ -275,7 +275,7 @@ namespace rt {
 		/// <summary>
 		/// Returns the current KD-tree for this mesh
 		/// </summary>
-		const std::unique_ptr<kd_tree_node>& GetKDTree() const { return m_tree; }
+		const std::unique_ptr<kd_tree_node>& get_kd_tree() const { return m_tree; }
 	};
 
 	/// <summary>
