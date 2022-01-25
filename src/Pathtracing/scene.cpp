@@ -234,8 +234,8 @@ namespace rt
 
 		struct
 		{
-			bounding_box LeftBounds, RightBounds;
-			std::vector<triangle> LeftTris, RightTris;
+			bounding_box left_bounds, right_bounds;
+			std::vector<triangle> left_tris, right_tris;
 		} result;
 
 		// Take the median of all points as split point
@@ -250,7 +250,7 @@ namespace rt
 
 		median /= 3 * triangles.size();
 
-		m_bounds.split(static_cast<axis>(uAxis), median, result.LeftBounds, result.RightBounds);
+		m_bounds.split(static_cast<axis>(uAxis), median, result.left_bounds, result.right_bounds);
 
 		// Test every triangle in both left and right bounding boxes
 		for (auto& t : triangles)
@@ -258,19 +258,19 @@ namespace rt
 
 			if (t.vertices[0].position[uAxis] <= median || t.vertices[1].position[uAxis] <= median || t.vertices[2].position[uAxis] <= median)
 			{
-				result.LeftTris.push_back(t);
+				result.left_tris.push_back(t);
 			}
 
 			if (t.vertices[0].position[uAxis] >= median || t.vertices[1].position[uAxis] >= median || t.vertices[2].position[uAxis] >= median)
 			{
-				result.RightTris.push_back(t);
+				result.right_tris.push_back(t);
 			}
 		}
 
 
 		// Check that not too many triangles are in common (> 50%)
 		// between the subdivisions 
-		if (result.LeftTris.size() + result.RightTris.size() > 1.5 * triangles.size())
+		if (result.left_tris.size() + result.right_tris.size() > 1.5 * triangles.size())
 		{
 			// If so, subdiving is not efficent anymore
 			m_triangles = triangles;
@@ -279,11 +279,11 @@ namespace rt
 		{
 			// Subidivide
 
-			if (result.LeftTris.size() > 0)
-				m_left = std::make_unique<kd_tree_node>(result.LeftTris, result.LeftBounds, depth + 1);
+			if (result.left_tris.size() > 0)
+				m_left = std::make_unique<kd_tree_node>(result.left_tris, result.left_bounds, depth + 1);
 
-			if (result.RightTris.size() > 0)
-				m_right = std::make_unique<kd_tree_node>(result.RightTris, result.RightBounds, depth + 1);
+			if (result.right_tris.size() > 0)
+				m_right = std::make_unique<kd_tree_node>(result.right_tris, result.right_bounds, depth + 1);
 		}
 	}
 
@@ -357,8 +357,8 @@ namespace rt
 	std::tuple<raycast_result, std::shared_ptr<scene_node>> scene::cast_ray(const ray& ray, bool return_on_first_hit, const std::vector<std::shared_ptr<scene_node>>& avoid_nodes) const
 	{
 		float distance = std::numeric_limits<float>::max();
-		raycast_result raycastResult;
-		std::shared_ptr<scene_node> sceneNode = nullptr;
+		raycast_result rc_result;
+		std::shared_ptr<scene_node> hit_node = nullptr;
 			
 		for (const auto& node : nodes)
 		{
@@ -388,15 +388,15 @@ namespace rt
 				if (d0 < distance) 
 				{
 					distance = d0;
-					raycastResult = r0;
-					sceneNode = node;
+					rc_result = r0;
+					hit_node = node;
 				}
 			}
 
 
 		}
 
-		return { raycastResult, std::move(sceneNode) };
+		return { rc_result, std::move(hit_node) };
 
 	}
 
@@ -405,16 +405,16 @@ namespace rt
 		raycast_result result;
 
 		float projection = glm::dot((glm::vec3(0.0f, 0.0f, 0.0f) - ray.origin), ray.direction);
-		float squaredDistance = glm::dot(ray.origin, ray.origin) - projection * projection;
+		float sq_distance = glm::dot(ray.origin, ray.origin) - projection * projection;
 
-		if (squaredDistance > 1.0f)
+		if (sq_distance > 1.0f)
 		{
 			// No hit
 			return result;
 		}
 
 
-		float offset = std::sqrt(1.0f - squaredDistance);
+		float offset = std::sqrt(1.0f - sq_distance);
 
 		float t1 = projection - offset;
 		float t2 = projection + offset;
