@@ -42,13 +42,13 @@ namespace rt {
 				auto next_scan_line = [&, current = uint32_t(0)]() mutable -> std::optional<uint32_t> {
 					std::lock_guard guard(line_mutex);
 
-					if (current == image.get_width())
+					if (current == image.get_height())
 					{
 						return std::nullopt;
 					}
 					else
 					{
-						self.progress = current / float(image.get_width());
+						self.progress = current / float(image.get_height());
 						return current++;
 					}
 				};
@@ -62,10 +62,10 @@ namespace rt {
 
 					for (auto scan_line = next_scan_line(); !self.is_interrupted() && scan_line.has_value(); scan_line = next_scan_line())
 					{
-						const auto x = scan_line.value();
+						const auto y = scan_line.value();
 						const float t = it.value() / float(it.value() + 1);
 
-						for (uint32_t y = 0; y < view_params.height && !self.is_interrupted(); ++y)
+						for (uint32_t x = 0; x < view_params.width && !self.is_interrupted(); ++x)
 						{
 							glm::vec3 color(0.0f);
 
