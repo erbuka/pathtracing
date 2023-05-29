@@ -1,19 +1,18 @@
 #include "abstract_pathtracer.h"
 
 #include <optional>
-
+#include <limits>
 #include <spdlog/spdlog.h>
 
 #include "rng.h"
 
 namespace rt {
+
 	std::shared_ptr<pathtracer_result> abstract_pathtracer::run(const view_parameters& view_params, const trace_parameters& trace_params, scene& scene)
 	{
 		scene.compile();
 		return std::make_shared<pathtracer_result>([&, trace_params, view_params](pathtracer_result& self) -> void {
 				
-			rng rng;
-			
 			std::mutex line_mutex;
 
 			image image(view_params.width, view_params.height);
@@ -54,9 +53,12 @@ namespace rt {
 					}
 				};
 
-				const auto thread_func = [&] {
+
+				const auto thread_func = [&] (const std::uint32_t seed) {
 
 					// Sync here ?
+
+					rng::seed(seed);
 
 					for (auto scan_line = next_scan_line(); !self.is_interrupted() && scan_line.has_value(); scan_line = next_scan_line())
 					{
@@ -71,8 +73,8 @@ namespace rt {
 							{
 								ray r;
 								
-								float fx = rng.next() - 0.5f + x;
-								float fy = rng.next() - 0.5f + y;
+								float fx = rng::next() - 0.5f + x;
+								float fy = rng::next() - 0.5f + y;
 								
 								float x_factor = fx / view_params.width * 2.0f - 1.0f;
 								float y_factor = 1.0f - fy / view_params.height * 2.0f;
@@ -95,7 +97,7 @@ namespace rt {
 				std::vector<std::thread> threads(trace_params.num_threads);
 
 				for (size_t i = 0; i < threads.size(); ++i)
-					threads[i] = std::thread(thread_func);
+					threads[i] = std::thread(thread_func, rng::next<std::uint32_t>(0u, std::numeric_limits<std::uint32_t>::max()));
 
 				for (size_t i = 0; i < threads.size(); ++i)
 					threads[i].join();

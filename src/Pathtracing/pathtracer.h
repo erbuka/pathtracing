@@ -17,7 +17,6 @@ namespace rt
 	
 	private:
 		static constexpr float s_epsilon = 1e-3f;
-		rng m_rng;
 		glm::vec3 trace_recursive(const view_parameters& params, const ray& r, const scene& scene, uint32_t recursion);
 
 	};

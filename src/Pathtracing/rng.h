@@ -11,22 +11,32 @@ namespace rt
 	/// </summary>
 	class rng
 	{
+	private:
+		static thread_local std::mt19937 m_e;
+		static thread_local std::uniform_real_distribution<float> m_01;
 	public:
+
+		rng() = delete;
+
 		/// <summary>
 		/// Gets a number in range [0, 1] inclusive
 		/// </summary>
 		/// <returns></returns>
-		float next() { return m_01(m_e); }
+		static float next() { return m_01(m_e); }
+
+		template<typename T>
+		static T next(const T min, const T max) {
+			return static_cast<T>(min + (max - min) * next());
+		}
 
 		/// <summary>
 		/// Gets a random vector on the hemisphere on the direction of the normal
 		/// </summary>
 		/// <param name="n">The normal</param>
 		/// <returns>A random unit vector</returns>
-		glm::vec3 hemisphere(const glm::vec3& n);
+		static glm::vec3 hemisphere(const glm::vec3& n);
 
-	private:
-		std::mt19937 m_e = std::mt19937(42);
-		std::uniform_real_distribution<float> m_01;
+		static void seed(const std::uint32_t s) { m_e.seed(s); }
+
 	};
 }

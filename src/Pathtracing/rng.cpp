@@ -5,6 +5,10 @@
 
 namespace rt
 {
+
+	thread_local std::mt19937 rng::m_e;
+	thread_local std::uniform_real_distribution<float> rng::m_01;
+
 	glm::vec3 rng::hemisphere(const glm::vec3& n)
 	{
 		glm::vec3 t;

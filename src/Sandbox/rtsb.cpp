@@ -295,7 +295,7 @@ namespace rtsb
         const rt::trace_parameters renderTraceParams = {
             std::thread::hardware_concurrency() - 1,
             0,
-            256
+            16
         };
 
         const rt::trace_parameters debugTraceParams = {
@@ -337,7 +337,7 @@ namespace rtsb
                     {
                         if (ImGui::BeginMenu(title))
                         {
-                            for (const size_t s : { 64, 128, 256, 512 })
+                            for (const size_t s : { 64, 128, 256, 512, 1024 })
                             {
                                 std::stringstream ss;
                                 ss << s << " px";

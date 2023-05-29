@@ -6,8 +6,10 @@
 
 #include "scene.h"
 
+
 namespace rt
 {
+
 
 	glm::vec3 pathtracer::trace(const view_parameters& params, const ray& r, const scene& scene)
 	{
@@ -35,7 +37,7 @@ namespace rt
 				const float metallic = node->material.metallic->sample(result.uv).r;
 
 				// Compute a random ray on the hemisphere + a perfect reflection ray
-				const auto hemi_dir = m_rng.hemisphere(result.normal);
+				const auto hemi_dir = rng::hemisphere(result.normal);
 				const auto reflect_dir = glm::reflect(r.direction, result.normal);
 
 				// Mix the perfect reflection and the random ray based on the roughness of the material
@@ -45,6 +47,7 @@ namespace rt
 				ray reflected_ray = {
 					result.position + dir * s_epsilon,
 					dir
+
 				};
 
 				// Compute the lighting (Lambert BRDF)

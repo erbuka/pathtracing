@@ -136,9 +136,7 @@ namespace rt
 			}
 
 		}
-
 		m_tree = std::make_unique<kd_tree_node>(m_triangles, m_bounds, 0);
-
 	}
 
 	raycast_result mesh::intersect_triangle(const ray& ray, const triangle& t) const
